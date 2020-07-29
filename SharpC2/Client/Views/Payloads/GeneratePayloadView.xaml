@@ -1,0 +1,42 @@
+﻿<Window x:Class="Client.Views.GeneratePayloadView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client.Views"
+        mc:Ignorable="d"
+        Title="Generate Payload" Height="450" Width="500">
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Listener:"/>
+        <ComboBox ItemsSource="{Binding Listeners}" SelectedItem="{Binding SelectedListener}" Grid.Column="1" Grid.Row="0"/>
+
+        <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding PayloadType}"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Kill Date:"/>
+        <DatePicker Grid.Row="2" Grid.Column="1" SelectedDate="{Binding KillDate}"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Framework:"/>
+        <ComboBox ItemsSource="{Binding Frameworks}" SelectedItem="{Binding SelectedFramework}" Grid.Column="1" Grid.Row="3"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Format:"/>
+        <ComboBox ItemsSource="{Binding Formats}" SelectedItem="{Binding SelectedFormat}" Grid.Column="1" Grid.Row="4"/>
+
+        <Button Grid.Row="5" Grid.Column="1" Command="{Binding GeneratePayload}">Generate</Button>
+
+    </Grid>
+</Window>

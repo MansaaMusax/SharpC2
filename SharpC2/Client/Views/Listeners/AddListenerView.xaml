@@ -1,0 +1,32 @@
+﻿<Window x:Class="Client.Views.Listeners.AddListenerView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client.Views.Listeners"
+        mc:Ignorable="d"
+        Title="Start Listener" Height="450" Width="500">
+    
+    <Grid Margin="5">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Name:" Grid.Row="0" Grid.Column="0"/>
+        <TextBox Text="{Binding Path=ListenerName}" Grid.Row="0" Grid.Column="1"/>
+
+        <TextBlock Text="Type:" Grid.Row="1" Grid.Column="0"/>
+        <ComboBox ItemsSource="{Binding ListenerTypes}" SelectedItem="{Binding SelectedListener}" Grid.Row="1" Grid.Column="1"/>
+
+        <ContentControl Content="{Binding NewListenerContent}" Grid.Row="2" Grid.Column="1"/>
+
+    </Grid>
+</Window>

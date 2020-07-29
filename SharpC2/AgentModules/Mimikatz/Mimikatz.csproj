@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net4.0</TargetFramework>
+    <AssemblyName>kiwi</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="powerkatz_x64.comp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="powerkatz_x64.comp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\TeamServer\Agents\HttpAgent\HttpAgent.csproj" />
+  </ItemGroup>
+
+</Project>

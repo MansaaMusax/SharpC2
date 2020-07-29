@@ -1,0 +1,91 @@
+﻿using Common;
+using Common.Models;
+
+using Serilog;
+
+using SharpC2.Models;
+
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
+
+using TeamServer.Controllers;
+using TeamServer.Interfaces;
+using TeamServer.Models;
+
+namespace TeamServer.Modules
+{
+    public class ReversePortForwardModule : IServerModule
+    {
+        private ServerController Server { get; set; }
+        private AgentController Agent { get; set; }
+
+        public void Init(ServerController server, AgentController agent)
+        {
+            Server = server;
+            Agent = agent;
+        }
+
+        public ServerModule GetModuleInfo()
+        {
+            return new ServerModule
+            {
+                Name = "ReversePortForward",
+                Description = "Provides server-side reverse port forwarding",
+                Developers = new List<Developer>
+                {
+                    new Developer { Name = "Daniel Duggan", Handle = "@_RastaMouse" }
+                },
+                ServerCommands = new List<ServerCommand>
+                {
+                    new ServerCommand
+                    {
+                        Name = "DataFromAgent",
+                        CallBack = DataFromAgent
+                    }
+                }
+            };
+        }
+
+        private void DataFromAgent(AgentMetadata metadata, C2Data c2Data)
+        {
+            var packet = Serialisation.DeserialiseData<ReversePortForwardPacket>(c2Data.Data);
+
+            if (!IPAddress.TryParse(packet.ForwardHost, out IPAddress ipAddress))
+            {
+                ipAddress = Dns.GetHostEntry(packet.ForwardHost).AddressList[0];
+            }
+
+            var endPoint = new IPEndPoint(ipAddress, packet.ForwardPort);
+            var sender = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.IP);
+            
+            sender.Connect(endPoint);
+            var bytesSent = sender.Send(packet.Data);
+
+            if (bytesSent > 0)
+            {
+                Log.Logger.Information("MODULE {ModuleName} {Data}", "ReversePortForward", $"{bytesSent} bytes sent");
+            }
+
+            var buffer = new byte[65535];
+            var bytesRecv = sender.Receive(buffer);
+
+            if (bytesRecv > 0)
+            {
+                packet.Data = buffer.TrimBytes();
+
+                Agent.SendAgentCommand(new AgentCommandRequest
+                {
+                    AgentId = c2Data.AgentID,
+                    Module = "rportfwd",
+                    Command = "DataFromTeamServer",
+                    Data = Convert.ToBase64String(Serialisation.SerialiseData(packet))
+                }, null);
+            }
+
+            sender.Shutdown(SocketShutdown.Both);
+            sender.Close();
+        }
+    }
+}

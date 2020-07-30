@@ -8,7 +8,7 @@ namespace TeamServer.Controllers
 {
     public class CryptoController
     {
-        public byte[] EncryptionKey { get; private set; } = Encoding.UTF8.GetBytes("jO8JTskl6BMQTHsZNZ43gz5xEVXb76Zk");  // Cryptography.GetRandomData(32); // 
+        public byte[] EncryptionKey { get; private set; } = Cryptography.GetRandomData(32); // Encoding.UTF8.GetBytes("jO8JTskl6BMQTHsZNZ43gz5xEVXb76Zk");
 
         public byte[] Encrypt<T>(T data)
         {

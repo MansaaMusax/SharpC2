@@ -8,7 +8,7 @@ namespace AgentCore.Controllers
 {
     public class CryptoController
     {
-        private byte[] EncryptionKey { get; set; } =  Encoding.UTF8.GetBytes("jO8JTskl6BMQTHsZNZ43gz5xEVXb76Zk"); // Convert.FromBase64String("<<EncKey>>");
+        private byte[] EncryptionKey { get; set; } = Convert.FromBase64String("<<EncKey>>"); // Encoding.UTF8.GetBytes("jO8JTskl6BMQTHsZNZ43gz5xEVXb76Zk");
 
         public byte[] Encrypt<T>(T data)
         {

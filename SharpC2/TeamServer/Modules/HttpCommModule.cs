@@ -124,6 +124,7 @@ namespace TeamServer.Modules
                         state.data = new byte[dataReceived.Length];
                         Buffer.BlockCopy(dataReceived, 0, state.data, 0, dataReceived.Length);
                     }
+
                     Array.Clear(state.buffer, 0, state.buffer.Length);
                     handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
                 }

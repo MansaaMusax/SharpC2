@@ -21,6 +21,8 @@ jobs:
       working-directory: ./SharpC2/TeamServer
       run: dotnet restore
     - name: Build
+      working-directory: ./SharpC2/TeamServer
       run: dotnet build --configuration Release --no-restore
     - name: Test
+      working-directory: ./SharpC2/TeamServer
       run: dotnet test --no-restore --verbosity normal

@@ -4,6 +4,7 @@ using Client.Views;
 using SharpC2.Models;
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -20,6 +21,8 @@ namespace Client.ViewModels
     {
         private MainWindowViewModel MainViewModel { get; set; }
         public string AgentId { get; set; }
+
+        public List<string> CommandHistory { get; set; } = new List<string>();
 
         public ObservableCollection<AgentEvent> AgentEvents { get; set; }
 
@@ -189,6 +192,7 @@ namespace Client.ViewModels
             }
 
             AgentAPI.SubmitAgentCommand(AgentId, mod, cmd, args);
+            CommandHistory.Insert(0, $"{mod} {cmd} {args}");
 
             ClearCommandInput();
         }

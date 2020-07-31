@@ -20,7 +20,7 @@
         <DockPanel Grid.Row="1" LastChildFill="True" Height="30">
             <TextBlock Text="{Binding AgentLabel}" VerticalAlignment="Center" Width="70"/>
             <Button Margin="0" Padding="0" Height="0" Width="0" Command="{Binding SubmitAgentCommand}" IsDefault="True"/>
-            <TextBox Text="{Binding AgentCommand, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" FontFamily="Consolas" FontSize="13"/>
+            <TextBox Text="{Binding AgentCommand, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" FontFamily="Consolas" FontSize="13" KeyUp="TextBox_KeyUp"/>
         </DockPanel>
         
     </Grid>

@@ -1,6 +1,6 @@
-﻿using AgentCore.Controllers;
-using AgentCore.Interfaces;
-using AgentCore.Models;
+﻿using Agent.Controllers;
+using Agent.Interfaces;
+using Agent.Models;
 
 using Common;
 using Common.Models;
@@ -91,7 +91,6 @@ namespace Agent.Modules
         private void AcceptCallback(IAsyncResult ar)
         {
             AllDone.Set();
-
             var listener = ar.AsyncState as TcpListener;
 
             if (ModuleStatus == ModuleStatus.Running)
@@ -187,15 +186,9 @@ namespace Agent.Modules
                     }
 
                     var dataToSend = Crypto.Encrypt(outbound);
-
-                    SendDataToClient(stream, dataToSend);
+                    stream.BeginWrite(dataToSend, 0, dataToSend.Length, new AsyncCallback(SendCallback), stream);
                 }
             }
-        }
-
-        private void SendDataToClient(NetworkStream stream, byte[] response)
-        {
-            stream.BeginWrite(response, 0, response.Length, new AsyncCallback(SendCallback), stream);
         }
 
         private void SendCallback(IAsyncResult ar)

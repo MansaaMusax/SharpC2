@@ -1,55 +1,51 @@
-﻿using System;
+﻿using Common;
+
+using SharpC2.Listeners;
+using SharpC2.Models;
+
+using System;
 using System.IO;
 using System.Reflection;
-
-using SharpC2.Models;
-using SharpC2.Listeners;
-
-using Common;
 
 namespace TeamServer.Controllers
 {
     public class PayloadControllerBase
     {
         public static string RootDirectory { get; set; } = Assembly.GetExecutingAssembly().Location.Split("TeamServer")[0];
-        public static string AgentDirectory { get; set; } = RootDirectory + "TeamServer" + Path.DirectorySeparatorChar + "Agents";
-        public static string ReferencesDirectory { get; set; } = AgentDirectory + Path.DirectorySeparatorChar + "References";
+        public static string AgentDirectory { get; set; } = Path.Combine(RootDirectory, "TeamServer", "Agents");
+        public static string ReferencesDirectory { get; set; } = Path.Combine(AgentDirectory, "References");
 
-        public static string GenerateAgentPayload(PayloadRequest request)
+        public static byte[] GenerateHttpAgent(HttpPayloadRequest request)
         {
-            var result = default(string);
-
-            var listener = GetListener(request.ListenerId);
-            if (listener == null)
-            {
-                return result;
-            }
-
-            var payload = default(byte[]);
-            try
-            {
-                if (listener.Type == ListenerType.HTTP)
-                {
-                    var controller = new HttpPayloadController(listener as ListenerHttp);
-                    payload = controller.GenerateHttpPayload(request);
-                }
-                else if (listener.Type == ListenerType.TCP)
-                {
-                    var controller = new TcpPayloadController(listener as ListenerTcp);
-                    payload = controller.GenerateTcpPayload(request);
-                }
-            }
-            catch
-            {
-                return result;
-            }
-
-            return Convert.ToBase64String(payload);
+            var listener = GetListener(request.ListenerGuid);
+            var controller = new HttpPayloadController(listener as ListenerHttp);
+            return controller.GenerateAgent(request);
         }
 
-        private static ListenerBase GetListener(string ListenerId)
+        public static byte[] GenerateTcpAgent(TcpPayloadRequest request)
         {
-            return Program.ServerController.ListenerController.GetListener(ListenerId);
+            var listener = GetListener(request.ListenerGuid);
+            var controller = new TcpPayloadController(listener as ListenerTcp);
+            return controller.GenerateStager(request);
+        }
+
+        public static byte[] GenerateSmbAgent(SmbPayloadRequest request)
+        {
+            var listener = GetListener(request.ListenerGuid);
+            var controller = new SmbPayloadController(listener as ListenerSmb);
+            return controller.GenerateStager(request);
+        }
+
+        public static byte[] GenerateStageOne(StageRequest request)
+        {
+            var stage = new byte[] { };
+
+            return stage;
+        }
+
+        private static ListenerBase GetListener(string listenerGuid)
+        {
+            return Program.ServerController.ListenerController.GetListener(listenerGuid);
         }
 
         protected static string CreateTempDirectory()
@@ -62,13 +58,17 @@ namespace TeamServer.Controllers
         protected static void CloneAgentSourceCode(ListenerType listenerType, string tempPath)
         {
             var srcPath = default(string);
+
             switch (listenerType)
             {
                 case ListenerType.HTTP:
-                    srcPath = AgentDirectory + Path.DirectorySeparatorChar + "HttpAgent";
+                    srcPath = Path.Combine(AgentDirectory, "HttpAgent");
                     break;
                 case ListenerType.TCP:
-                    srcPath = AgentDirectory + Path.DirectorySeparatorChar + "TcpAgent";
+                    srcPath = Path.Combine(AgentDirectory, "TcpAgent");
+                    break;
+                case ListenerType.SMB:
+                    srcPath = Path.Combine(AgentDirectory, "SmbAgent");
                     break;
                 default:
                     break;
@@ -76,6 +76,7 @@ namespace TeamServer.Controllers
 
             // AgentType
             var srcFiles = Directory.GetFiles(srcPath, "*.cs", SearchOption.AllDirectories);
+
             foreach (var filePath in srcFiles)
             {
                 if (filePath.Contains("AssemblyInfo.cs", StringComparison.OrdinalIgnoreCase) ||
@@ -86,23 +87,25 @@ namespace TeamServer.Controllers
             }
 
             // Agent Core
-            srcPath = AgentDirectory + Path.DirectorySeparatorChar + "AgentCore";
+            srcPath = Path.Combine(AgentDirectory, "AgentCore");
+
             foreach (var filePath in Directory.GetFiles(srcPath, "*.cs", SearchOption.AllDirectories))
             {
                 var fileName = Path.GetFileName(filePath);
                 var finalPath = tempPath + Path.DirectorySeparatorChar + fileName;
-                
+
                 if (File.Exists(finalPath))
                 {
                     fileName = fileName.Insert(fileName.Length - 3, Helpers.GeneratePseudoRandomString(6));
                     finalPath = tempPath + Path.DirectorySeparatorChar + fileName;
                 }
-                
+
                 File.Copy(filePath, finalPath, true);
             }
 
             // Common
-            srcPath = AgentDirectory + Path.DirectorySeparatorChar + "Common";
+            srcPath = Path.Combine(AgentDirectory, "Common");
+
             foreach (var filePath in Directory.GetFiles(srcPath, "*.cs", SearchOption.AllDirectories))
             {
                 var fileName = Path.GetFileName(filePath);
@@ -114,6 +117,21 @@ namespace TeamServer.Controllers
                     finalPath = tempPath + Path.DirectorySeparatorChar + fileName;
                 }
 
+                File.Copy(filePath, finalPath, true);
+            }
+        }
+
+        protected static void CloneStageOneSourceCode(string tempPath)
+        {
+            var srcPath = Path.Combine(AgentDirectory, "StageOne");
+            var srcFiles = Directory.GetFiles(srcPath, "*.cs", SearchOption.AllDirectories);
+
+            foreach (var filePath in srcFiles)
+            {
+                if (filePath.Contains("AssemblyInfo.cs", StringComparison.OrdinalIgnoreCase) ||
+                    filePath.Contains("AssemblyAttributes.cs", StringComparison.OrdinalIgnoreCase)) { continue; }
+                var fileName = Path.GetFileName(filePath);
+                var finalPath = tempPath + Path.DirectorySeparatorChar + fileName;
                 File.Copy(filePath, finalPath, true);
             }
         }

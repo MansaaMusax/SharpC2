@@ -1,8 +1,8 @@
-﻿using AgentCore.Models;
+﻿using Agent.Models;
 
 using System.Collections.Generic;
 
-namespace AgentCore.Controllers
+namespace Agent.Controllers
 {
     public class ConfigController
     {
@@ -31,6 +31,7 @@ namespace AgentCore.Controllers
             {
                 return ConfigSettings[setting];
             }
+
             return null;
         }
     }

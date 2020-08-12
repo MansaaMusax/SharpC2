@@ -4,11 +4,11 @@ using System;
 using System.Linq;
 using System.Text;
 
-namespace AgentCore.Controllers
+namespace Agent.Controllers
 {
     public class CryptoController
     {
-        private byte[] EncryptionKey { get; set; } = Convert.FromBase64String("<<EncKey>>"); // Encoding.UTF8.GetBytes("jO8JTskl6BMQTHsZNZ43gz5xEVXb76Zk");
+        public byte[] EncryptionKey { get; private set; } = Convert.FromBase64String("<<EncKey>>"); // Encoding.UTF8.GetBytes("jO8JTskl6BMQTHsZNZ43gz5xEVXb76Zk");
 
         public byte[] Encrypt<T>(T data)
         {

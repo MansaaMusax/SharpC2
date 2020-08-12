@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AgentCore.Models
+namespace Agent.Models
 {
     public sealed class GenericObjectResult : SharpC2Result
     {

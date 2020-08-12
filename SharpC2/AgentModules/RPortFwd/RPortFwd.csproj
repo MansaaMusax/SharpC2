@@ -2,16 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net4.0</TargetFramework>
+    <AssemblyName>rportfwd</AssemblyName>
+    <RootNamespace>Agent</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\TeamServer\Agents\HttpAgent\HttpAgent.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Management.Automation">
-      <HintPath>System.Management.Automation.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

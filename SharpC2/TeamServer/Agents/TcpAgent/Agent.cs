@@ -1,7 +1,7 @@
 ﻿using Agent.Modules;
 
-using AgentCore.Controllers;
-using AgentCore.Models;
+using Agent.Controllers;
+using Agent.Models;
 
 using System;
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AgentCore.Models
+namespace Agent.Models
 {
     public sealed class EnvironmentVariableResult : SharpC2Result
     {

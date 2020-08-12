@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 
-namespace AgentCore.Models
+namespace Agent.Models
 {
     public class ReversePortForward
     {

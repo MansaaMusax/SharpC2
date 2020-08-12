@@ -1,6 +1,6 @@
-﻿using AgentCore.Controllers;
-using AgentCore.Interfaces;
-using AgentCore.Models;
+﻿using Agent.Controllers;
+using Agent.Interfaces;
+using Agent.Models;
 
 using Common;
 using Common.Models;
@@ -14,9 +14,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AgentCore.Modules
+namespace Agent
 {
-    class ReversePortForwardModule : IAgentModule
+    public class Module : IAgentModule
     {
         private AgentController Agent { get; set; }
         private ConfigController Config { get; set; }
@@ -249,7 +249,7 @@ namespace AgentCore.Modules
         {
             try
             {
-                var packet = Serialisation.DeserialiseData<ReversePortForwardPacket>(Convert.FromBase64String(Encoding.UTF8.GetString(data)));
+                var packet = Serialisation.DeserialiseData<ReversePortForwardPacket>(data);
                 InboundPackets.Add(packet);
             }
             catch (Exception e)

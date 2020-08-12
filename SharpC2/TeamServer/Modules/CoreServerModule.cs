@@ -1,15 +1,18 @@
-﻿using System;
-using System.Text;
+﻿using Common;
+using Common.Models;
+
+using Serilog;
+
+using SharpC2.Models;
+
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 using TeamServer.Controllers;
 using TeamServer.Interfaces;
 using TeamServer.Models;
-
-using Common.Models;
-using Common;
-
-using SharpC2.Models;
 
 namespace TeamServer.Modules
 {
@@ -19,6 +22,7 @@ namespace TeamServer.Modules
         private AgentController Agent { get; set; }
 
         private event EventHandler<AgentEvent> OnAgentEvent;
+        private event EventHandler<ServerEvent> OnServerEvent;
 
         public void Init(ServerController server, AgentController agent)
         {
@@ -26,6 +30,7 @@ namespace TeamServer.Modules
             Agent = agent;
 
             OnAgentEvent += Agent.AgentEventHandler;
+            OnServerEvent += Server.ServerEventHandler;
         }
 
         public ServerModule GetModuleInfo()

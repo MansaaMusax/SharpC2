@@ -1,4 +1,4 @@
-﻿namespace AgentCore.Models
+﻿namespace Agent.Models
 {
     public enum ConfigSetting
     {
@@ -7,6 +7,7 @@
         ConnectPort,
         BindAddress,
         BindPort,
+        PipeName,
         SleepInterval,
         SleepJitter,
         KillDate,

@@ -1,8 +1,8 @@
-﻿using AgentCore.Controllers;
+﻿using Agent.Controllers;
 
 using Common.Models;
 
-namespace AgentCore.Interfaces
+namespace Agent.Interfaces
 {
     public interface ICommModule
     {

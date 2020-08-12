@@ -1,7 +1,6 @@
-﻿using AgentCore.Controllers;
-using AgentCore.Interfaces;
-using AgentCore.Models;
-using AgentCore.Modules;
+﻿using Agent.Controllers;
+using Agent.Interfaces;
+using Agent.Models;
 
 using Common.Models;
 
@@ -60,7 +59,6 @@ namespace Agent.Modules
             Config.SetOption(ConfigSetting.Metadata, metadata);
 
             Agent.RegisterAgentModule(new CoreAgentModule());
-            Agent.RegisterAgentModule(new ReversePortForwardModule());
         }
 
         public void Init(AgentController agentController, ConfigController configController)

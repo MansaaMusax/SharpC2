@@ -1,6 +1,6 @@
-﻿using AgentCore.Controllers;
-using AgentCore.Interfaces;
-using AgentCore.Models;
+﻿using Agent.Controllers;
+using Agent.Interfaces;
+using Agent.Models;
 
 using Common.Models;
 

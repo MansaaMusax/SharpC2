@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace AgentCore.Models
+namespace Agent.Models
 {
     public sealed class DriveInfoResult : SharpC2Result
     {

@@ -26,7 +26,8 @@ namespace Client.ViewModels.Listeners
             ListenerTypes = new List<string>
             {
                 "HTTP",
-                "TCP"
+                "TCP",
+                "SMB"
             };
         }
 
@@ -46,6 +47,13 @@ namespace Client.ViewModels.Listeners
                 content = new NewTcpListenerView
                 {
                     DataContext = new NewTcpListenerViewModel(View, this)
+                };
+            }
+            else if (SelectedListener.Equals(ListenerTypes[2]))
+            {
+                content = new NewSmbListenerView
+                {
+                    DataContext = new NewSmbListenerViewModel(View, this)
                 };
             }
 

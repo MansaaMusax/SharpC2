@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using Common.Models;
 
-namespace AgentCore.Models
+namespace Agent.Models
 {
     [Serializable]
     public class AgentModule

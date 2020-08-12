@@ -19,6 +19,7 @@ namespace Client.ViewModels
         private MainWindowViewModel MainView { get; set; }
         public ObservableCollection<ListenerBase> ActiveListeners { get; set; }
         public ListenerBase SelectedListener { get; set; }
+        
         private readonly object _lock = new object();
 
         private readonly DelegateCommand _addListener;
@@ -57,12 +58,13 @@ namespace Client.ViewModels
         {
             var httpListeners = await ListenerAPI.GetHttpListeners();
             var tcpListeners = await ListenerAPI.GetTcpListeners();
+            var smbListeners = await ListenerAPI.GetSmbListeners();
 
             if (httpListeners != null)
             {
                 foreach (var http in httpListeners)
                 {
-                    if (!ActiveListeners.Any(l => l.ListenerId.Equals(http.ListenerId)))
+                    if (!ActiveListeners.Any(l => l.ListenerName.Equals(http.ListenerName)))
                     {
                         ActiveListeners.Add(http);
                     }
@@ -70,7 +72,7 @@ namespace Client.ViewModels
 
                 foreach (var listener in ActiveListeners.Where(l => l.Type == ListenerType.HTTP).ToList())
                 {
-                    if (!httpListeners.Any(l => l.ListenerId == listener.ListenerId))
+                    if (!httpListeners.Any(l => l.ListenerName == listener.ListenerName))
                     {
                         ActiveListeners.Remove(listener);
                     }
@@ -81,7 +83,7 @@ namespace Client.ViewModels
             {
                 foreach (var tcp in tcpListeners)
                 {
-                    if (!ActiveListeners.Any(l => l.ListenerId.Equals(tcp.ListenerId)))
+                    if (!ActiveListeners.Any(l => l.ListenerName.Equals(tcp.ListenerName)))
                     {
                         ActiveListeners.Add(tcp);
                     }
@@ -89,7 +91,26 @@ namespace Client.ViewModels
 
                 foreach (var listener in ActiveListeners.Where(l => l.Type == ListenerType.TCP).ToList())
                 {
-                    if (!tcpListeners.Any(l => l.ListenerId == listener.ListenerId))
+                    if (!tcpListeners.Any(l => l.ListenerName == listener.ListenerName))
+                    {
+                        ActiveListeners.Remove(listener);
+                    }
+                }
+            }
+
+            if (smbListeners != null)
+            {
+                foreach (var smb in smbListeners)
+                {
+                    if (!ActiveListeners.Any(l => l.ListenerName.Equals(smb.ListenerName)))
+                    {
+                        ActiveListeners.Add(smb);
+                    }
+                }
+
+                foreach (var listener in ActiveListeners.Where(l => l.Type == ListenerType.SMB).ToList())
+                {
+                    if (!smbListeners.Any(l => l.ListenerName == listener.ListenerName))
                     {
                         ActiveListeners.Remove(listener);
                     }
@@ -99,7 +120,7 @@ namespace Client.ViewModels
 
         private void OnRemoveListener(object obj)
         {
-            ListenerAPI.StopListener(SelectedListener.ListenerId, SelectedListener.Type);
+            ListenerAPI.StopListener(SelectedListener.ListenerName, SelectedListener.Type);
         }
 
         private void OnAddListener(object obj)

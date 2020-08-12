@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AgentCore.Models
+namespace Agent.Models
 {
     public sealed class FileSystemEntryResult : SharpC2Result
     {

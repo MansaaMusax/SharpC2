@@ -51,7 +51,7 @@ namespace Client.ViewModels.Listeners
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
 
-            if (string.IsNullOrEmpty(response.ListenerId))
+            if (string.IsNullOrEmpty(response.ListenerName))
             {
                 window.Content = "Failed to start listener";
                 window.ShowDialog();

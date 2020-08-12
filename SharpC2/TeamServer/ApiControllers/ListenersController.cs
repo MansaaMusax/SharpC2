@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using SharpC2.Listeners;
 using SharpC2.Models;
+
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TeamServer.ApiControllers
 {
@@ -23,6 +23,12 @@ namespace TeamServer.ApiControllers
         public IEnumerable<ListenerTcp> GetTcpListeners()
         {
             return Program.ServerController.ListenerController.GetTcpListeners();
+        }
+
+        [HttpGet("smb")]
+        public IEnumerable<ListenerSmb> GetSmbListeners()
+        {
+            return Program.ServerController.ListenerController.GetSmbListeners();
         }
 
         [HttpGet("weblogs")]
@@ -43,6 +49,13 @@ namespace TeamServer.ApiControllers
         {
             var user = HttpContext.User.Identity.Name;
             return Program.ServerController.ListenerController.StartTcpListener(request);
+        }
+
+        [HttpPost("smb")]
+        public ListenerSmb NewSmbListener([FromBody] NewSmbListenerRequest request)
+        {
+            var user = HttpContext.User.Identity.Name;
+            return Program.ServerController.ListenerController.StartSmbListener(request);
         }
 
         [HttpDelete("{id}")]

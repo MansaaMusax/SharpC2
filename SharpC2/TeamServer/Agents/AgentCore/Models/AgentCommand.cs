@@ -1,8 +1,8 @@
 ﻿using System;
 
-using AgentCore.Controllers;
+using Agent.Controllers;
 
-namespace AgentCore.Models
+namespace Agent.Models
 {
     [Serializable]
     public class AgentCommand

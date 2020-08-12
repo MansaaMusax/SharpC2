@@ -1,9 +1,9 @@
-﻿using System;
+﻿using SharpC2.Listeners;
+using SharpC2.Models;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using SharpC2.Models;
-using SharpC2.Listeners;
 
 namespace TeamServer.Controllers
 {
@@ -11,6 +11,7 @@ namespace TeamServer.Controllers
     {
         public HttpListenerController HttpListenerController { get; private set; }
         public TcpListenerController TcpListenerController { get; private set; }
+        public SmbListenerController SmbListenerController { get; private set; }
         public ServerController ServerController { get; private set; }
         private AgentController AgentController { get; set; }
         private CryptoController CryptoController { get; set; }
@@ -25,6 +26,7 @@ namespace TeamServer.Controllers
 
             HttpListenerController = new HttpListenerController(this);
             TcpListenerController = new TcpListenerController(this);
+            SmbListenerController = new SmbListenerController(this);
 
             OnServerEvent += ServerController.ServerEventHandler;
         }
@@ -39,6 +41,11 @@ namespace TeamServer.Controllers
             return TcpListenerController.StartTcpListener(request);
         }
 
+        public ListenerSmb StartSmbListener(NewSmbListenerRequest request)
+        {
+            return SmbListenerController.StartSmbListener(request);
+        }
+
         public IEnumerable<ListenerHttp> GetHttpListeners()
         {
             return HttpListenerController.GetHttpListeners();
@@ -49,7 +56,12 @@ namespace TeamServer.Controllers
             return TcpListenerController.GetTcpListeners();
         }
 
-        public ListenerBase GetListener(string listenerId)
+        public IEnumerable<ListenerSmb> GetSmbListeners()
+        {
+            return SmbListenerController.GetSmbListeners();
+        }
+
+        public ListenerBase GetListener(string listenerGuid)
         {
             var listeners = new List<ListenerBase>();
 
@@ -63,7 +75,12 @@ namespace TeamServer.Controllers
                 listeners.Add(tcp);
             }
 
-            return listeners.FirstOrDefault(l => l.ListenerId.Equals(listenerId, StringComparison.OrdinalIgnoreCase));
+            foreach (var smb in GetSmbListeners())
+            {
+                listeners.Add(smb);
+            }
+
+            return listeners.FirstOrDefault(l => l.ListenerGuid.Equals(listenerGuid, StringComparison.OrdinalIgnoreCase));
         }
 
         public bool StopListener(string listenerId, ListenerType type, string user)
@@ -77,6 +94,10 @@ namespace TeamServer.Controllers
             else if (type == ListenerType.TCP)
             {
                 success = TcpListenerController.StopTcpListener(listenerId, user);
+            }
+            else if (type == ListenerType.SMB)
+            {
+                success = SmbListenerController.StopSmbListener(listenerId, user);
             }
 
             return success;

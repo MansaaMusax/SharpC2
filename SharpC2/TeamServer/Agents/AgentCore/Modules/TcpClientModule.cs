@@ -1,5 +1,5 @@
-﻿using AgentCore.Controllers;
-using AgentCore.Interfaces;
+﻿using Agent.Controllers;
+using Agent.Interfaces;
 
 using Common;
 using Common.Models;
@@ -10,9 +10,9 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AgentCore.Modules
+namespace Agent.Modules
 {
-    public class StateObject
+    class TcpStateObject
     {
         public TcpClient workClient = null;
         public NetworkStream workStream = null;
@@ -87,9 +87,10 @@ namespace AgentCore.Modules
 
         private void RequestCallback(IAsyncResult ar)
         {
-            AllDone.Set();
-
             var client = ar.AsyncState as TcpClient;
+            client.EndConnect(ar);
+
+            AllDone.Set();
 
             try
             {
@@ -114,7 +115,7 @@ namespace AgentCore.Modules
                 }
 
                 var encrypted = Crypto.Encrypt(messages);
-                var state = new StateObject { workClient = client, workStream = stream };
+                var state = new TcpStateObject { workClient = client, workStream = stream };
 
                 stream.BeginWrite(encrypted, 0, encrypted.Length, new AsyncCallback(WriteCallback), state);
             }
@@ -127,20 +128,14 @@ namespace AgentCore.Modules
 
         private void WriteCallback(IAsyncResult ar)
         {
-            var state = ar.AsyncState as StateObject;
+            var state = ar.AsyncState as TcpStateObject;
             state.workStream.EndWrite(ar);
-
-            ReadData(state);
-        }
-
-        private void ReadData(StateObject state)
-        {
             state.workStream.BeginRead(state.buffer, 0, state.buffer.Length, new AsyncCallback(ReadCallback), state);
         }
 
         private void ReadCallback(IAsyncResult ar)
         {
-            var state = ar.AsyncState as StateObject;
+            var state = ar.AsyncState as TcpStateObject;
             var bytesReceived = state.workStream.EndRead(ar);
 
             if (bytesReceived > 0)

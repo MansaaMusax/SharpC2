@@ -16,12 +16,12 @@ namespace TeamServer.Controllers
         private ListenerTcp Listener { get; set; }
         private string TempPath { get; set; }
 
-        public TcpPayloadController(ListenerTcp listenerTcp)
+        public TcpPayloadController(ListenerTcp listener)
         {
-            Listener = listenerTcp;
+            Listener = listener;
         }
 
-        public byte[] GenerateTcpPayload(PayloadRequest request)
+        public byte[] GenerateStager(TcpPayloadRequest request)
         {
             TempPath = CreateTempDirectory();
 
@@ -83,7 +83,7 @@ namespace TeamServer.Controllers
 
         private void InsertBindAddress()
         {
-            var srcPath = TempPath + Path.DirectorySeparatorChar + "Agent.cs";
+            var srcPath = Path.Combine(TempPath, "Agent.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<BindAddress>>", Listener.BindAddress);
             File.WriteAllText(srcPath, newSrc);
@@ -91,7 +91,7 @@ namespace TeamServer.Controllers
 
         private void InsertBindPort()
         {
-            var srcPath = TempPath + Path.DirectorySeparatorChar + "Agent.cs";
+            var srcPath = Path.Combine(TempPath, "Agent.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("\"<<BindPort>>\"", Listener.BindPort.ToString());
             File.WriteAllText(srcPath, newSrc);
@@ -99,7 +99,7 @@ namespace TeamServer.Controllers
 
         private void InsertKillDate(DateTime killDate)
         {
-            var srcPath = TempPath + Path.DirectorySeparatorChar + "Agent.cs";
+            var srcPath = Path.Combine(TempPath, "Agent.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<KillDate>>", killDate.ToString());
             File.WriteAllText(srcPath, newSrc);
@@ -107,7 +107,7 @@ namespace TeamServer.Controllers
 
         private void InsertCryptoKey(string key)
         {
-            var srcPath = TempPath + Path.DirectorySeparatorChar + "CryptoController.cs";
+            var srcPath = Path.Combine(TempPath, "CryptoController.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<EncKey>>", key);
             File.WriteAllText(srcPath, newSrc);

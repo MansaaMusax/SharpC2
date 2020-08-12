@@ -1,4 +1,4 @@
-﻿namespace AgentCore.Models
+﻿namespace Agent.Models
 {
     public class ReversePortForwardPacket
     {

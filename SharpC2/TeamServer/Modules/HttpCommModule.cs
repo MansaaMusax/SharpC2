@@ -225,7 +225,7 @@ namespace TeamServer.Modules
         {
             WebLogs.Add(new WebLog
             {
-                ListenerId = Listener.ListenerId,
+                ListenerId = Listener.ListenerName,
                 Origin = remoteEndPoint.Address.ToString(),
                 WebRequest = webRequest.Replace("\0", "")
             });

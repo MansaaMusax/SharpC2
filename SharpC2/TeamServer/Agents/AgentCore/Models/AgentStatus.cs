@@ -1,9 +1,6 @@
-﻿namespace Agent.Models
+﻿public enum AgentStatus
 {
-    public enum AgentStatus
-    {
-        Starting,
-        Running,
-        Stopped
-    }
+    Starting,
+    Running,
+    Stopped
 }

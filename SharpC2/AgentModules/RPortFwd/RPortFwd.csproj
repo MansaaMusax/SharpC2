@@ -6,8 +6,4 @@
     <RootNamespace>Agent</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\TeamServer\Agents\HttpAgent\HttpAgent.csproj" />
-  </ItemGroup>
-
 </Project>

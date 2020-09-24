@@ -4,8 +4,8 @@ namespace SharpC2.Models
 {
     public class PayloadRequest
     {
-        public TargetFramework TargetFramework { get; set; }
-        public OutputType OutputType { get; set; }
+        public TargetFramework TargetFramework { get; set; } = TargetFramework.Net40;
+        public OutputType OutputType { get; set; } = OutputType.Dll;
         public DateTime KillDate { get; set; } = DateTime.UtcNow.AddDays(365);
     }
 

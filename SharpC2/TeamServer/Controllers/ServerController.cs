@@ -66,38 +66,37 @@ namespace TeamServer.Controllers
 
                     foreach (var commModule in commModules)
                     {
-                        if (commModule != null && commModule.RecvData(out Tuple<AgentMetadata, List<AgentMessage>> data))
+                        if (commModule != null && commModule.RecvData(out Tuple<AgentMetadata, AgentMessage> data) == true)
                         {
-                            foreach (var message in data.Item2)
+                            var message = data.Item2;
+
+                            if (!IdempotencyKeys.Contains(message.IdempotencyKey))
                             {
-                                if (!IdempotencyKeys.Contains(message.IdempotencyKey))
+                                IdempotencyKeys.Add(message.IdempotencyKey);
+
+                                var checkinCallback = ServerModules
+                                    .Where(m => m.Name.Equals("Core", StringComparison.OrdinalIgnoreCase))
+                                    .Select(m => m.ServerCommands).FirstOrDefault()
+                                    .Where(c => c.Name.Equals("AgentCheckIn", StringComparison.OrdinalIgnoreCase))
+                                    .Select(c => c.CallBack).FirstOrDefault();
+
+                                // checkin the parent agent
+                                checkinCallback?.Invoke(data.Item1, null);
+
+                                if (!message.Data.Command.Equals("AgentCheckIn", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    IdempotencyKeys.Add(message.IdempotencyKey);
-
-                                    var checkinCallback = ServerModules
-                                        .Where(m => m.Name.Equals("Core", StringComparison.OrdinalIgnoreCase))
-                                        .Select(m => m.ServerCommands).FirstOrDefault()
-                                        .Where(c => c.Name.Equals("AgentCheckIn", StringComparison.OrdinalIgnoreCase))
-                                        .Select(c => c.CallBack).FirstOrDefault();
-
-                                    // checkin the parent agent
-                                    checkinCallback?.Invoke(data.Item1, null);
-
-                                    if (!message.Data.Command.Equals("AgentCheckIn", StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        HandleC2Data(message.Metadata, message.Data);
-                                    }
-
-                                    // checkin the p2p agent
-                                    if (!string.IsNullOrEmpty(message.Metadata.ParentAgentID))
-                                    {
-                                        checkinCallback?.Invoke(message.Metadata, message.Data);
-                                    }
+                                    HandleC2Data(message.Metadata, message.Data);
                                 }
-                                else
+
+                                // checkin the p2p agent
+                                if (!string.IsNullOrEmpty(message.Metadata.ParentAgentID))
                                 {
-                                    OnServerEvent?.Invoke(this, new ServerEvent(ServerEventType.IdempotencyKeyError, $"Duplicate Idempotency Key received for {message.Metadata.AgentID}"));
+                                    checkinCallback?.Invoke(message.Metadata, message.Data);
                                 }
+                            }
+                            else
+                            {
+                                OnServerEvent?.Invoke(this, new ServerEvent(ServerEventType.IdempotencyKeyError, $"Duplicate Idempotency Key received for {message.Metadata.AgentID}"));
                             }
                         }
                     }

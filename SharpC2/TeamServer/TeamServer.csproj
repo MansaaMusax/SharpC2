@@ -8,45 +8,57 @@
 
   <ItemGroup>
     <Compile Remove="Agents\AgentCore\**" />
+    <Compile Remove="Agents\AgentStage\**" />
     <Compile Remove="Agents\Common\**" />
     <Compile Remove="Agents\HttpAgentStager\**" />
     <Compile Remove="Agents\HttpAgent\**" />
+    <Compile Remove="Agents\HTTPStager\**" />
     <Compile Remove="Agents\SmbAgentStager\**" />
     <Compile Remove="Agents\SmbAgent\**" />
     <Compile Remove="Agents\StageOne\**" />
     <Compile Remove="Agents\StagerCore\**" />
     <Compile Remove="Agents\TcpAgentStager\**" />
     <Compile Remove="Agents\TcpAgent\**" />
+    <Compile Remove="Agents\TCPStager\**" />
     <Content Remove="Agents\AgentCore\**" />
+    <Content Remove="Agents\AgentStage\**" />
     <Content Remove="Agents\Common\**" />
     <Content Remove="Agents\HttpAgentStager\**" />
     <Content Remove="Agents\HttpAgent\**" />
+    <Content Remove="Agents\HTTPStager\**" />
     <Content Remove="Agents\SmbAgentStager\**" />
     <Content Remove="Agents\SmbAgent\**" />
     <Content Remove="Agents\StageOne\**" />
     <Content Remove="Agents\StagerCore\**" />
     <Content Remove="Agents\TcpAgentStager\**" />
     <Content Remove="Agents\TcpAgent\**" />
+    <Content Remove="Agents\TCPStager\**" />
     <EmbeddedResource Remove="Agents\AgentCore\**" />
+    <EmbeddedResource Remove="Agents\AgentStage\**" />
     <EmbeddedResource Remove="Agents\Common\**" />
     <EmbeddedResource Remove="Agents\HttpAgentStager\**" />
     <EmbeddedResource Remove="Agents\HttpAgent\**" />
+    <EmbeddedResource Remove="Agents\HTTPStager\**" />
     <EmbeddedResource Remove="Agents\SmbAgentStager\**" />
     <EmbeddedResource Remove="Agents\SmbAgent\**" />
     <EmbeddedResource Remove="Agents\StageOne\**" />
     <EmbeddedResource Remove="Agents\StagerCore\**" />
     <EmbeddedResource Remove="Agents\TcpAgentStager\**" />
     <EmbeddedResource Remove="Agents\TcpAgent\**" />
+    <EmbeddedResource Remove="Agents\TCPStager\**" />
     <None Remove="Agents\AgentCore\**" />
+    <None Remove="Agents\AgentStage\**" />
     <None Remove="Agents\Common\**" />
     <None Remove="Agents\HttpAgentStager\**" />
     <None Remove="Agents\HttpAgent\**" />
+    <None Remove="Agents\HTTPStager\**" />
     <None Remove="Agents\SmbAgentStager\**" />
     <None Remove="Agents\SmbAgent\**" />
     <None Remove="Agents\StageOne\**" />
     <None Remove="Agents\StagerCore\**" />
     <None Remove="Agents\TcpAgentStager\**" />
     <None Remove="Agents\TcpAgent\**" />
+    <None Remove="Agents\TCPStager\**" />
   </ItemGroup>
 
   <ItemGroup>

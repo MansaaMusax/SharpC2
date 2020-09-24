@@ -54,6 +54,11 @@ namespace TeamServer.Modules
                     },
                     new ServerCommand
                     {
+                        Name = "StageOneRequest",
+                        CallBack = HandleStageOneRequest
+                    },
+                    new ServerCommand
+                    {
                         Name = "RegisterAgentModule",
                         Description = "Registers a new agent module.",
                         CallBack = RegisterAgentModule
@@ -72,6 +77,16 @@ namespace TeamServer.Modules
                     }
                 }
             };
+        }
+
+        private void HandleStageOneRequest(AgentMetadata metadata, C2Data c2Data)
+        {
+            var stage = PayloadControllerBase.GenerateStageOne(new StageRequest
+            {
+                TargetFramework = TargetFramework.Net40
+            });
+
+            Agent.SendDataToAgent(metadata.AgentID, "", "StageOne", stage);
         }
 
         private void HandleAgentOutput(AgentMetadata metadata, C2Data c2Data)

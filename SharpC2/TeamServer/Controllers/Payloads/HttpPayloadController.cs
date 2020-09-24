@@ -21,13 +21,13 @@ namespace TeamServer.Controllers
             Listener = listener;
         }
 
-        public byte[] GenerateAgent(HttpPayloadRequest request)
+        public byte[] GenerateAgentStager(HttpPayloadRequest request)
         {
             TempPath = CreateTempDirectory();
 
             var compilerRequest = new Compiler.CompilationRequest
             {
-                AssemblyName = "Agent",
+                AssemblyName = "AgentStager",
                 OutputKind = (OutputKind)request.OutputType,
                 Platform = Platform.AnyCpu,
                 ReferenceDirectory = request.TargetFramework == TargetFramework.Net35 ? ReferencesDirectory + Path.DirectorySeparatorChar + "net35" : ReferencesDirectory + Path.DirectorySeparatorChar + "net40",
@@ -74,7 +74,7 @@ namespace TeamServer.Controllers
                 }
             };
 
-            CloneAgentSourceCode(Listener.Type, TempPath);
+            CloneAgentStagerSourceCode(Listener.Type, TempPath);
             InsertConnectAddresses();
             InsertConnectPort();
             InsertKillDate(request.KillDate);
@@ -91,7 +91,7 @@ namespace TeamServer.Controllers
 
         private void InsertConnectAddresses()
         {
-            var srcPath = Path.Combine(TempPath, "Agent.cs");
+            var srcPath = Path.Combine(TempPath, "HttpCommModule.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<ConnectHost>>", Listener.ConnectAddress);
             File.WriteAllText(srcPath, newSrc);
@@ -99,7 +99,7 @@ namespace TeamServer.Controllers
 
         private void InsertConnectPort()
         {
-            var srcPath = Path.Combine(TempPath, "Agent.cs");
+            var srcPath = Path.Combine(TempPath, "HttpCommModule.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<ConnectPort>>", Listener.ConnectPort.ToString());
             File.WriteAllText(srcPath, newSrc);
@@ -107,7 +107,7 @@ namespace TeamServer.Controllers
 
         private void InsertKillDate(DateTime killDate)
         {
-            var srcPath = Path.Combine(TempPath, "Agent.cs");
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<KillDate>>", killDate.ToString());
             File.WriteAllText(srcPath, newSrc);
@@ -115,7 +115,7 @@ namespace TeamServer.Controllers
 
         private void InsertSleepInterval(string interval)
         {
-            var srcPath = Path.Combine(TempPath, "Agent.cs");
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<SleepInterval>>", interval);
             File.WriteAllText(srcPath, newSrc);
@@ -123,7 +123,7 @@ namespace TeamServer.Controllers
 
         private void InsertSleepJitter(string jitter)
         {
-            var srcPath = Path.Combine(TempPath, "Agent.cs");
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<SleepJitter>>", jitter);
             File.WriteAllText(srcPath, newSrc);

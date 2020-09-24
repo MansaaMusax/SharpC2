@@ -1,16 +1,10 @@
-﻿using Agent.Controllers;
-
-using Common.Models;
-
-namespace Agent.Interfaces
+﻿interface ICommModule
 {
-    public interface ICommModule
-    {
-        void Init(ConfigController config, CryptoController crypto);
-        void Start();
-        void SendData(AgentMessage message);
-        bool RecvData(out AgentMessage message);
-        ModuleStatus GetStatus();
-        void Stop();
-    }
+    void Init(ConfigController config, CryptoController crypto);
+    void SetMetadata(AgentMetadata metadata);
+    void Start();
+    void Stop();
+    ModuleStatus GetStatus();
+    void SendData(AgentMessage message);
+    bool RecvData(out AgentMessage message);
 }

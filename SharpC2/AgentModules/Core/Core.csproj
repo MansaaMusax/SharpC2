@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\TeamServer\Agents\HttpAgent\HttpAgent.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="System.Management.Automation">
       <HintPath>Powerpick\System.Management.Automation.dll</HintPath>
     </Reference>

@@ -68,7 +68,7 @@ namespace TeamServer.Controllers
                 }
             };
 
-            CloneAgentSourceCode(Listener.Type, TempPath);
+            CloneAgentStagerSourceCode(Listener.Type, TempPath);
             InsertPipeName();
             InsertKillDate(request.KillDate);
             InsertCryptoKey(Convert.ToBase64String(Program.ServerController.CryptoController.EncryptionKey));

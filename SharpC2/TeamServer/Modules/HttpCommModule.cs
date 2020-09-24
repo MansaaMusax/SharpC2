@@ -33,7 +33,7 @@ namespace TeamServer.Modules
         private CryptoController CryptoController { get; set; }
         private Socket Socket { get; set; }
         public ModuleStatus ModuleStatus { get; private set; }
-        private Queue<Tuple<AgentMetadata, List<AgentMessage>>> InboundQueue { get; set; } = new Queue<Tuple<AgentMetadata, List<AgentMessage>>>();
+        private Queue<Tuple<AgentMetadata, AgentMessage>> InboundQueue { get; set; } = new Queue<Tuple<AgentMetadata, AgentMessage>>();
         public List<WebLog> WebLogs { get; private set; } = new List<WebLog>();
 
         private event EventHandler<AgentEvent> OnAgentEvent;
@@ -148,15 +148,15 @@ namespace TeamServer.Modules
                     var agentMetadata = ExtractAgentMetadata(finalRequest);
                     if (agentMetadata != null)
                     {
-                        var agentMessages = ExtractAgentMessage(finalRequest);
+                        var agentMessage = ExtractAgentMessage(finalRequest);
 
-                        if (agentMessages != null)
+                        if (agentMessage != null)
                         {
-                            var tuple = new Tuple<AgentMetadata, List<AgentMessage>>(agentMetadata, agentMessages);
+                            var tuple = new Tuple<AgentMetadata, AgentMessage>(agentMetadata, agentMessage);
                             InboundQueue.Enqueue(tuple);
 
-                            var agentTasks = GetAgentTasks(agentMetadata.AgentID);
-                            SendData(handler, agentTasks);
+                            var agentTask = GetAgentTasks(agentMetadata.AgentID);
+                            SendData(handler, agentTask);
                         }
                     }
                     else
@@ -167,9 +167,9 @@ namespace TeamServer.Modules
             }
         }
 
-        private void SendData(Socket handler, List<AgentMessage> messages)
+        private void SendData(Socket handler, AgentMessage message)
         {
-            var encrypted = CryptoController.Encrypt(messages);
+            var encrypted = CryptoController.Encrypt(message);
 
             var response = new StringBuilder("HTTP/1.1 200 OK\r\n");
             response.Append(string.Format("X-Malware: SharpC2\r\n"));
@@ -193,32 +193,24 @@ namespace TeamServer.Modules
             }
         }
 
-        private List<AgentMessage> GetAgentTasks(string agentId)
+        private AgentMessage GetAgentTasks(string agentId)
         {
-            var tasks = new List<AgentMessage>();
+            AgentMessage message = null;
             var agent = AgentController.GetSession(agentId);
 
             if (agent != null)
             {
                 if (agent.QueuedCommands.Count > 0)
                 {
-                    while (agent.QueuedCommands.Count != 0)
-                    {
-                        tasks.Add(agent.QueuedCommands.Dequeue());
-                    }
-                }
-                else
-                {
-                    tasks.Add(new AgentMessage
-                    {
-                        IdempotencyKey = Guid.NewGuid().ToString(),
-                        Metadata = new AgentMetadata { AgentID = agentId },
-                        Data = new C2Data { Module = "Core", Command = "NOP" }
-                    });
+                    message = agent.QueuedCommands.Dequeue();
                 }
             }
+            else
+            {
+                message = new AgentMessage { IdempotencyKey = Guid.NewGuid().ToString(), Metadata = new AgentMetadata(), Data = new C2Data { Module = "Core", Command = "NOP" } };
+            }
 
-            return tasks;
+            return message;
         }
 
         private void GenerateWebLog(string webRequest, IPEndPoint remoteEndPoint)
@@ -253,9 +245,9 @@ namespace TeamServer.Modules
             return metadata;
         }
 
-        private List<AgentMessage> ExtractAgentMessage(string webRequest)
+        private AgentMessage ExtractAgentMessage(string webRequest)
         {
-            List<AgentMessage> message = null;
+            AgentMessage message = null;
 
             var regex = Regex.Match(webRequest, "Message=([^\\s]+)");
 
@@ -265,13 +257,12 @@ namespace TeamServer.Modules
 
                 if (CryptoController.VerifyHMAC(encrypted))
                 {
-                    message = CryptoController.Decrypt<List<AgentMessage>>(encrypted);
+                    message = CryptoController.Decrypt<AgentMessage>(encrypted);
                 }
                 else
                 {
                     OnAgentEvent?.Invoke(this, new AgentEvent("", AgentEventType.CryptoError, "HMAC validation failed on AgentMessage"));
                 }
-                
             }
 
             return message;
@@ -298,7 +289,7 @@ namespace TeamServer.Modules
             Socket.Close();
         }
 
-        public bool RecvData(out Tuple<AgentMetadata, List<AgentMessage>> data)
+        public bool RecvData(out Tuple<AgentMetadata, AgentMessage> data)
         {
             if (InboundQueue.Count > 0)
             {

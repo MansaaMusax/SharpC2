@@ -1,11 +1,5 @@
-﻿using Agent.Controllers;
-using Agent.Models;
-
-namespace Agent.Interfaces
+﻿interface IAgentModule
 {
-    public interface IAgentModule
-    {
-        void Init(AgentController agent, ConfigController config);
-        AgentModule GetModuleInfo();
-    }
+    void Init(AgentController agent, ConfigController config);
+    AgentModuleInfo GetModuleInfo();
 }

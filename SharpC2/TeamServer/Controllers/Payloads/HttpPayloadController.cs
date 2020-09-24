@@ -91,7 +91,7 @@ namespace TeamServer.Controllers
 
         private void InsertConnectAddresses()
         {
-            var srcPath = Path.Combine(TempPath, "HttpCommModule.cs");
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<ConnectHost>>", Listener.ConnectAddress);
             File.WriteAllText(srcPath, newSrc);
@@ -99,7 +99,7 @@ namespace TeamServer.Controllers
 
         private void InsertConnectPort()
         {
-            var srcPath = Path.Combine(TempPath, "HttpCommModule.cs");
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<ConnectPort>>", Listener.ConnectPort.ToString());
             File.WriteAllText(srcPath, newSrc);

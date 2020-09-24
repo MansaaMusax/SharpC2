@@ -27,7 +27,7 @@ namespace TeamServer.Controllers
 
             var compilerRequest = new Compiler.CompilationRequest
             {
-                AssemblyName = "Agent",
+                AssemblyName = "AgentStager",
                 OutputKind = (OutputKind)request.OutputType,
                 Platform = Platform.AnyCpu,
                 ReferenceDirectory = request.TargetFramework == TargetFramework.Net35 ? ReferencesDirectory + Path.DirectorySeparatorChar + "net35" : ReferencesDirectory + Path.DirectorySeparatorChar + "net40",
@@ -83,7 +83,7 @@ namespace TeamServer.Controllers
 
         private void InsertBindAddress()
         {
-            var srcPath = Path.Combine(TempPath, "Agent.cs");
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<BindAddress>>", Listener.BindAddress);
             File.WriteAllText(srcPath, newSrc);
@@ -91,15 +91,15 @@ namespace TeamServer.Controllers
 
         private void InsertBindPort()
         {
-            var srcPath = Path.Combine(TempPath, "Agent.cs");
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
-            var newSrc = src.Replace("\"<<BindPort>>\"", Listener.BindPort.ToString());
+            var newSrc = src.Replace("<<BindPort>>", Listener.BindPort.ToString());
             File.WriteAllText(srcPath, newSrc);
         }
 
         private void InsertKillDate(DateTime killDate)
         {
-            var srcPath = Path.Combine(TempPath, "Agent.cs");
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<KillDate>>", killDate.ToString());
             File.WriteAllText(srcPath, newSrc);

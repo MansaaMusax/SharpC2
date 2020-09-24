@@ -26,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ProcessListResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ReversePortForwardPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ReversePortForwardResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modules\LinkModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modules\CoreModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommModules\HttpCommModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommModules\SmbCommModule.cs" />
@@ -36,7 +37,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Modules\EnvModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modules\ExecModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modules\FileModule.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Modules\PowerPick\PowerShellRunner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modules\PowerShellRunner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modules\ProcessModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modules\RevPortFwdModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modules\SetModule.cs" />
@@ -45,8 +46,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Helpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Misc.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Serialisation.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)CommModules\" />
   </ItemGroup>
 </Project>

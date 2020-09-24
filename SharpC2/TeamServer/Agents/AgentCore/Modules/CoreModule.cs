@@ -37,7 +37,7 @@ namespace Agent.Modules
                     {
                         Name = "exit",
                         Description = "Kill the current agent.",
-                        HelpText = "exit",
+                        HelpText = "core exit",
                         CallBack = ExitAgent
                     },
                     new AgentCommand

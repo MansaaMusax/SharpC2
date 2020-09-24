@@ -27,7 +27,7 @@ public class AgentStage
         var config = new ConfigController();
         config.SetOption(ConfigSetting.KillDate, killDate);
 
-        var commModule = new TcpCommModule();
+        var commModule = new TcpCommModule(bindAddress, bindPort);
 
         StartAgent(config, commModule);
     }

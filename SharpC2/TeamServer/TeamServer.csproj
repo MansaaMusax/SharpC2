@@ -8,20 +8,28 @@
 
   <ItemGroup>
     <Compile Remove="Agents\AgentCore\**" />
+    <Compile Remove="Agents\AgentStage\**" />
     <Compile Remove="Agents\Common\**" />
     <Compile Remove="Agents\HttpAgent\**" />
+    <Compile Remove="Agents\HTTPStager\**" />
     <Compile Remove="Agents\TcpAgent\**" />
     <Content Remove="Agents\AgentCore\**" />
+    <Content Remove="Agents\AgentStage\**" />
     <Content Remove="Agents\Common\**" />
     <Content Remove="Agents\HttpAgent\**" />
+    <Content Remove="Agents\HTTPStager\**" />
     <Content Remove="Agents\TcpAgent\**" />
     <EmbeddedResource Remove="Agents\AgentCore\**" />
+    <EmbeddedResource Remove="Agents\AgentStage\**" />
     <EmbeddedResource Remove="Agents\Common\**" />
     <EmbeddedResource Remove="Agents\HttpAgent\**" />
+    <EmbeddedResource Remove="Agents\HTTPStager\**" />
     <EmbeddedResource Remove="Agents\TcpAgent\**" />
     <None Remove="Agents\AgentCore\**" />
+    <None Remove="Agents\AgentStage\**" />
     <None Remove="Agents\Common\**" />
     <None Remove="Agents\HttpAgent\**" />
+    <None Remove="Agents\HTTPStager\**" />
     <None Remove="Agents\TcpAgent\**" />
   </ItemGroup>
 

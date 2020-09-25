@@ -5,7 +5,7 @@ public class AgentMessage
 {
     public string IdempotencyKey { get; set; } = Guid.NewGuid().ToString();
     public AgentMetadata Metadata { get; set; }
-    public C2Data Data { get; set; }
+    public C2Data Data { get; set; } = new C2Data();
 }
 
 [Serializable]

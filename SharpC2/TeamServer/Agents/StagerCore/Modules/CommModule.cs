@@ -22,7 +22,6 @@ abstract class CommModule
     public virtual void Start(CryptoController crypto)
     {
         Crypto = crypto;
-
         ModuleStatus = ModuleStatus.Running;
     }
 

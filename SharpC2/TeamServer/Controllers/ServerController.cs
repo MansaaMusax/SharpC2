@@ -83,16 +83,18 @@ namespace TeamServer.Controllers
                                 // checkin the parent agent
                                 checkinCallback?.Invoke(data.Item1, null);
 
-                                if (!message.Data.Command.Equals("AgentCheckIn", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    HandleC2Data(message.Metadata, message.Data);
-                                }
-
                                 // checkin the p2p agent
                                 if (!string.IsNullOrEmpty(message.Metadata.ParentAgentID))
                                 {
                                     checkinCallback?.Invoke(message.Metadata, message.Data);
                                 }
+
+                                if (!message.Data.Command.Equals("AgentCheckIn", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    HandleC2Data(message.Metadata, message.Data);
+                                }
+
+                                
                             }
                             else
                             {

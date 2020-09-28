@@ -7,11 +7,6 @@ public class AgentStage
 {
     static string AgentID;
 
-    static void Main(string[] args)
-    {
-        HttpEntryPoint("HTTP", DateTime.UtcNow.AddDays(365), "127.0.0.1", 8080, 1, 0);
-    }
-
     public static void HttpEntryPoint(string agentID, DateTime killDate, string connectHost, int connectPort, int sleepInterval, int sleepJitter)
     {
         AgentID = agentID;

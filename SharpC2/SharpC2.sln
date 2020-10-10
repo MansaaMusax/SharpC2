@@ -37,11 +37,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentStage", "TeamServer\Ag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCPStager", "TeamServer\Agents\TCPStager\TCPStager.csproj", "{CA6CC2EE-75FD-4F00-B687-917FA55A4FAE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMBStager", "TeamServer\Agents\SMBStager\SMBStager.csproj", "{A1167B68-446B-4C0C-A8B8-2A7278B67511}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TeamServer\Agents\Common\Common.projitems*{0fd85eb4-6164-4029-b42c-0ad8ae9fc8c3}*SharedItemsImports = 13
 		SharpC2API\SharpC2API.projitems*{1c874b5d-7269-4b8d-8711-ce26a35a4646}*SharedItemsImports = 5
 		TeamServer\Agents\Common\Common.projitems*{1c874b5d-7269-4b8d-8711-ce26a35a4646}*SharedItemsImports = 5
+		TeamServer\Agents\StagerCore\StagerCore.projitems*{a1167b68-446b-4c0c-a8b8-2a7278b67511}*SharedItemsImports = 4
 		TeamServer\Agents\StagerCore\StagerCore.projitems*{a1930a95-e6a2-44ed-a4ef-4769d8001c9d}*SharedItemsImports = 13
 		TeamServer\Agents\StagerCore\StagerCore.projitems*{a9db9fcc-7502-42cd-81ec-3cd66f511346}*SharedItemsImports = 4
 		SharpC2API\SharpC2API.projitems*{affe0816-b2f1-42ea-98c8-7c24a1db7b34}*SharedItemsImports = 13
@@ -166,6 +169,18 @@ Global
 		{CA6CC2EE-75FD-4F00-B687-917FA55A4FAE}.Release|x64.Build.0 = Release|Any CPU
 		{CA6CC2EE-75FD-4F00-B687-917FA55A4FAE}.Release|x86.ActiveCfg = Release|Any CPU
 		{CA6CC2EE-75FD-4F00-B687-917FA55A4FAE}.Release|x86.Build.0 = Release|Any CPU
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511}.Debug|x64.Build.0 = Debug|Any CPU
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511}.Debug|x86.Build.0 = Debug|Any CPU
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511}.Release|x64.ActiveCfg = Release|Any CPU
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511}.Release|x64.Build.0 = Release|Any CPU
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511}.Release|x86.ActiveCfg = Release|Any CPU
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -180,6 +195,7 @@ Global
 		{A9DB9FCC-7502-42CD-81EC-3CD66F511346} = {23227B56-10D2-4AE7-AB83-DE3C2AC0B223}
 		{4D8C2A88-1DA5-4ABE-8995-6606473D7CF1} = {6CE68D0A-2F0E-4F8E-8AE7-AC447281F973}
 		{CA6CC2EE-75FD-4F00-B687-917FA55A4FAE} = {23227B56-10D2-4AE7-AB83-DE3C2AC0B223}
+		{A1167B68-446B-4C0C-A8B8-2A7278B67511} = {23227B56-10D2-4AE7-AB83-DE3C2AC0B223}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8541C2A-D9D1-4CEA-B560-05DFA8606392}

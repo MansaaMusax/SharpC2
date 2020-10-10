@@ -28,11 +28,12 @@ class AgentController
         CommModule = commModule;
     }
 
-    public void Init(string agentID)
+    public void Init(string agentID, string parentAgentID)
     {
         AgentMetadata = new AgentMetadata
         {
             AgentID = agentID,
+            ParentAgentID = parentAgentID,
             Hostname = Helpers.GetHostname,
             IPAddress = Helpers.GetIpAddress,
             Integrity = Helpers.GetIntegrity,

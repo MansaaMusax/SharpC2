@@ -71,6 +71,11 @@ abstract class CommModule
         Metadata.ParentAgentID = parentID;
     }
 
+    public virtual string GetParentID()
+    {
+        return Metadata.ParentAgentID;
+    }
+
     public virtual void ProcessTeamServerResponse(byte[] response)
     {
         if (Crypto.VerifyHMAC(response))

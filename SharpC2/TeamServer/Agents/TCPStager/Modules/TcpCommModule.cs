@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +17,7 @@ class TcpCommModule : CommModule
     public override void Start(CryptoController crypto)
     {
         base.Start(crypto);
-        
+
         Listener.Start();
 
         Task.Factory.StartNew(delegate ()
@@ -26,8 +25,7 @@ class TcpCommModule : CommModule
             while (ModuleStatus == ModuleStatus.Running)
             {
                 Status.Reset();
-                var state = new CommStateObject();
-                Listener.BeginAcceptTcpClient(new AsyncCallback(AcceptCallback), state);
+                Listener.BeginAcceptTcpClient(new AsyncCallback(AcceptCallback), Listener);
                 Status.WaitOne();
 
                 Thread.Sleep(1000);
@@ -60,14 +58,13 @@ class TcpCommModule : CommModule
     {
         Status.Set();
 
-        var state = ar.AsyncState as CommStateObject;
+        var listener = ar.AsyncState as TcpListener;
 
         if (ModuleStatus == ModuleStatus.Running)
         {
             var handler = Listener.EndAcceptTcpClient(ar);
             var stream = handler.GetStream();
-            state.Handler = handler;
-            state.Worker = stream;
+            var state = new CommStateObject { Worker = stream };
             stream.BeginRead(state.Buffer, 0, state.Buffer.Length, new AsyncCallback(ReadCallback), state);
         }
     }
@@ -76,7 +73,14 @@ class TcpCommModule : CommModule
     {
         var state = ar.AsyncState as CommStateObject;
         var stream = state.Worker as NetworkStream;
-        var bytesRead = stream.EndRead(ar);
+
+        var bytesRead = 0;
+
+        try
+        {
+            bytesRead = stream.EndRead(ar);
+        }
+        catch { }
 
         if (bytesRead > 0)
         {
@@ -102,16 +106,15 @@ class TcpCommModule : CommModule
 
         var dataToSend = Crypto.Encrypt(outbound);
 
-        stream.BeginWrite(dataToSend, 0, dataToSend.Length, new AsyncCallback(WriteCallback), state);
+        stream.BeginWrite(dataToSend, 0, dataToSend.Length, new AsyncCallback(WriteCallback), stream);
     }
 
     private void WriteCallback(IAsyncResult ar)
     {
-        var state = ar.AsyncState as CommStateObject;
-        var stream = state.Worker as NetworkStream;
+        var stream = ar.AsyncState as NetworkStream;
 
         stream.EndWrite(ar);
-        stream.Dispose();
+        stream.Close();
     }
 
     private byte[] DataJuggle(int bytesRead, NetworkStream stream, CommStateObject state)

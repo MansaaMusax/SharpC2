@@ -196,18 +196,6 @@ namespace TeamServer.Controllers
                 var finalPath = tempPath + Path.DirectorySeparatorChar + fileName;
                 File.Copy(filePath, finalPath, true);
             }
-
-            // AgentCore
-            srcPath = Path.Combine(AgentDirectory, "AgentCore");
-            srcFiles = Directory.GetFiles(srcPath, "*.cs", SearchOption.AllDirectories);
-            foreach (var filePath in srcFiles)
-            {
-                if (filePath.Contains("AssemblyInfo.cs", StringComparison.OrdinalIgnoreCase) ||
-                    filePath.Contains("AssemblyAttributes.cs", StringComparison.OrdinalIgnoreCase)) { continue; }
-                var fileName = Path.GetFileName(filePath);
-                var finalPath = tempPath + Path.DirectorySeparatorChar + fileName;
-                File.Copy(filePath, finalPath, true);
-            }
         }
 
         protected static void RemoveTempDirectory(string path)

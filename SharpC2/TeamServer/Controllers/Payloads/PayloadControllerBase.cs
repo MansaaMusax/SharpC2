@@ -80,6 +80,12 @@ namespace TeamServer.Controllers
                     },
                     new Compiler.Reference
                     {
+                        File = "System.IO.Pipes.dll",
+                        Framework = (Compiler.DotNetVersion)request.TargetFramework,
+                        Enabled = true
+                    },
+                    new Compiler.Reference
+                    {
                         File = "System.XML.dll",
                         Framework = (Compiler.DotNetVersion)request.TargetFramework,
                         Enabled = true
@@ -163,23 +169,6 @@ namespace TeamServer.Controllers
 
                 File.Copy(filePath, finalPath, true);
             }
-
-            // Common
-            //srcPath = Path.Combine(AgentDirectory, "Common");
-
-            //foreach (var filePath in Directory.GetFiles(srcPath, "*.cs", SearchOption.AllDirectories))
-            //{
-            //    var fileName = Path.GetFileName(filePath);
-            //    var finalPath = tempPath + Path.DirectorySeparatorChar + fileName;
-
-            //    if (File.Exists(finalPath))
-            //    {
-            //        fileName = fileName.Insert(fileName.Length - 3, Helpers.GeneratePseudoRandomString(6));
-            //        finalPath = tempPath + Path.DirectorySeparatorChar + fileName;
-            //    }
-
-            //    File.Copy(filePath, finalPath, true);
-            //}
         }
 
         protected static void CloneStageOneSourceCode(string tempPath)

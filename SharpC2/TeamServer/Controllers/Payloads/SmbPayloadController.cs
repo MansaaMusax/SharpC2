@@ -27,7 +27,7 @@ namespace TeamServer.Controllers
 
             var compilerRequest = new Compiler.CompilationRequest
             {
-                AssemblyName = "Agent",
+                AssemblyName = "AgentStager",
                 OutputKind = (OutputKind)request.OutputType,
                 Platform = Platform.AnyCpu,
                 ReferenceDirectory = request.TargetFramework == TargetFramework.Net35 ? ReferencesDirectory + Path.DirectorySeparatorChar + "net35" : ReferencesDirectory + Path.DirectorySeparatorChar + "net40",
@@ -64,6 +64,12 @@ namespace TeamServer.Controllers
                         File = "System.Runtime.Serialization.dll",
                         Framework = (Compiler.DotNetVersion)request.TargetFramework,
                         Enabled = true
+                    },
+                    new Compiler.Reference
+                    {
+                        File = "System.IO.Pipes.dll",
+                        Framework = (Compiler.DotNetVersion)request.TargetFramework,
+                        Enabled = true
                     }
                 }
             };
@@ -84,13 +90,13 @@ namespace TeamServer.Controllers
         {
             var srcPath = Path.Combine(TempPath, "SmbCommModule.cs");
             var src = File.ReadAllText(srcPath);
-            var newSrc = src.Replace("<<PipeName>>", Listener.PipeName);
+            var newSrc = src.Replace("<<Pipename>>", Listener.PipeName);
             File.WriteAllText(srcPath, newSrc);
         }
 
         private void InsertKillDate(DateTime killDate)
         {
-            var srcPath = TempPath + Path.DirectorySeparatorChar + "Agent.cs";
+            var srcPath = TempPath + Path.DirectorySeparatorChar + "AgentStager.cs";
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<KillDate>>", killDate.ToString());
             File.WriteAllText(srcPath, newSrc);

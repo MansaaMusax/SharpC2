@@ -30,10 +30,10 @@ class SmbCommModule : ICommModule
         Mode = ModuleMode.Server;
     }
 
-    public SmbCommModule(string pipename, string connectHost)
+    public SmbCommModule(string connectHost, string pipename)
     {
-        Pipename = pipename;
         ConnectHost = connectHost;
+        Pipename = pipename;
         Mode = ModuleMode.Client;
     }
 

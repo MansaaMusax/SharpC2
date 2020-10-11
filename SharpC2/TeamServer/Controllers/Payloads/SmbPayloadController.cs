@@ -88,7 +88,7 @@ namespace TeamServer.Controllers
 
         private void InsertPipeName()
         {
-            var srcPath = Path.Combine(TempPath, "SmbCommModule.cs");
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<Pipename>>", Listener.PipeName);
             File.WriteAllText(srcPath, newSrc);

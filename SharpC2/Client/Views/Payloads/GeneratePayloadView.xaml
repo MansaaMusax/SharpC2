@@ -23,7 +23,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Listener:"/>
-        <ComboBox ItemsSource="{Binding Listeners}" SelectedItem="{Binding SelectedListener}" Grid.Column="1" Grid.Row="0"/>
+        <ComboBox ItemsSource="{Binding ListenerList}" SelectedItem="{Binding SelectedListener}" Grid.Column="1" Grid.Row="0"/>
 
         <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding PayloadType}"/>
 

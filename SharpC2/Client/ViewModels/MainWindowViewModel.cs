@@ -227,12 +227,35 @@ namespace Client.ViewModels
                             CLR = agent.Metadata.CLR,
                             Integrity = agent.Metadata.Integrity.ToString(),
                             AgentModules = agent.LoadModules,
-                            ChildAgents = new List<Agent>(),
                             LastSeen = Helpers.CalculateTimeDiff(agent.LastSeen)
                         });
                     }
                     else
                     {
+                        Agents.FirstOrDefault(a => a.AgentId.Equals(agent.Metadata.AgentID, StringComparison.OrdinalIgnoreCase))
+                            .Hostname = agent.Metadata.Hostname;
+
+                        Agents.FirstOrDefault(a => a.AgentId.Equals(agent.Metadata.AgentID, StringComparison.OrdinalIgnoreCase))
+                            .IpAddress = agent.Metadata.IPAddress;
+
+                        Agents.FirstOrDefault(a => a.AgentId.Equals(agent.Metadata.AgentID, StringComparison.OrdinalIgnoreCase))
+                            .Identity = agent.Metadata.Identity;
+
+                        Agents.FirstOrDefault(a => a.AgentId.Equals(agent.Metadata.AgentID, StringComparison.OrdinalIgnoreCase))
+                            .ProcessName = agent.Metadata.ProcessName;
+
+                        Agents.FirstOrDefault(a => a.AgentId.Equals(agent.Metadata.AgentID, StringComparison.OrdinalIgnoreCase))
+                            .ProcessId = agent.Metadata.ProcessID;
+
+                        Agents.FirstOrDefault(a => a.AgentId.Equals(agent.Metadata.AgentID, StringComparison.OrdinalIgnoreCase))
+                            .Arch = agent.Metadata.Arch.ToString();
+
+                        Agents.FirstOrDefault(a => a.AgentId.Equals(agent.Metadata.AgentID, StringComparison.OrdinalIgnoreCase))
+                            .CLR = agent.Metadata.CLR;
+
+                        Agents.FirstOrDefault(a => a.AgentId.Equals(agent.Metadata.AgentID, StringComparison.OrdinalIgnoreCase))
+                            .Integrity = agent.Metadata.Integrity.ToString();
+
                         Agents.FirstOrDefault(a => a.AgentId.Equals(agent.Metadata.AgentID, StringComparison.OrdinalIgnoreCase))
                             .AgentModules = agent.LoadModules;
 

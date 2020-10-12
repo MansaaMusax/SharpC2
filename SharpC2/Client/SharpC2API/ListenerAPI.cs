@@ -27,6 +27,14 @@ namespace Client.SharpC2API
             return JsonConvert.DeserializeObject<List<ListenerTcp>>(apiResponse.Content);
         }
 
+        public static async Task<List<ListenerSmb>> GetSmbListeners()
+        {
+            var apiRequest = new RestRequest("/api/Listeners/smb", Method.GET);
+            var apiResponse = await REST.Client.ExecuteAsync(apiRequest);
+
+            return JsonConvert.DeserializeObject<List<ListenerSmb>>(apiResponse.Content);
+        }
+
         public static async Task<ListenerHttp> StartHttpListener(NewHttpListenerRequest req)
         {
             var apiRequest = new RestRequest("/api/Listeners/http", Method.POST);
@@ -43,6 +51,15 @@ namespace Client.SharpC2API
             var apiResponse = await REST.Client.ExecuteAsync(apiRequest);
 
             return JsonConvert.DeserializeObject<ListenerTcp>(apiResponse.Content);
+        }
+
+        public static async Task<ListenerSmb> StartSmbListener(NewSmbListenerRequest req)
+        {
+            var apiRequest = new RestRequest("/api/Listeners/smb", Method.POST);
+            apiRequest.AddParameter("application/json", JsonConvert.SerializeObject(req), ParameterType.RequestBody);
+            var apiResponse = await REST.Client.ExecuteAsync(apiRequest);
+
+            return JsonConvert.DeserializeObject<ListenerSmb>(apiResponse.Content);
         }
 
         public static async void StopListener(string listenerId, ListenerType type)
@@ -65,6 +82,7 @@ namespace Client.SharpC2API
 
             var httpListeners = await GetHttpListeners();
             var tcpListeners = await GetTcpListeners();
+            var smbListeners = await GetSmbListeners();
 
             if (httpListeners != null)
             {
@@ -79,6 +97,14 @@ namespace Client.SharpC2API
                 foreach (var tcpListener in tcpListeners)
                 {
                     result.Add(tcpListener);
+                }
+            }
+
+            if (smbListeners != null)
+            {
+                foreach (var smbListener in smbListeners)
+                {
+                    result.Add(smbListener);
                 }
             }
 

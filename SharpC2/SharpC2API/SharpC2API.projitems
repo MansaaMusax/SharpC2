@@ -6,7 +6,7 @@
     <SharedGUID>affe0816-b2f1-42ea-98c8-7c24a1db7b34</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>SharpC2API</Import_RootNamespace>
+    <Import_RootNamespace>SharpC2</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Models\Agents\AgentCommand.cs" />
@@ -20,8 +20,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\GenericObjectResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Listeners\ListenerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Listeners\ListenerHttp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Listeners\ListenerSmb.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Listeners\ListenerTcp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Listeners\NewHttpListenerRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Listeners\NewSmbListenerRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Listeners\NewTcpListenerRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Listeners\WebLog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payload\PayloadRequest.cs" />

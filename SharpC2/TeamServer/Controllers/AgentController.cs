@@ -37,14 +37,14 @@ namespace TeamServer.Controllers
 
         public void UpdateSession(AgentMetadata metadata)
         {
-            if (!ConnectedAgents.Where(a => a.Metadata.AgentID.Equals(metadata.AgentID, StringComparison.OrdinalIgnoreCase)).Any())
+            if (!ConnectedAgents.Any(a => a.Metadata.AgentID.Equals(metadata.AgentID, StringComparison.OrdinalIgnoreCase)))
             {
                 CreateSession(metadata);
             }
             else
             {
-                ConnectedAgents.Where(a => a.Metadata.AgentID.Equals(metadata.AgentID, StringComparison.OrdinalIgnoreCase))
-                    .FirstOrDefault().LastSeen = DateTime.UtcNow;
+                ConnectedAgents.FirstOrDefault(a => a.Metadata.AgentID.Equals(metadata.AgentID, StringComparison.OrdinalIgnoreCase)).Metadata = metadata;
+                ConnectedAgents.FirstOrDefault(a => a.Metadata.AgentID.Equals(metadata.AgentID, StringComparison.OrdinalIgnoreCase)).LastSeen = DateTime.UtcNow;
             }
         }
 
@@ -85,6 +85,38 @@ namespace TeamServer.Controllers
             agent.LoadModules.Add(module);
             OnAgentEvent?.Invoke(this, new AgentEvent(agent.Metadata.AgentID, AgentEventType.ModuleRegistered, module.Name));
             Log.Logger.Information("AGENT {Event} {ModuleName}", AgentEventType.ModuleRegistered.ToString(), module.Name);
+        }
+
+        public void SendDataToAgent(string agentId, string module, string command, byte[] data)
+        {
+            var agent = ConnectedAgents.FirstOrDefault(a => a.Metadata.AgentID.Equals(agentId, StringComparison.OrdinalIgnoreCase));
+
+            if (agent != null)
+            {
+                while (true)
+                {
+                    if (!string.IsNullOrEmpty(agent.Metadata.ParentAgentID))
+                    {
+                        var parentAgent = agent.Metadata.ParentAgentID;
+                        agent = ConnectedAgents.FirstOrDefault(a => a.Metadata.AgentID.Equals(parentAgent, StringComparison.OrdinalIgnoreCase));
+                        if (string.IsNullOrEmpty(agent.Metadata.ParentAgentID))
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                agent.QueuedCommands.Enqueue(new AgentMessage
+                {
+                    IdempotencyKey = Guid.NewGuid().ToString(),
+                    Metadata = new AgentMetadata(),
+                    Data = new C2Data { AgentID = agentId, Module = module, Command = command, Data = data }
+                });
+            }
         }
 
         public void SendAgentCommand(AgentCommandRequest request, string user)

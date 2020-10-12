@@ -66,10 +66,12 @@ namespace TeamServer.Controllers
 
                     foreach (var commModule in commModules)
                     {
-                        if (commModule != null && commModule.RecvData(out Tuple<AgentMetadata, List<AgentMessage>> data))
+                        if (commModule != null && commModule.RecvData(out Tuple<AgentMetadata, AgentMessage> data) == true)
                         {
-                            foreach (var message in data.Item2)
+                            if (data != null)
                             {
+                                var message = data.Item2;
+
                                 if (!IdempotencyKeys.Contains(message.IdempotencyKey))
                                 {
                                     IdempotencyKeys.Add(message.IdempotencyKey);
@@ -83,10 +85,16 @@ namespace TeamServer.Controllers
                                     // checkin the parent agent
                                     checkinCallback?.Invoke(data.Item1, null);
 
-                                    HandleC2Data(message.Metadata, message.Data);
-
                                     // checkin the p2p agent
-                                    checkinCallback?.Invoke(message.Metadata, message.Data);
+                                    if (!string.IsNullOrEmpty(message.Metadata.ParentAgentID))
+                                    {
+                                        checkinCallback?.Invoke(message.Metadata, message.Data);
+                                    }
+
+                                    if (!message.Data.Command.Equals("AgentCheckIn", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        HandleC2Data(message.Metadata, message.Data);
+                                    }
                                 }
                                 else
                                 {

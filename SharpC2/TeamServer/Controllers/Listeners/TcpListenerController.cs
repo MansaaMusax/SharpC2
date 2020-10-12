@@ -26,7 +26,7 @@ namespace TeamServer.Controllers
         {
             var listener = new ListenerTcp
             {
-                ListenerId = request.Name,
+                ListenerName = request.Name,
                 Type = ListenerType.TCP,
                 BindAddress = request.BindAddress,
                 BindPort = request.BindPort
@@ -44,7 +44,7 @@ namespace TeamServer.Controllers
 
         public bool StopTcpListener(string listenerId, string user)
         {
-            var listener = TcpListeners.FirstOrDefault(l => l.ListenerId.Equals(listenerId));
+            var listener = TcpListeners.FirstOrDefault(l => l.ListenerName.Equals(listenerId));
 
             if (listener != null)
             {

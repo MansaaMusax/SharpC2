@@ -24,6 +24,7 @@ namespace SharpC2.Models
         ListenerStopped,
         InitialAgent,
         IdempotencyKeyError,
-        ServerModuleRegistered
+        ServerModuleRegistered,
+        RosylnError
     }
 }

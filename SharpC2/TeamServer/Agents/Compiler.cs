@@ -160,7 +160,7 @@ namespace TeamServer.Agents
 
         public CompilerException(string message) : base(message)
         {
-
+            Console.Error.WriteLine(message);
         }
 
         public CompilerException(string message, Exception inner) : base(message, inner)

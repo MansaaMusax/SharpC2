@@ -16,18 +16,18 @@ namespace TeamServer.Controllers
         private ListenerHttp Listener { get; set; }
         private string TempPath { get; set; }
 
-        public HttpPayloadController(ListenerHttp listenerHttp)
+        public HttpPayloadController(ListenerHttp listener)
         {
-            Listener = listenerHttp;
+            Listener = listener;
         }
 
-        public byte[] GenerateHttpPayload(PayloadRequest request)
+        public byte[] GenerateAgentStager(HttpPayloadRequest request)
         {
             TempPath = CreateTempDirectory();
 
             var compilerRequest = new Compiler.CompilationRequest
             {
-                AssemblyName = "Agent",
+                AssemblyName = "AgentStager",
                 OutputKind = (OutputKind)request.OutputType,
                 Platform = Platform.AnyCpu,
                 ReferenceDirectory = request.TargetFramework == TargetFramework.Net35 ? ReferencesDirectory + Path.DirectorySeparatorChar + "net35" : ReferencesDirectory + Path.DirectorySeparatorChar + "net40",
@@ -74,7 +74,7 @@ namespace TeamServer.Controllers
                 }
             };
 
-            CloneAgentSourceCode(Listener.Type, TempPath);
+            CloneAgentStagerSourceCode(Listener.Type, TempPath);
             InsertConnectAddresses();
             InsertConnectPort();
             InsertKillDate(request.KillDate);
@@ -91,7 +91,7 @@ namespace TeamServer.Controllers
 
         private void InsertConnectAddresses()
         {
-            var srcPath = TempPath + Path.DirectorySeparatorChar + "Agent.cs";
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<ConnectHost>>", Listener.ConnectAddress);
             File.WriteAllText(srcPath, newSrc);
@@ -99,7 +99,7 @@ namespace TeamServer.Controllers
 
         private void InsertConnectPort()
         {
-            var srcPath = TempPath + Path.DirectorySeparatorChar + "Agent.cs";
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<ConnectPort>>", Listener.ConnectPort.ToString());
             File.WriteAllText(srcPath, newSrc);
@@ -107,7 +107,7 @@ namespace TeamServer.Controllers
 
         private void InsertKillDate(DateTime killDate)
         {
-            var srcPath = TempPath + Path.DirectorySeparatorChar + "Agent.cs";
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<KillDate>>", killDate.ToString());
             File.WriteAllText(srcPath, newSrc);
@@ -115,23 +115,23 @@ namespace TeamServer.Controllers
 
         private void InsertSleepInterval(string interval)
         {
-            var srcPath = TempPath + Path.DirectorySeparatorChar + "Agent.cs";
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
-            var newSrc = src.Replace("\"<<SleepInterval>>\"", interval);
+            var newSrc = src.Replace("<<SleepInterval>>", interval);
             File.WriteAllText(srcPath, newSrc);
         }
 
         private void InsertSleepJitter(string jitter)
         {
-            var srcPath = TempPath + Path.DirectorySeparatorChar + "Agent.cs";
+            var srcPath = Path.Combine(TempPath, "AgentStager.cs");
             var src = File.ReadAllText(srcPath);
-            var newSrc = src.Replace("\"<<SleepJitter>>\"", jitter);
+            var newSrc = src.Replace("<<SleepJitter>>", jitter);
             File.WriteAllText(srcPath, newSrc);
         }
 
         private void InsertCryptoKey(string key)
         {
-            var srcPath = TempPath + Path.DirectorySeparatorChar + "CryptoController.cs";
+            var srcPath = Path.Combine(TempPath, "CryptoController.cs");
             var src = File.ReadAllText(srcPath);
             var newSrc = src.Replace("<<EncKey>>", key);
             File.WriteAllText(srcPath, newSrc);

@@ -29,7 +29,7 @@ namespace TeamServer.Controllers
         {
             var listener = new ListenerHttp
             {
-                ListenerId = request.Name,
+                ListenerName = request.Name,
                 Type = ListenerType.HTTP,
                 BindPort = request.BindPort,
                 ConnectAddress = request.ConnectAddress,
@@ -66,7 +66,7 @@ namespace TeamServer.Controllers
 
         public bool StopHttpListener(string listenerId, string user)
         {
-            var module = HttpListeners.Where(m => m.Listener.ListenerId.Equals(listenerId, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+            var module = HttpListeners.FirstOrDefault(m => m.Listener.ListenerName.Equals(listenerId, StringComparison.OrdinalIgnoreCase));
             
             if (module != null)
             {

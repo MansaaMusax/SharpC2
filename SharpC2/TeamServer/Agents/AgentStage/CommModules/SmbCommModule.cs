@@ -147,6 +147,8 @@ class SmbCommModule : ICommModule
                 pipe.BeginWrite(dataToSend, 0, dataToSend.Length, new AsyncCallback(ClientWriteCallback), pipe);
 
                 Status.WaitOne();
+
+                Thread.Sleep(1000);
             }
         });
     }
@@ -261,6 +263,8 @@ class SmbCommModule : ICommModule
     #region Client
     private void ClientWriteCallback(IAsyncResult ar)
     {
+        Status.Set();
+
         var pipe = ar.AsyncState as NamedPipeClientStream;
         pipe.EndWrite(ar);
 

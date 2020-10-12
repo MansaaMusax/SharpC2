@@ -1,4 +1,4 @@
-﻿ using Agent.Modules;
+﻿using Agent.Modules;
 
 using System;
 using System.Net;
@@ -62,6 +62,7 @@ public class AgentStage
         agent.RegisterAgentModule(new LinkModule());
         agent.RegisterAgentModule(new DirectoryModule());
         agent.RegisterAgentModule(new FileModule());
+        agent.RegisterAgentModule(new NetModule());
         agent.RegisterAgentModule(new DrivesModule());
         agent.RegisterAgentModule(new EnvModule());
         agent.RegisterAgentModule(new ProcessModule());

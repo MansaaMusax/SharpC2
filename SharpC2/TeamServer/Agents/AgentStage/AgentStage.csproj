@@ -87,6 +87,9 @@
     <Compile Include="Modules\ProcessModule.cs" />
     <Compile Include="Modules\RevPortFwdModule.cs" />
     <Compile Include="Modules\SetModule.cs" />
+    <Compile Include="Modules\TokenModule.cs" />
+    <Compile Include="PInvoke\NativeMethods.cs" />
+    <Compile Include="PInvoke\Tokens\Token.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\Compression.cs" />
     <Compile Include="Utilities\Cryptography.cs" />

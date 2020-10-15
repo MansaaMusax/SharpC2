@@ -67,6 +67,7 @@ public class AgentStage
         agent.RegisterAgentModule(new EnvModule());
         agent.RegisterAgentModule(new ProcessModule());
         agent.RegisterAgentModule(new ExecModule());
+        agent.RegisterAgentModule(new TokenModule());
         agent.RegisterAgentModule(new RevPortFwdModule());
 
         agent.Start();

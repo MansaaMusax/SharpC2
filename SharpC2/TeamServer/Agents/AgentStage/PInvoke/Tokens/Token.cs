@@ -4,7 +4,7 @@ using static NativeMethods;
 
 static class Token
 {
-    static IntPtr hToken;
+    public static IntPtr hToken;
 
     public static bool CreateToken(string username, string domain, string password)
     {
@@ -13,7 +13,7 @@ static class Token
             Rev2Self();
         }
 
-        if (Advapi.LogonUserA(username, domain, password, LogonType.LOGON32_LOGON_NEW_CREDENTIALS, LogonProvider.LOGON32_PROVIDER_DEFAULT, out hToken))
+        if (Advapi.LogonUser(username, domain, password, LogonType.LOGON32_LOGON_NEW_CREDENTIALS, LogonProvider.LOGON32_PROVIDER_DEFAULT, out hToken))
         {
             return Advapi.ImpersonateLoggedOnUser(hToken);
         }

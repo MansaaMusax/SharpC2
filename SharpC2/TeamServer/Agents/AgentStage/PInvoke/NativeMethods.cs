@@ -6,7 +6,7 @@ class NativeMethods
     public class Advapi
     {
         [DllImport("advapi32.dll")]
-        public static extern bool LogonUserA(
+        public static extern bool LogonUser(
             string lpszUsername,
             string lpszDomain,
             string lpszPassword,
@@ -53,15 +53,15 @@ class NativeMethods
 
     #region Flags
     [Flags]
-    public enum LogonProvider
+    public enum LogonProvider : uint
     {
-        LOGON32_PROVIDER_DEFAULT
+        LOGON32_PROVIDER_DEFAULT = 0
     }
 
     [Flags]
-    public enum LogonType
+    public enum LogonType : uint
     {
-        LOGON32_LOGON_NEW_CREDENTIALS
+        LOGON32_LOGON_NEW_CREDENTIALS = 9
     }
 
     [Flags]

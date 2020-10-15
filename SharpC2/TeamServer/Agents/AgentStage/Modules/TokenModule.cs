@@ -98,17 +98,18 @@ class TokenModule : IAgentModule
         var split = Encoding.UTF8.GetString(data).Split(' ');
 
         var userdom = split[0].Split('\\');
+
         var domain = userdom[0];
         var user = userdom[1];
         var pass = split[1];
 
         if (Token.CreateToken(user, domain, pass))
         {
-            Agent.SendOutput($"Successfully created and impersonated token for {userdom}");
+            Agent.SendOutput($"Successfully created and impersonated token for {domain}\\{user}");
         }
         else
         {
-            Agent.SendError($"Unable to create and impersonate token for {userdom}");
+            Agent.SendError($"Unable to create and impersonate token for {domain}\\{user}");
         }
     }
 }

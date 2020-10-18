@@ -1,8 +1,4 @@
-﻿using Common.Models;
-
-using Serilog;
-
-using SharpC2.Models;
+﻿using Serilog;
 
 using System;
 using System.Collections.Generic;
@@ -18,21 +14,21 @@ namespace TeamServer.Controllers
         public List<AgentSessionData> ConnectedAgents { get; private set; } = new List<AgentSessionData>();
         public List<AgentEvent> AgentEvents { get; set; } = new List<AgentEvent>();
 
-        private event EventHandler<AgentEvent> OnAgentEvent;
-        private event EventHandler<ServerEvent> OnServerEvent;
+        private event EventHandler<AgentEvent> AgentEvent;
 
         public AgentController(ServerController server, CryptoController crypto)
         {
             Server = server;
             Crypto = crypto;
 
-            OnAgentEvent += AgentEventHandler;
-            OnServerEvent += Server.ServerEventHandler;
+            AgentEvent += AgentEventHandler;
         }
 
         public void AgentEventHandler(object sender, AgentEvent e)
         {
             AgentEvents.Add(e);
+
+            Log.Logger.Information("{Event} {AgentId} {Data} {Nick}", e.Type, e.AgentId, e.Data, e.Nick);
         }
 
         public void UpdateSession(AgentMetadata metadata)
@@ -57,9 +53,7 @@ namespace TeamServer.Controllers
                 LastSeen = DateTime.UtcNow
             });
 
-            var data = string.Format("{0}@{1} ({2})", metadata.Identity, metadata.IPAddress, metadata.Hostname);
-            OnServerEvent?.Invoke(this, new ServerEvent(ServerEventType.InitialAgent, data));
-            Log.Logger.Information("AGENT {Event} {AgentID} {Hostname}", ServerEventType.InitialAgent.ToString(), metadata.AgentID, metadata.Hostname);
+            AgentEvent?.Invoke(this, new AgentEvent(metadata.AgentID, AgentEventType.InitialAgent));
         }
 
         public AgentSessionData GetSession(string agentId)
@@ -83,8 +77,7 @@ namespace TeamServer.Controllers
             }
 
             agent.LoadModules.Add(module);
-            OnAgentEvent?.Invoke(this, new AgentEvent(agent.Metadata.AgentID, AgentEventType.ModuleRegistered, module.Name));
-            Log.Logger.Information("AGENT {Event} {ModuleName}", AgentEventType.ModuleRegistered.ToString(), module.Name);
+            AgentEvent?.Invoke(this, new AgentEvent(agent.Metadata.AgentID, AgentEventType.ModuleRegistered, module.Name));
         }
 
         public void SendDataToAgent(string agentId, string module, string command, byte[] data)
@@ -114,7 +107,7 @@ namespace TeamServer.Controllers
                 {
                     IdempotencyKey = Guid.NewGuid().ToString(),
                     Metadata = new AgentMetadata(),
-                    Data = new C2Data { AgentID = agentId, Module = module, Command = command, Data = data }
+                    Data = new C2Data { AgentId = agentId, Module = module, Command = command, Data = data }
                 });
             }
         }
@@ -146,37 +139,27 @@ namespace TeamServer.Controllers
                 {
                     IdempotencyKey = Guid.NewGuid().ToString(),
                     Metadata = new AgentMetadata(),
-                    Data = new C2Data { AgentID = request.AgentId, Module = request.Module, Command = request.Command, Data = Encoding.UTF8.GetBytes(request.Data) }
+                    Data = new C2Data { AgentId = request.AgentId, Module = request.Module, Command = request.Command, Data = Encoding.UTF8.GetBytes(request.Data) }
                 });
 
-                OnAgentEvent?.Invoke(this, new AgentEvent(request.AgentId, AgentEventType.CommandRequest, request.Command));
-                Log.Logger.Information("AGENT {Event} {AgentID} {Command} {Nick}", AgentEventType.CommandRequest.ToString(), request.AgentId, request.Command, user);
+                AgentEvent?.Invoke(this, new AgentEvent(request.AgentId, AgentEventType.CommandRequest, request.Command));
             }
         }
 
         public void ClearAgentCommandQueue(string agentId)
         {
-            try
+            var agent = ConnectedAgents.FirstOrDefault(a => a.Metadata.AgentID.Equals(agentId, StringComparison.OrdinalIgnoreCase));
+
+            if (agent != null)
             {
-                ConnectedAgents.FirstOrDefault(a => a.Metadata.AgentID.Equals(agentId, StringComparison.OrdinalIgnoreCase)).QueuedCommands.Clear();
-            }
-            catch (Exception e)
-            {
-                throw new ArgumentException(e.Message);
+                agent.QueuedCommands.Clear();
             }
         }
 
-        public void RemoveAgent(string agentId)
+        public bool RemoveAgent(string agentId)
         {
-            try
-            {
-                var agent = ConnectedAgents.FirstOrDefault(a => a.Metadata.AgentID.Equals(agentId, StringComparison.OrdinalIgnoreCase));
-                ConnectedAgents.Remove(agent);
-            }
-            catch (Exception e)
-            {
-                throw new ArgumentException(e.Message);
-            }
+            var agent = ConnectedAgents.FirstOrDefault(a => a.Metadata.AgentID.Equals(agentId, StringComparison.OrdinalIgnoreCase));
+            return ConnectedAgents.Remove(agent);
         }
     }
 }

@@ -5,8 +5,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using SharpC2.Models;
-
 namespace TeamServer.ApiControllers
 {
     [Authorize]

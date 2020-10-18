@@ -1,8 +1,4 @@
-﻿using Serilog;
-
-using SharpC2.Models;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,39 +9,39 @@ namespace TeamServer.Controllers
         private ServerController Server { get; set; }
         public List<string> ConnectedClients { get; private set; } = new List<string>();
 
-        private event EventHandler<ServerEvent> OnClientEvent;
+        private event EventHandler<ServerEvent> ClientEvent;
 
         public ClientController(ServerController server)
         {
             Server = server;
-            OnClientEvent += OnClientEventHandler;
+            ClientEvent += ClientEventHandler;
         }
 
-        public ClientAuthenticationResult ClientLogin(ClientAuthenticationRequest request)
+        public ClientAuthResponse ClientLogin(ClientAuthRequest request)
         {
-            var result = new ClientAuthenticationResult();
+            var result = new ClientAuthResponse();
 
             if (string.IsNullOrEmpty(request.Nick) || string.IsNullOrEmpty(request.Password))
             {
-                result.Result = ClientAuthenticationResult.AuthResult.InvalidRequest;
-                Log.Logger.Warning("CLIENT {AuthResult} {Nick}", result.Result.ToString(), request.Nick);
+                result.Result = ClientAuthResult.InvalidRequest;
+                ClientEvent?.Invoke(this, new ServerEvent(ServerEventType.FailedAuth, result.Result.ToString(), request.Nick));
             }
             else if (!AuthenticationController.ValidatePassword(request.Password))
             {
-                result.Result = ClientAuthenticationResult.AuthResult.BadPassword;
-                Log.Logger.Warning("CLIENT {AuthResult} {Nick}", result.Result.ToString(), request.Nick);
+                result.Result = ClientAuthResult.BadPassword;
+                ClientEvent?.Invoke(this, new ServerEvent(ServerEventType.FailedAuth, result.Result.ToString(), request.Nick));
             }
             else if (ConnectedClients.Contains(request.Nick, StringComparer.OrdinalIgnoreCase))
             {
-                result.Result = ClientAuthenticationResult.AuthResult.NickInUse;
-                Log.Logger.Warning("CLIENT {AuthResult} {Nick}", result.Result.ToString(), request.Nick);
+                result.Result = ClientAuthResult.NickInUse;
+                ClientEvent?.Invoke(this, new ServerEvent(ServerEventType.FailedAuth, result.Result.ToString(), request.Nick));
             }
             else
             {
-                result.Result = ClientAuthenticationResult.AuthResult.LoginSuccess;
+                result.Result = ClientAuthResult.LoginSuccess;
                 result.Token = AuthenticationController.GenerateAuthenticationToken(request.Nick);
 
-                Log.Logger.Information("CLIENT {AuthResult} {Nick}", result.Result.ToString(), request.Nick);
+                ClientEvent?.Invoke(this, new ServerEvent(ServerEventType.UserLogon, result.Result.ToString(), request.Nick));
 
                 AddNewClient(request.Nick);
             }
@@ -56,21 +52,21 @@ namespace TeamServer.Controllers
         private void AddNewClient(string nick)
         {
             ConnectedClients.Add(nick);
-            OnClientEvent?.Invoke(this, new ServerEvent(ServerEventType.UserLogon, nick));
         }
 
         public bool ClientLogoff(string nick)
         {
             var result = ConnectedClients.Remove(nick);
+
             if (result)
             {
-                OnClientEvent?.Invoke(this, new ServerEvent(ServerEventType.UserLogoff, nick));
-                Log.Logger.Information("CLIENT {Nick} LoggedOff", nick);
+                ClientEvent?.Invoke(this, new ServerEvent(ServerEventType.UserLogoff, "", nick));
             }
+
             return result;
         }
 
-        private void OnClientEventHandler(object sender, ServerEvent e)
+        private void ClientEventHandler(object sender, ServerEvent e)
         {
             Server.ServerEventHandler(this, e);
         }

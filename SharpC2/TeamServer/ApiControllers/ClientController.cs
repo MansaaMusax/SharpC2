@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using SharpC2.Models;
-
 using System.Collections.Generic;
 
 namespace TeamServer.ApiControllers
@@ -19,7 +17,7 @@ namespace TeamServer.ApiControllers
 
         [AllowAnonymous]
         [HttpPost]
-        public ClientAuthenticationResult ClientLogin([FromBody]ClientAuthenticationRequest request)
+        public ClientAuthResponse ClientLogin([FromBody]ClientAuthRequest request)
         {
             return Program.ServerController.ClientController.ClientLogin(request);
         }

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using SharpC2.Models;
-
 using System;
 
 namespace TeamServer.ApiControllers
@@ -12,44 +10,14 @@ namespace TeamServer.ApiControllers
     [ApiController]
     public class PayloadController : ControllerBase
     {
-        [HttpPost("http")]
-        public IActionResult GenerateHttpAgent([FromBody]HttpPayloadRequest request)
+        [HttpPost("stager")]
+        public IActionResult GenerateStager([FromBody]StagerRequest request)
         {
-            var payload = Controllers.PayloadControllerBase.GenerateHttpAgent(request);
+            var stager = Controllers.PayloadController.GenerateStager(request);
 
-            if (payload.Length > 0)
+            if (stager.Length > 0)
             {
-                return Ok(Convert.ToBase64String(payload));
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-        [HttpPost("tcp")]
-        public IActionResult GenerateTcpStager([FromBody]TcpPayloadRequest request)
-        {
-            var payload = Controllers.PayloadControllerBase.GenerateTcpAgent(request);
-
-            if (payload.Length > 0)
-            {
-                return Ok(Convert.ToBase64String(payload));
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-        [HttpPost("smb")]
-        public IActionResult GenerateSmbStager([FromBody]SmbPayloadRequest request)
-        {
-            var payload = Controllers.PayloadControllerBase.GenerateSmbAgent(request);
-
-            if (payload.Length > 0)
-            {
-                return Ok(Convert.ToBase64String(payload));
+                return Ok(Convert.ToBase64String(stager));
             }
             else
             {

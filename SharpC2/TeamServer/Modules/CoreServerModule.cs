@@ -1,13 +1,5 @@
-﻿using Common;
-using Common.Models;
-
-using Serilog;
-
-using SharpC2.Models;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
 using TeamServer.Controllers;
@@ -22,7 +14,6 @@ namespace TeamServer.Modules
         private AgentController Agent { get; set; }
 
         private event EventHandler<AgentEvent> OnAgentEvent;
-        private event EventHandler<ServerEvent> OnServerEvent;
 
         public void Init(ServerController server, AgentController agent)
         {
@@ -30,7 +21,6 @@ namespace TeamServer.Modules
             Agent = agent;
 
             OnAgentEvent += Agent.AgentEventHandler;
-            OnServerEvent += Server.ServerEventHandler;
         }
 
         public ServerModule GetModuleInfo()
@@ -81,7 +71,7 @@ namespace TeamServer.Modules
 
         private void HandleStageOneRequest(AgentMetadata metadata, C2Data c2Data)
         {
-            var stage = PayloadControllerBase.GenerateStageOne(new StageRequest
+            var stage = PayloadController.GenerateStage(new StageRequest
             {
                 TargetFramework = TargetFramework.Net40
             });

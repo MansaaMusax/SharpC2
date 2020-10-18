@@ -11,11 +11,11 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Cryptography.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\AgentMessage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\C2Data.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Developer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\AgentMetadata.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\ModuleStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AgentMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)C2Data.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Developer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AgentMetadata.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ModuleStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialisation.cs" />
   </ItemGroup>
 </Project>

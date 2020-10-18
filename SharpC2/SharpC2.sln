@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agents", "Agents", "{6CE68D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AgentModules", "AgentModules", "{336F4D98-755B-4849-B94D-E3A6ED856A12}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharpC2", "SharpC2API\SharpC2.shproj", "{AFFE0816-B2F1-42EA-98C8-7C24A1DB7B34}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{AFFE0816-B2F1-42EA-98C8-7C24A1DB7B34}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{1C874B5D-7269-4B8D-8711-CE26A35A4646}"
 EndProject
@@ -42,14 +42,12 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TeamServer\Agents\Common\Common.projitems*{0fd85eb4-6164-4029-b42c-0ad8ae9fc8c3}*SharedItemsImports = 13
-		SharpC2API\SharpC2API.projitems*{1c874b5d-7269-4b8d-8711-ce26a35a4646}*SharedItemsImports = 5
 		TeamServer\Agents\Common\Common.projitems*{1c874b5d-7269-4b8d-8711-ce26a35a4646}*SharedItemsImports = 5
 		TeamServer\Agents\StagerCore\StagerCore.projitems*{a1167b68-446b-4c0c-a8b8-2a7278b67511}*SharedItemsImports = 4
 		TeamServer\Agents\StagerCore\StagerCore.projitems*{a1930a95-e6a2-44ed-a4ef-4769d8001c9d}*SharedItemsImports = 13
 		TeamServer\Agents\StagerCore\StagerCore.projitems*{a9db9fcc-7502-42cd-81ec-3cd66f511346}*SharedItemsImports = 4
-		SharpC2API\SharpC2API.projitems*{affe0816-b2f1-42ea-98c8-7c24a1db7b34}*SharedItemsImports = 13
+		Shared\SharpC2API.projitems*{affe0816-b2f1-42ea-98c8-7c24a1db7b34}*SharedItemsImports = 13
 		TeamServer\Agents\StagerCore\StagerCore.projitems*{ca6cc2ee-75fd-4f00-b687-917fa55a4fae}*SharedItemsImports = 4
-		SharpC2API\SharpC2API.projitems*{feecd619-670e-4bca-ab45-f32949d8b3c3}*SharedItemsImports = 5
 		TeamServer\Agents\Common\Common.projitems*{feecd619-670e-4bca-ab45-f32949d8b3c3}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

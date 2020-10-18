@@ -1,6 +1,4 @@
-﻿using Common;
-
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -29,12 +27,14 @@ namespace TeamServer.Controllers
         public static string GenerateAuthenticationToken(string nick)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Name, nick) }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(JWTSecret), SecurityAlgorithms.HmacSha512Signature)
             };
+
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }

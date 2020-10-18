@@ -1,10 +1,4 @@
-﻿using Common;
-using Common.Models;
-
-using SharpC2.Listeners;
-using SharpC2.Models;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -217,7 +211,7 @@ namespace TeamServer.Modules
         {
             WebLogs.Add(new WebLog
             {
-                ListenerId = Listener.ListenerName,
+                Listener = Listener.Name,
                 Origin = remoteEndPoint.Address.ToString(),
                 WebRequest = webRequest.Replace("\0", "")
             });

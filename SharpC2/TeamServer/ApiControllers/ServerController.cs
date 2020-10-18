@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using SharpC2.Models;
-
 using System.Collections.Generic;
 
 namespace TeamServer.ApiControllers

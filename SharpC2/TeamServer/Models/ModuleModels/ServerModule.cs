@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using Common.Models;
-
 namespace TeamServer.Models
 {
     public class ServerModule

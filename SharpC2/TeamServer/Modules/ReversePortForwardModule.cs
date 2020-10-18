@@ -1,12 +1,4 @@
-﻿using Common;
-using Common.Models;
-
-using Serilog;
-
-using SharpC2.Models;
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 
@@ -70,15 +62,7 @@ namespace TeamServer.Modules
             {
                 packet.Data = buffer.TrimBytes();
 
-                Agent.SendDataToAgent(c2Data.AgentID, "rportfwd", "DataFromTeamServer", Serialisation.SerialiseData(packet));
-
-                //Agent.SendAgentCommand(new AgentCommandRequest
-                //{
-                //    AgentId = c2Data.AgentID,
-                //    Module = "rportfwd",
-                //    Command = "DataFromTeamServer",
-                //    Data = Convert.ToBase64String(Serialisation.SerialiseData(packet))
-                //}, null);
+                Agent.SendDataToAgent(c2Data.AgentId, "rportfwd", "DataFromTeamServer", Serialisation.SerialiseData(packet));
             }
 
             sender.Shutdown(SocketShutdown.Both);

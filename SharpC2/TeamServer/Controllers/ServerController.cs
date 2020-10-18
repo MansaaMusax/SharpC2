@@ -1,6 +1,4 @@
-﻿using Common.Models;
-using Serilog;
-using SharpC2.Models;
+﻿using Serilog;
 
 using System;
 using System.Collections.Generic;
@@ -16,16 +14,17 @@ namespace TeamServer.Controllers
     {
         public ModuleStatus ServerStatus { get; private set; }
         public ClientController ClientController { get; private set; }
-        public ListenerControllerBase ListenerController { get; private set; }
+        public ListenerController ListenerController { get; private set; }
+        public PayloadController PayloadController { get; set; }
         public AgentController AgentController { get; private set; }
         public CryptoController CryptoController { get; private set; }
         private List<ServerModule> ServerModules { get; set; } = new List<ServerModule>();
         public List<ServerEvent> ServerEvents { get; private set; } = new List<ServerEvent>();
         private List<string> IdempotencyKeys { get; set; } = new List<string>();
 
-        private event EventHandler<ServerEvent> OnServerEvent;
+        private event EventHandler<ServerEvent> ServerEvent;
 
-        public delegate void OnServerCommand(AgentMetadata metadata, C2Data c2Data);
+        public delegate void OnServerCommand(AgentMetadata Metadata, C2Data C2Data);
 
         public ServerController()
         {
@@ -34,14 +33,17 @@ namespace TeamServer.Controllers
             ClientController = new ClientController(this);
             CryptoController = new CryptoController();
             AgentController = new AgentController(this, CryptoController);
-            ListenerController = new ListenerControllerBase(this, AgentController, CryptoController);
+            ListenerController = new ListenerController(this, AgentController, CryptoController);
+            PayloadController = new PayloadController(ListenerController);
 
-            OnServerEvent += ServerEventHandler;
+            ServerEvent += ServerEventHandler;
         }
 
         public void ServerEventHandler(object sender, ServerEvent e)
         {
             ServerEvents.Add(e);
+
+            Log.Logger.Information("{Event} {Data} {Nick}", e.Type, e.Data, e.Nick);
         }
 
         public void RegisterServerModule(IServerModule module)
@@ -49,8 +51,8 @@ namespace TeamServer.Controllers
             module.Init(this, AgentController);
             var info = module.GetModuleInfo();
             ServerModules.Add(info);
-            OnServerEvent?.Invoke(this, new ServerEvent(ServerEventType.ServerModuleRegistered, info.Name));
-            Log.Logger.Information("SERVER {Event} {ModuleName}", ServerEventType.ServerModuleRegistered.ToString(), info.Name);
+
+            ServerEvent?.Invoke(this, new ServerEvent(ServerEventType.ServerModuleRegistered, info.Name));
         }
 
         public void Start()
@@ -62,11 +64,11 @@ namespace TeamServer.Controllers
             {
                 while (ServerStatus == ModuleStatus.Running)
                 {
-                    var commModules = ListenerController.HttpListenerController.HttpListeners.ToList();
+                    var commModules = ListenerController.HttpListeners.ToList();
 
                     foreach (var commModule in commModules)
                     {
-                        if (commModule != null && commModule.RecvData(out Tuple<AgentMetadata, AgentMessage> data) == true)
+                        if (commModule != null && commModule.RecvData(out Tuple<AgentMetadata, AgentMessage> data))
                         {
                             if (data != null)
                             {
@@ -98,7 +100,7 @@ namespace TeamServer.Controllers
                                 }
                                 else
                                 {
-                                    OnServerEvent?.Invoke(this, new ServerEvent(ServerEventType.IdempotencyKeyError, $"Duplicate Idempotency Key received for {message.Metadata.AgentID}"));
+                                    ServerEvent?.Invoke(this, new ServerEvent(ServerEventType.IdempotencyKeyError, $"Duplicate Idempotency Key received for {message.Metadata.AgentID}"));
                                 }
                             }
                         }

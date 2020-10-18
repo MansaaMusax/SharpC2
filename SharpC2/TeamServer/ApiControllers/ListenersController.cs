@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using SharpC2.Listeners;
-using SharpC2.Models;
-
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,22 +10,10 @@ namespace TeamServer.ApiControllers
     [Route("api/[controller]")]
     public class ListenersController : Controller
     {
-        [HttpGet("http")]
-        public IEnumerable<ListenerBase> GetHttpListeners()
+        [HttpGet]
+        public IEnumerable<Listener> GetHttpListeners()
         {
-            return Program.ServerController.ListenerController.GetHttpListeners();
-        }
-
-        [HttpGet("tcp")]
-        public IEnumerable<ListenerTcp> GetTcpListeners()
-        {
-            return Program.ServerController.ListenerController.GetTcpListeners();
-        }
-
-        [HttpGet("smb")]
-        public IEnumerable<ListenerSmb> GetSmbListeners()
-        {
-            return Program.ServerController.ListenerController.GetSmbListeners();
+            return Program.ServerController.ListenerController.GetListeners();
         }
 
         [HttpGet("weblogs")]
@@ -37,32 +22,18 @@ namespace TeamServer.ApiControllers
             return Program.ServerController.ListenerController.GetWebLogs();
         }
 
-        [HttpPost("http")]
-        public ListenerHttp NewHttpListener([FromBody] NewHttpListenerRequest request)
+        [HttpPost]
+        public Listener NewHttpListener([FromBody] NewListenerRequest request)
         {
             var user = HttpContext.User.Identity.Name;
-            return Program.ServerController.ListenerController.StartHttpListener(request, user);
+            return Program.ServerController.ListenerController.StartListener(request, user);
         }
 
-        [HttpPost("tcp")]
-        public ListenerTcp NewTcpListener([FromBody] NewTcpListenerRequest request)
+        [HttpDelete("{name}")]
+        public void StopListener(string name, ListenerType type)
         {
             var user = HttpContext.User.Identity.Name;
-            return Program.ServerController.ListenerController.StartTcpListener(request);
-        }
-
-        [HttpPost("smb")]
-        public ListenerSmb NewSmbListener([FromBody] NewSmbListenerRequest request)
-        {
-            var user = HttpContext.User.Identity.Name;
-            return Program.ServerController.ListenerController.StartSmbListener(request);
-        }
-
-        [HttpDelete("{id}")]
-        public void StopListener(string id, ListenerType type)
-        {
-            var user = HttpContext.User.Identity.Name;
-            Program.ServerController.ListenerController.StopListener(id, type, user);
+            Program.ServerController.ListenerController.StopListener(name, user);
         }
     }
 }

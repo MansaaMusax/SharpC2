@@ -1,27 +1,24 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Json;
 
-namespace Common
+public class Serialisation
 {
-    public class Serialisation
+    public static byte[] SerialiseData<T>(T data)
     {
-        public static byte[] SerialiseData<T>(T data)
+        using (var ms = new MemoryStream())
         {
-            using (var ms = new MemoryStream())
-            {
-                var serialiser = new DataContractJsonSerializer(typeof(T));
-                serialiser.WriteObject(ms, data);
-                return ms.ToArray();
-            }
+            var serialiser = new DataContractJsonSerializer(typeof(T));
+            serialiser.WriteObject(ms, data);
+            return ms.ToArray();
         }
+    }
 
-        public static T DeserialiseData<T>(byte[] data)
+    public static T DeserialiseData<T>(byte[] data)
+    {
+        using (var ms = new MemoryStream(data))
         {
-            using (var ms = new MemoryStream(data))
-            {
-                var serialiser = new DataContractJsonSerializer(typeof(T));
-                return (T)serialiser.ReadObject(ms);
-            }
+            var serialiser = new DataContractJsonSerializer(typeof(T));
+            return (T)serialiser.ReadObject(ms);
         }
     }
 }

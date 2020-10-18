@@ -5,6 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <LangVersion>8.0</LangVersion>
+    <AssemblyName>SharpC2</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

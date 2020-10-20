@@ -32,7 +32,8 @@ class NetModule : IAgentModule
                 new AgentCommand
                 {
                     Name = "info",
-                    Description = "ala ipconfig",
+                    Description = "Get network information",
+                    HelpText = "net info",
                     CallBack = GetAdapterInfo
                 }
             }

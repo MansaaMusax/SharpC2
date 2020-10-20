@@ -1,4 +1,4 @@
-﻿interface ICommModule
+﻿public interface ICommModule
 {
     void Init(ConfigController config, CryptoController crypto);
     void SetMetadata(AgentMetadata metadata);

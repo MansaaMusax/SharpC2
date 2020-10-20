@@ -12,7 +12,7 @@ namespace TeamServer.Controllers
     public class AuthenticationController
     {
         private static byte[] ServerPassword { get; set; }
-        public static byte[] JWTSecret { get; private set; } = Helpers.GeneratePseudoRandomBytes(128);
+        public static byte[] JWTSecret { get; private set; } = SharedHelpers.GeneratePseudoRandomBytes(128);
 
         public static void SetPassword(string plaintext)
         {

@@ -19,43 +19,41 @@ class LinkModule : IAgentModule
             Name = "link",
             Description = "Link to P2P Agents",
             Developers = new List<Developer>
-                {
-                    new Developer { Name = "Daniel Duggan", Handle = "@_RastaMouse" },
-                    new Developer { Name = "Adam Chester", Handle = "@_xpn_" }
-                },
+            {
+                new Developer { Name = "Daniel Duggan", Handle = "@_RastaMouse" },
+                new Developer { Name = "Adam Chester", Handle = "@_xpn_" }
+            },
             Commands = new List<AgentCommand>
+            {
+                new AgentCommand
                 {
-                    new AgentCommand
-                    {
-                        Name = "tcp",
-                        Description = "Link to a TCP Agent",
-                        HelpText = "link tcp [address] [port]",
-                        CallBack = LinkTcpAgent
-                    },
-                    new AgentCommand
-                    {
-                        Name = "smb",
-                        Description = "Link to an SMB Agent",
-                        HelpText = "link smb [address] [pipename]",
-                        CallBack = LinkSmbAgent
-                    },
-                    new AgentCommand
-                    {
-                        Name = "IncomingLink",
-                        Visible = false,
-                        CallBack = IncomingLink
-                    },
-                    new AgentCommand
-                    {
-                        Name = "IncomingUnlink",
-                        Visible = false,
-                        CallBack = IncomingUnlink
-                    }
+                    Name = "tcp",
+                    Description = "Link to a TCP Agent",
+                    HelpText = "link tcp [target] [listener]",
+                    CallBack = LinkTcpAgent
+                },
+                new AgentCommand
+                {
+                    Name = "smb",
+                    Description = "Link to an SMB Agent",
+                    HelpText = "link smb [target] [listener]",
+                    CallBack = LinkSmbAgent
+                },
+                new AgentCommand
+                {
+                    Name = "IncomingLink",
+                    Visible = false,
+                    CallBack = IncomingLink
+                },
+                new AgentCommand
+                {
+                    Name = "IncomingUnlink",
+                    Visible = false,
+                    CallBack = IncomingUnlink
                 }
+            }
         };
     }
-
-
 
     private void LinkTcpAgent(byte[] data)
     {

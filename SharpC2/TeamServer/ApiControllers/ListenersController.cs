@@ -10,10 +10,25 @@ namespace TeamServer.ApiControllers
     [Route("api/[controller]")]
     public class ListenersController : Controller
     {
-        [HttpGet]
-        public IEnumerable<Listener> GetHttpListeners()
+        [HttpGet("http")]
+        public IEnumerable<ListenerHttp> GetHttpListeners()
         {
-            return Program.ServerController.ListenerController.GetListeners();
+            var listeners = Program.ServerController.ListenerController.GetHttpListeners();
+            return listeners;
+        }
+
+        [HttpGet("tcp")]
+        public IEnumerable<ListenerTcp> GetTcpListeners()
+        {
+            var listeners = Program.ServerController.ListenerController.GetTcpListeners();
+            return listeners;
+        }
+
+        [HttpGet("smb")]
+        public IEnumerable<ListenerSmb> GetSmbListeners()
+        {
+            var listeners = Program.ServerController.ListenerController.GetSmbListeners();
+            return listeners;
         }
 
         [HttpGet("weblogs")]
@@ -23,14 +38,14 @@ namespace TeamServer.ApiControllers
         }
 
         [HttpPost]
-        public Listener NewHttpListener([FromBody] NewListenerRequest request)
+        public Listener NewListener([FromBody] NewListenerRequest request)
         {
             var user = HttpContext.User.Identity.Name;
             return Program.ServerController.ListenerController.StartListener(request, user);
         }
 
         [HttpDelete("{name}")]
-        public void StopListener(string name, ListenerType type)
+        public void StopListener(string name)
         {
             var user = HttpContext.User.Identity.Name;
             Program.ServerController.ListenerController.StopListener(name, user);

@@ -1,4 +1,4 @@
-﻿enum ModuleStatus
+﻿public enum ModuleStatus
 {
     Starting,
     Running,

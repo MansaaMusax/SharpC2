@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 [Serializable]
-class AgentModuleInfo
+public class AgentModuleInfo
 {
     public string Name { get; set; }
     public string Description { get; set; }
@@ -12,14 +12,7 @@ class AgentModuleInfo
 }
 
 [Serializable]
-class Developer
-{
-    public string Name { get; set; }
-    public string Handle { get; set; }
-}
-
-[Serializable]
-class AgentCommand
+public class AgentCommand
 {
     public string Name { get; set; }
     public string Description { get; set; }

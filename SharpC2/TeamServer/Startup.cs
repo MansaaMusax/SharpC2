@@ -12,6 +12,7 @@ using Newtonsoft.Json.Serialization;
 using NSwag.Generation.Processors.Security;
 
 using TeamServer.Controllers;
+using TeamServer.Hubs;
 
 namespace TeamServer
 {
@@ -26,6 +27,8 @@ namespace TeamServer
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
+
             services.AddControllers().AddNewtonsoftJson(j =>
             {
                 j.SerializerSettings.ContractResolver = new DefaultContractResolver();
@@ -88,6 +91,7 @@ namespace TeamServer
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<MessageHub>("/MessageHub");
             });
 
             app.UseOpenApi();

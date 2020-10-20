@@ -9,11 +9,13 @@
     <Import_RootNamespace>Agent</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AgentMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AgentMetadata.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\C2Data.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommStateObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ModuleStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modules\CommModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\CryptoController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\AgentMessage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\ModuleStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\StagerStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Compression.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Cryptography.cs" />

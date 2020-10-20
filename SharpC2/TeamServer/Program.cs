@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
@@ -7,6 +8,7 @@ using Serilog;
 using System;
 
 using TeamServer.Controllers;
+using TeamServer.Hubs;
 using TeamServer.Modules;
 
 namespace TeamServer
@@ -20,8 +22,14 @@ namespace TeamServer
             var pass = args.Length > 0 ? args[0] : string.Empty;
             PrintLogo(); // the most important part
             StartLogger();
-            StartTeamServer(pass);
-            CreateHostBuilder(args).Build().Run();
+
+            var host = CreateHostBuilder(args).Build();
+
+            var hubContext = (IHubContext<MessageHub>)host.Services.GetService(typeof(IHubContext<MessageHub>));
+
+            StartTeamServer(hubContext, pass);
+            
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -32,7 +40,7 @@ namespace TeamServer
                     webBuilder.UseStartup<Startup>();
                 });
 
-        public static void StartTeamServer(string pass = "")
+        public static void StartTeamServer(IHubContext<MessageHub> hubContext, string pass = "")
         {
             if (string.IsNullOrEmpty(pass))
             {
@@ -41,12 +49,12 @@ namespace TeamServer
 
             AuthenticationController.SetPassword(pass);
 
-            ServerController = new ServerController();
+            ServerController = new ServerController(hubContext);
             ServerController.RegisterServerModule(new CoreServerModule());
             ServerController.RegisterServerModule(new ReversePortForwardModule());
             ServerController.Start();
 
-            Log.Logger.Information("SERVER is {ServerStatus}", ServerController.ServerStatus);
+            Log.Logger.Information("{ServerStatus}", ServerController.ServerStatus);
         }
 
         private static void PrintLogo()

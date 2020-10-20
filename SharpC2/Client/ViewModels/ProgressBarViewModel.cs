@@ -1,6 +1,6 @@
 ﻿namespace Client.ViewModels
 {
-    class ProgressBarViewModel
+    public class ProgressBarViewModel
     {
         public string Label { get; set; }
     }

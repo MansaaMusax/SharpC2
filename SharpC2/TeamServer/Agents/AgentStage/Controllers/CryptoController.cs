@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-class CryptoController
+public class CryptoController
 {
     public byte[] EncryptionKey { get; private set; } = Encoding.UTF8.GetBytes("jO8JTskl6BMQTHsZNZ43gz5xEVXb76Zk"); // Convert.FromBase64String("<<EncKey>>");
 

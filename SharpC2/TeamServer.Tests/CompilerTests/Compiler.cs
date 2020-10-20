@@ -51,8 +51,8 @@ namespace TeamServer.Tests.CompilerTests
             var payloadRequest = new PayloadRequest
             {
                 ListenerId = listener.ListenerId,
-                OutputType = OutputType.Exe,
-                TargetFramework = TargetFramework.Net40
+                OutputType = OutputType.EXE,
+                TargetFramework = TargetFramework.NET40
             };
 
             var apiReq = await TestClient.HttpClient.PostAsync("api/Payload", Helpers.Serialise(payloadRequest));
@@ -71,8 +71,8 @@ namespace TeamServer.Tests.CompilerTests
             var payloadRequest = new PayloadRequest
             {
                 ListenerId = "blah",
-                OutputType = OutputType.Exe,
-                TargetFramework = TargetFramework.Net40
+                OutputType = OutputType.EXE,
+                TargetFramework = TargetFramework.NET40
             };
 
             var apiReq = await TestClient.HttpClient.PostAsync("api/Payload", Helpers.Serialise(payloadRequest));
@@ -93,8 +93,8 @@ namespace TeamServer.Tests.CompilerTests
             var payloadRequest = new PayloadRequest
             {
                 ListenerId = listener.ListenerId,
-                OutputType = OutputType.Exe,
-                TargetFramework = TargetFramework.Net40
+                OutputType = OutputType.EXE,
+                TargetFramework = TargetFramework.NET40
             };
 
             var apiReq = await TestClient.HttpClient.PostAsync("api/Payload", Helpers.Serialise(payloadRequest));
@@ -113,8 +113,8 @@ namespace TeamServer.Tests.CompilerTests
             var payloadRequest = new PayloadRequest
             {
                 ListenerId = "blah",
-                OutputType = OutputType.Exe,
-                TargetFramework = TargetFramework.Net40
+                OutputType = OutputType.EXE,
+                TargetFramework = TargetFramework.NET40
             };
 
             var apiReq = await TestClient.HttpClient.PostAsync("api/Payload", Helpers.Serialise(payloadRequest));

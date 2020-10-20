@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-class ConfigController
+public class ConfigController
 {
     Dictionary<ConfigSetting, object> ConfigSettings { get; set; } = new Dictionary<ConfigSetting, object>();
 

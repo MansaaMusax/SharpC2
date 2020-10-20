@@ -1,49 +1,29 @@
-﻿using Client.SharpC2API;
-using Client.Views;
-
-using SharpC2.Models;
+﻿using Client.API;
+using Client.Commands;
+using Client.Services;
 
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Input;
 
 namespace Client.ViewModels
 {
     class WebLogViewModel : BaseViewModel
     {
-        private MainWindowViewModel MainView { get; set; }
+        public ObservableCollection<string> WebLog { get; set; } = new ObservableCollection<string>();
 
-        public ObservableCollection<WebLog> WebLogs { get; set; }
-        private readonly object _lock = new object();
-
-        private readonly DelegateCommand _detachTab;
-        private readonly DelegateCommand _closeTab;
-
-        public ICommand DetachTab => _detachTab;
-        public ICommand CloseTab => _closeTab;
-
-        public WebLogViewModel(MainWindowViewModel mainView)
+        public WebLogViewModel(MainViewModel mainViewModel, SignalR signalR)
         {
-            MainView = mainView;
+            signalR.NewWebEvenReceived += SignalR_NewWebEvenReceived;
 
-            WebLogs = new ObservableCollection<WebLog>();
-            BindingOperations.EnableCollectionSynchronization(WebLogs, _lock);
+            CloseTab = new CloseTabCommand("Web Log", mainViewModel);
+            DetachTab = new DetachTabCommand("Web Log", mainViewModel);
+            RenameTab = new RenameTabCommand("Web Log", mainViewModel);
 
-            _detachTab = new DelegateCommand(OnDetachTab);
-            _closeTab = new DelegateCommand(OnCloseTab);
+            GetWebLogs();
+        }
 
-            Task.Factory.StartNew(() =>
-            {
-                while (true)
-                {
-                    GetWebLogs();
-                    Thread.Sleep(1000);
-                }
-            });
+        private void SignalR_NewWebEvenReceived(WebLog log)
+        {
+            AddWebLog(log);
         }
 
         private async void GetWebLogs()
@@ -54,31 +34,14 @@ namespace Client.ViewModels
             {
                 foreach (var log in logs)
                 {
-                    if (!WebLogs.Any(l => l.Date == log.Date))
-                    {
-                        WebLogs.Insert(0, log);
-                    }
+                    AddWebLog(log);
                 }
             }
         }
 
-        public void OnCloseTab(object obj)
+        private void AddWebLog(WebLog l)
         {
-            var tab = MainView.TabItems.FirstOrDefault(t => t.Header.Equals("Web Logs"));
-            MainView.TabItems.Remove(tab);
-        }
-
-        public void OnDetachTab(object obj)
-        {
-            var window = new Window
-            {
-                Title = "Web Logs",
-                Content = new WebLogView(),
-                DataContext = this
-            };
-
-            window.Show();
-            OnCloseTab(null);
+            WebLog.Insert(0, $"[{l.Date}]   visit ({l.Listener}) from {l.Origin}\n\n{l.WebRequest}");
         }
     }
 }

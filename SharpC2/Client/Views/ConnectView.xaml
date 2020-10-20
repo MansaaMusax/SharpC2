@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client.Views"
         mc:Ignorable="d"
-        Title="Connect" Height="300" Width="500">
-    
+        Title="Connect" Height="300" Width="500"
+        WindowStartupLocation="CenterScreen">
+
     <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
 
         <Grid.RowDefinitions>
@@ -24,19 +25,20 @@
             <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=ConnectMessage}" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=WelcomeMessage}" HorizontalAlignment="Center"/>
 
         <TextBlock Grid.Column="0" Grid.Row="1" Text="Host:"/>
         <TextBlock Grid.Column="0" Grid.Row="2" Text="Port:"/>
         <TextBlock Grid.Column="0" Grid.Row="3" Text="Nick:"/>
         <TextBlock Grid.Column="0" Grid.Row="4" Text="Pass:"/>
 
-        <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Path=Host}"/>
-        <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding Path=Port}"/>
-        <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Path=Nick}"/>
+        <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Path=Host, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding Path=Port, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Path=Nick, UpdateSourceTrigger=PropertyChanged}"/>
         <PasswordBox Grid.Column="1" Grid.Row="4" PasswordChanged="PasswordBox_PasswordChanged"/>
 
-        <Button Grid.Column="1" Grid.Row="5" Command="{Binding ClickLogin}" Content="Connect" IsDefault="True"/>
+        <Button Grid.Column="1" Grid.Row="5" Command="{Binding ConnectCommand}" Content="Connect" IsDefault="True"/>
 
     </Grid>
+    
 </Window>

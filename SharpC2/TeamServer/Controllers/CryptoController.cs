@@ -10,7 +10,7 @@ namespace TeamServer.Controllers
 
         public byte[] Encrypt<T>(T data)
         {
-            var compressed = Helpers.Compress(Serialisation.SerialiseData(data));
+            var compressed = SharedHelpers.Compress(Serialisation.SerialiseData(data));
 
             var encryptedData = Cryptography.Encrypt(compressed, EncryptionKey, out byte[] iv);
             var hmac = Cryptography.ComputeHmac256(EncryptionKey, encryptedData);
@@ -31,7 +31,7 @@ namespace TeamServer.Controllers
             var enc = data[iv.Length..(data.Length-hmac.Length)];
 
             var decrypted = Cryptography.Decrypt(enc, EncryptionKey, iv);
-            var decompressed = Helpers.Decompress(decrypted);
+            var decompressed = SharedHelpers.Decompress(decrypted);
 
             return Serialisation.DeserialiseData<T>(decompressed);
         }

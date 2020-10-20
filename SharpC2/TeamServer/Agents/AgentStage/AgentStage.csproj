@@ -51,6 +51,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Shared\Data\AgentMessage.cs">
+      <Link>Models\AgentMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\Data\AgentMetadata.cs">
+      <Link>Models\AgentMetadata.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\Data\C2Data.cs">
+      <Link>Models\C2Data.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\Misc\Developer.cs">
+      <Link>Models\Developer.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\Modules\ModuleStatus.cs">
+      <Link>Models\ModuleStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\SharedHelpers.cs">
+      <Link>Utilities\SharedHelpers.cs</Link>
+    </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="CommModules\HttpCommModule.cs" />
     <Compile Include="CommModules\SmbCommModule.cs" />
@@ -61,7 +79,6 @@
     <Compile Include="Controllers\P2PController.cs" />
     <Compile Include="Interfaces\IAgentModule.cs" />
     <Compile Include="Interfaces\ICommModule.cs" />
-    <Compile Include="Models\AgentMessage.cs" />
     <Compile Include="Models\AgentModuleInfo.cs" />
     <Compile Include="Models\AgentStatus.cs" />
     <Compile Include="Models\CommStateObject.cs" />
@@ -71,7 +88,6 @@
     <Compile Include="Models\FileSystemEntryResult.cs" />
     <Compile Include="Models\GenericObjectResult.cs" />
     <Compile Include="Models\ModuleMode.cs" />
-    <Compile Include="Models\ModuleStatus.cs" />
     <Compile Include="Models\ProcessListResult.cs" />
     <Compile Include="Models\ReversePortForwardPacket.cs" />
     <Compile Include="Models\ReversePortForwardResult.cs" />

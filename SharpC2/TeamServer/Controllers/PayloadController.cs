@@ -310,7 +310,7 @@ namespace TeamServer.Controllers
 
         private static string CreateTempDirectory()
         {
-            var temp = Path.GetTempPath() + Helpers.GeneratePseudoRandomString(6);
+            var temp = Path.GetTempPath() + SharedHelpers.GeneratePseudoRandomString(6);
             Directory.CreateDirectory(temp);
             return temp;
         }
@@ -354,7 +354,7 @@ namespace TeamServer.Controllers
 
                 if (File.Exists(finalPath))
                 {
-                    fileName = fileName.Insert(fileName.Length - 3, Helpers.GeneratePseudoRandomString(6));
+                    fileName = fileName.Insert(fileName.Length - 3, SharedHelpers.GeneratePseudoRandomString(6));
                     finalPath = tempPath + Path.DirectorySeparatorChar + fileName;
                 }
 
@@ -365,6 +365,7 @@ namespace TeamServer.Controllers
         private static void CloneStageSourceCode(string tempPath)
         {
             // AgentStage
+
             var srcPath = Path.Combine(AgentDirectory, "AgentStage");
             var srcFiles = Directory.GetFiles(srcPath, "*.cs", SearchOption.AllDirectories);
 
@@ -376,13 +377,29 @@ namespace TeamServer.Controllers
                 var finalPath = tempPath + Path.DirectorySeparatorChar + fileName;
                 File.Copy(filePath, finalPath, true);
             }
+
+            // Shared
+
+            srcPath = Path.Combine(AgentDirectory, "Shared");
+            srcFiles = Directory.GetFiles(srcPath, "*.cs", SearchOption.AllDirectories);
+
+            foreach (var filePath in srcFiles)
+            {
+                if (filePath.Contains("AssemblyInfo.cs", StringComparison.OrdinalIgnoreCase) ||
+                    filePath.Contains("AssemblyAttributes.cs", StringComparison.OrdinalIgnoreCase) ||
+                    filePath.Contains("AgentCommand.cs", StringComparison.OrdinalIgnoreCase)) { continue; }
+
+                var fileName = Path.GetFileName(filePath);
+                var finalPath = tempPath + Path.DirectorySeparatorChar + fileName;
+                File.Copy(filePath, finalPath, true);
+            }
         }
 
         private static void ReplaceText(string tempPath, string filename, string originalText, string newText)
         {
             var srcPath = Path.Combine(tempPath, filename);
             var src = File.ReadAllText(srcPath);
-            var newSrc = src.Replace("originalText", newText);
+            var newSrc = src.Replace(originalText, newText);
             File.WriteAllText(srcPath, newSrc);
         }
 

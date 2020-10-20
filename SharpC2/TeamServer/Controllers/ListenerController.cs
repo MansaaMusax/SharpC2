@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.SignalR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -35,12 +36,15 @@ namespace TeamServer.Controllers
             {
                 case ListenerType.HTTP:
                     listener = StartHttpListener(request);
+                    ServerController.HubContext.Clients.All.SendAsync("NewHttpListener", listener as ListenerHttp);
                     break;
                 case ListenerType.TCP:
                     listener = StartTcpListener(request);
+                    ServerController.HubContext.Clients.All.SendAsync("NewTcpListener", listener as ListenerTcp);
                     break;
                 case ListenerType.SMB:
                     listener = StartSmbListener(request);
+                    ServerController.HubContext.Clients.All.SendAsync("NewSmbListener", listener as ListenerSmb);
                     break;
             }
 
@@ -64,8 +68,6 @@ namespace TeamServer.Controllers
 
             module.Init(AgentController, CryptoController);
             module.Start();
-
-            ServerEvent?.Invoke(this, new ServerEvent(ServerEventType.ListenerStarted, request.Name));
 
             return listener;
         }
@@ -117,6 +119,28 @@ namespace TeamServer.Controllers
             return GetListeners().FirstOrDefault(l => l.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
+        public List<ListenerHttp> GetHttpListeners()
+        {
+            var listeners = new List<ListenerHttp>();
+
+            foreach (var module in HttpListeners)
+            {
+                listeners.Add(module.Listener);
+            }
+
+            return listeners;
+        }
+
+        public List<ListenerTcp> GetTcpListeners()
+        {
+            return TcpListeners;
+        }
+
+        public List<ListenerSmb> GetSmbListeners()
+        {
+            return SmbListeners;
+        }
+
         public bool StopListener(string name, string nick)
         {
             var result = false;
@@ -152,6 +176,7 @@ namespace TeamServer.Controllers
             if (result)
             {
                 ServerEvent?.Invoke(this, new ServerEvent(ServerEventType.ListenerStopped, name, nick));
+                ServerController.HubContext.Clients.All.SendAsync("RemoveListener", name);
             }
 
             return result;

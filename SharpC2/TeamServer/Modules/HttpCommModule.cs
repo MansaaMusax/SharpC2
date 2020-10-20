@@ -30,7 +30,8 @@ namespace TeamServer.Modules
         private Queue<Tuple<AgentMetadata, AgentMessage>> InboundQueue { get; set; } = new Queue<Tuple<AgentMetadata, AgentMessage>>();
         public List<WebLog> WebLogs { get; private set; } = new List<WebLog>();
 
-        private event EventHandler<AgentEvent> OnAgentEvent;
+        private event EventHandler<AgentEvent> AgentEvent;
+        private event EventHandler<WebLog> WebEvent;
 
         private static ManualResetEvent AllDone = new ManualResetEvent(false);
 
@@ -42,7 +43,8 @@ namespace TeamServer.Modules
 
             Socket = new Socket(SocketType.Stream, ProtocolType.IP);
 
-            OnAgentEvent += AgentController.AgentEventHandler;
+            AgentEvent += AgentController.AgentEventHandler;
+            WebEvent += AgentController.WebEventHandler;
         }
 
         public void Start()
@@ -209,12 +211,15 @@ namespace TeamServer.Modules
 
         private void GenerateWebLog(string webRequest, IPEndPoint remoteEndPoint)
         {
-            WebLogs.Add(new WebLog
+            var log = new WebLog
             {
                 Listener = Listener.Name,
                 Origin = remoteEndPoint.Address.ToString(),
                 WebRequest = webRequest.Replace("\0", "")
-            });
+            };
+
+            WebLogs.Add(log);
+            WebEvent?.Invoke(this, log);
         }
 
         private AgentMetadata ExtractAgentMetadata(string webRequest)
@@ -232,7 +237,7 @@ namespace TeamServer.Modules
                 }
                 else
                 {
-                    OnAgentEvent?.Invoke(this, new AgentEvent("", AgentEventType.CryptoError, "HMAC validation failed on AgentMetadata"));
+                    AgentEvent?.Invoke(this, new AgentEvent("", AgentEventType.CryptoError, "HMAC validation failed on AgentMetadata"));
                 }
             }
 
@@ -255,7 +260,7 @@ namespace TeamServer.Modules
                 }
                 else
                 {
-                    OnAgentEvent?.Invoke(this, new AgentEvent("", AgentEventType.CryptoError, "HMAC validation failed on AgentMessage"));
+                    AgentEvent?.Invoke(this, new AgentEvent("", AgentEventType.CryptoError, "HMAC validation failed on AgentMessage"));
                 }
             }
 

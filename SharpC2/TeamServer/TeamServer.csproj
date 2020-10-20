@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Agents\Shared\Shared.projitems" />
     <None Remove="SharpC2_Log.txt" />
   </ItemGroup>
 
@@ -53,10 +54,6 @@
     <Folder Include="Agents\References\net40\" />
     <Folder Include="Agents\References\net35\" />
   </ItemGroup>
-
-  <Import Project="Agents\Common\Common.projitems" Label="Shared" />
-
-  <Import Project="..\SharpC2API\SharpC2API.projitems" Label="Shared" />
 
 
 </Project>

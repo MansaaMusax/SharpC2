@@ -184,7 +184,7 @@ class TcpCommModule : ICommModule
                 }
             }
 
-            AgentMessage outbound = new AgentMessage { Metadata = Metadata };
+            var outbound = new AgentMessage { Metadata = Metadata };
 
             if (Outbound.Count > 0)
             {

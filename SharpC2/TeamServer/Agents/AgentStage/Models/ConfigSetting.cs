@@ -1,4 +1,4 @@
-﻿enum ConfigSetting
+﻿public enum ConfigSetting
 {
     SleepInterval,
     SleepJitter,

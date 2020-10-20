@@ -1,10 +1,13 @@
-﻿using Serilog;
+﻿using Microsoft.AspNetCore.SignalR;
+
+using Serilog;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TeamServer.Hubs;
 using TeamServer.Interfaces;
 using TeamServer.Models;
 
@@ -20,15 +23,18 @@ namespace TeamServer.Controllers
         public CryptoController CryptoController { get; private set; }
         private List<ServerModule> ServerModules { get; set; } = new List<ServerModule>();
         public List<ServerEvent> ServerEvents { get; private set; } = new List<ServerEvent>();
+        public IHubContext<MessageHub> HubContext { get; set; }
         private List<string> IdempotencyKeys { get; set; } = new List<string>();
 
         private event EventHandler<ServerEvent> ServerEvent;
 
         public delegate void OnServerCommand(AgentMetadata Metadata, C2Data C2Data);
 
-        public ServerController()
+        public ServerController(IHubContext<MessageHub> hubContext)
         {
             ServerStatus = ModuleStatus.Starting;
+
+            HubContext = hubContext;
 
             ClientController = new ClientController(this);
             CryptoController = new CryptoController();
@@ -42,7 +48,7 @@ namespace TeamServer.Controllers
         public void ServerEventHandler(object sender, ServerEvent e)
         {
             ServerEvents.Add(e);
-
+            HubContext.Clients.All.SendAsync("NewServerEvent", e);
             Log.Logger.Information("{Event} {Data} {Nick}", e.Type, e.Data, e.Nick);
         }
 

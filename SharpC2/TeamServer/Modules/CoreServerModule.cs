@@ -73,7 +73,7 @@ namespace TeamServer.Modules
         {
             var stage = PayloadController.GenerateStage(new StageRequest
             {
-                TargetFramework = TargetFramework.Net40
+                TargetFramework = TargetFramework.NET40
             });
 
             Agent.SendDataToAgent(metadata.AgentID, "", "StageOne", stage);

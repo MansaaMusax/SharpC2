@@ -1,49 +1,56 @@
-﻿using Client.SharpC2API;
-using Client.Views;
-
-using SharpC2.Models;
+﻿using Client.API;
+using Client.Commands;
+using Client.Services;
 
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Input;
 
 namespace Client.ViewModels
 {
     class EventLogViewModel : BaseViewModel
     {
-        private MainWindowViewModel MainView { get; set; }
+        private readonly SignalR SignalR;
 
-        public ObservableCollection<ServerEvent> EventLogs { get; set; }
-        private readonly object _lock = new object();
+        public ObservableCollection<string> Events { get; set; } = new ObservableCollection<string>();
 
-        private readonly DelegateCommand _detachTab;
-        private readonly DelegateCommand _closeTab;
-
-        public ICommand DetachTab => _detachTab;
-        public ICommand CloseTab => _closeTab;
-
-        public EventLogViewModel(MainWindowViewModel mainView)
+        public EventLogViewModel(MainViewModel mainViewModel, SignalR signalR)
         {
-            MainView = mainView;
+            SignalR = signalR;
 
-            EventLogs = new ObservableCollection<ServerEvent>();
-            BindingOperations.EnableCollectionSynchronization(EventLogs, _lock);
+            SignalR.NewServerEventReceived += SignalR_NewServerEventReceived;
+            SignalR.NewAgentEvenReceived += SignalR_NewAgentEvenReceived;
 
-            _detachTab = new DelegateCommand(OnDetachTab);
-            _closeTab = new DelegateCommand(OnCloseTab);
+            CloseTab = new CloseTabCommand("Event Log", mainViewModel);
+            DetachTab = new DetachTabCommand("Event Log", mainViewModel);
+            RenameTab = new RenameTabCommand("Event Log", mainViewModel);
 
-            Task.Factory.StartNew(() =>
+            GetServerEventData();
+        }
+
+        private void SignalR_NewAgentEvenReceived(AgentEvent ev)
+        {
+            switch (ev.Type)
             {
-                while (true)
-                {
-                    GetServerEventData();
-                    Thread.Sleep(1000);
-                }
-            });
+                case AgentEventType.InitialAgent:
+                    Events.Insert(0, $"[{ev.Date}]     Initial checkin from {ev.AgentId}");
+                    break;
+                case AgentEventType.ModuleRegistered:
+                    break;
+                case AgentEventType.CommandRequest:
+                    break;
+                case AgentEventType.CommandResponse:
+                    break;
+                case AgentEventType.AgentError:
+                    break;
+                case AgentEventType.CryptoError:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void SignalR_NewServerEventReceived(ServerEvent ev)
+        {
+            AddEvent(ev);
         }
 
         private async void GetServerEventData()
@@ -54,31 +61,40 @@ namespace Client.ViewModels
             {
                 foreach (var ev in serverEvents)
                 {
-                    if (!EventLogs.Any(e => e.EventTime == ev.EventTime && e.EventType == ev.EventType && e.Data == ev.Data))
-                    {
-                        EventLogs.Insert(0, ev);
-                    }
+                    AddEvent(ev);
                 }
             }
         }
 
-        public void OnCloseTab(object obj)
+        private void AddEvent(ServerEvent ev)
         {
-            var tab = MainView.TabItems.FirstOrDefault(t => t.Header.Equals("Event Logs"));
-            MainView.TabItems.Remove(tab);
-        }
-
-        public void OnDetachTab(object obj)
-        {
-            var window = new Window
+            switch (ev.Type)
             {
-                Title = "Event Logs",
-                Content = new EventLogView(),
-                DataContext = this
-            };
-
-            window.Show();
-            OnCloseTab(null);
+                case ServerEventType.UserLogon:
+                    Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has joined. Say hi!");
+                    break;
+                case ServerEventType.UserLogoff:
+                    Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has left. Goodbye!");
+                    break;
+                case ServerEventType.FailedAuth:
+                    Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has failed to login ({ev.Data}).");
+                    break;
+                case ServerEventType.ListenerStarted:
+                    Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has started listener {ev.Data}.");
+                    break;
+                case ServerEventType.ListenerStopped:
+                    Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has stopped listener {ev.Data}.");
+                    break;
+                case ServerEventType.IdempotencyKeyError:
+                    break;
+                case ServerEventType.ServerModuleRegistered:
+                    Events.Insert(0, $"[{ev.Date}]     {ev.Data} module has started.");
+                    break;
+                case ServerEventType.RosylnError:
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

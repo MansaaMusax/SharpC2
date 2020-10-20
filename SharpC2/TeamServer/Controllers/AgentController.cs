@@ -1,4 +1,6 @@
-﻿using Serilog;
+﻿using Microsoft.AspNetCore.SignalR;
+
+using Serilog;
 
 using System;
 using System.Collections.Generic;
@@ -27,8 +29,13 @@ namespace TeamServer.Controllers
         public void AgentEventHandler(object sender, AgentEvent e)
         {
             AgentEvents.Add(e);
-
+            Server.HubContext.Clients.All.SendAsync("NewAgentEvent", e);
             Log.Logger.Information("{Event} {AgentId} {Data} {Nick}", e.Type, e.AgentId, e.Data, e.Nick);
+        }
+
+        public void WebEventHandler(object sender, WebLog l)
+        {
+            Server.HubContext.Clients.All.SendAsync("NewWebEvent", l);
         }
 
         public void UpdateSession(AgentMetadata metadata)
@@ -107,7 +114,7 @@ namespace TeamServer.Controllers
                 {
                     IdempotencyKey = Guid.NewGuid().ToString(),
                     Metadata = new AgentMetadata(),
-                    Data = new C2Data { AgentId = agentId, Module = module, Command = command, Data = data }
+                    Data = new C2Data { AgentID = agentId, Module = module, Command = command, Data = data }
                 });
             }
         }
@@ -139,10 +146,11 @@ namespace TeamServer.Controllers
                 {
                     IdempotencyKey = Guid.NewGuid().ToString(),
                     Metadata = new AgentMetadata(),
-                    Data = new C2Data { AgentId = request.AgentId, Module = request.Module, Command = request.Command, Data = Encoding.UTF8.GetBytes(request.Data) }
+                    Data = new C2Data { AgentID = request.AgentId, Module = request.Module, Command = request.Command, Data = Encoding.UTF8.GetBytes(request.Data) }
                 });
 
-                AgentEvent?.Invoke(this, new AgentEvent(request.AgentId, AgentEventType.CommandRequest, request.Command));
+                var cmd = $"{request.Module} {request.Command} {request.Data}";
+                AgentEvent?.Invoke(this, new AgentEvent(request.AgentId, AgentEventType.CommandRequest, cmd, user));
             }
         }
 

@@ -26,7 +26,7 @@ namespace Agent.Controllers
                 {
                     foreach (var module in P2PAgents.Values)
                     {
-                        if (module.RecvData(out AgentMessage message) == true)
+                        if (module.RecvData(out AgentMessage message))
                         {
                             if (!string.IsNullOrEmpty(message.Data.Module))
                             {

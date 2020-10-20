@@ -62,7 +62,7 @@ namespace TeamServer.Modules
             {
                 packet.Data = buffer.TrimBytes();
 
-                Agent.SendDataToAgent(c2Data.AgentId, "rportfwd", "DataFromTeamServer", Serialisation.SerialiseData(packet));
+                Agent.SendDataToAgent(c2Data.AgentID, "rportfwd", "DataFromTeamServer", Serialisation.SerialiseData(packet));
             }
 
             sender.Shutdown(SocketShutdown.Both);

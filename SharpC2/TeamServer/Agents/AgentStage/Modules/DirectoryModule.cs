@@ -121,7 +121,7 @@ namespace Agent.Modules
                     var info = new FileInfo(file);
                     result.Add(new FileSystemEntryResult
                     {
-                        Size = Helpers.ConvertFileLength(info.Length),
+                        Size = SharedHelpers.ConvertFileLength(info.Length),
                         Type = "fil",
                         LastModified = info.LastWriteTimeUtc,
                         Name = info.Name

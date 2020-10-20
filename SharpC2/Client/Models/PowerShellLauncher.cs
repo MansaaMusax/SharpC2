@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Client.Core;
+
+using System;
 
 namespace Client.Models
 {

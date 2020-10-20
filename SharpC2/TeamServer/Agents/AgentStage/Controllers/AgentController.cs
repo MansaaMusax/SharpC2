@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-class AgentController
+public class AgentController
 {
     AgentStatus AgentStatus;
 

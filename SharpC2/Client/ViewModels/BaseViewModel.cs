@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace Client.ViewModels
 {
@@ -6,7 +8,11 @@ namespace Client.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void NotifyPropertyChanged(string propertyName)
+        public ICommand CloseTab { get; protected set; }
+        public ICommand DetachTab { get; protected set; }
+        public ICommand RenameTab { get; protected set; }
+
+        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

@@ -57,8 +57,8 @@ namespace Agent.Modules
                     {
                         info.Label = drive.VolumeLabel;
                         info.Format = drive.DriveFormat;
-                        info.Capacity = Helpers.ConvertFileLength(drive.TotalSize);
-                        info.FreeSpace = Helpers.ConvertFileLength(drive.AvailableFreeSpace);
+                        info.Capacity = SharedHelpers.ConvertFileLength(drive.TotalSize);
+                        info.FreeSpace = SharedHelpers.ConvertFileLength(drive.AvailableFreeSpace);
                     }
 
                     result.Add(info);

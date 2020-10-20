@@ -60,7 +60,7 @@ namespace TeamServer.Controllers
 
             if (result)
             {
-                ClientEvent?.Invoke(this, new ServerEvent(ServerEventType.UserLogoff, "", nick));
+                ClientEvent?.Invoke(this, new ServerEvent(ServerEventType.UserLogoff, result.ToString(), nick));
             }
 
             return result;

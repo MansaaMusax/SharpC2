@@ -18,7 +18,7 @@ namespace Client.Views
     /// <summary>
     /// Interaction logic for ProgressBarView.xaml
     /// </summary>
-    public partial class ProgressBarView : UserControl
+    public partial class ProgressBarView : Window
     {
         public ProgressBarView()
         {

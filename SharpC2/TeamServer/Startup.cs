@@ -10,20 +10,19 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 using NSwag.Generation.Processors.Security;
-
-using TeamServer.Controllers;
+using System.Text;
 using TeamServer.Hubs;
 
 namespace TeamServer
 {
     public class Startup
     {
+        public static IConfiguration Configuration { get; private set; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -68,7 +67,7 @@ namespace TeamServer
                 j.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(AuthenticationController.JWTSecret),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("gvcznxrbobuzvvzytfynvvzrpqaaihrvkrgbgnfqdzdwojjzbiymzcfeuywidvjuwdnlvplwlzcwjbyfaveegnvxnvfcbjdwgggywzngsoxxyroaiogmcmvisdmogfge")),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };

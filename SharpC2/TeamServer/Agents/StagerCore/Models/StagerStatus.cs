@@ -1,5 +1,0 @@
-﻿enum StagerStatus
-{
-    Staging,
-    Staged
-}

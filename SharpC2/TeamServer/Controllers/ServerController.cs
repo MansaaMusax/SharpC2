@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-using Serilog;
+using Shared.Models;
+using Shared.Utilities;
 
 using System;
 using System.Collections.Generic;
@@ -15,129 +16,173 @@ namespace TeamServer.Controllers
 {
     public class ServerController
     {
-        public ModuleStatus ServerStatus { get; private set; }
-        public ClientController ClientController { get; private set; }
-        public ListenerController ListenerController { get; private set; }
-        public PayloadController PayloadController { get; set; }
-        public AgentController AgentController { get; private set; }
-        public CryptoController CryptoController { get; private set; }
-        private List<ServerModule> ServerModules { get; set; } = new List<ServerModule>();
-        public List<ServerEvent> ServerEvents { get; private set; } = new List<ServerEvent>();
-        public IHubContext<MessageHub> HubContext { get; set; }
-        private List<string> IdempotencyKeys { get; set; } = new List<string>();
+        UserController Users;
+        ListenerController Listeners;
+        CryptoController Crypto;
+        AgentController Agent;
 
-        private event EventHandler<ServerEvent> ServerEvent;
+        IHubContext<MessageHub> HubContext;
 
-        public delegate void OnServerCommand(AgentMetadata Metadata, C2Data C2Data);
+        List<ServerModule> ServerModules = new List<ServerModule>();
 
-        public ServerController(IHubContext<MessageHub> hubContext)
+        public delegate void ServerCommand(string AgentID, C2Data C2Data);
+
+        public ServerController(UserController Users, IHubContext<MessageHub> HubContext)
         {
-            ServerStatus = ModuleStatus.Starting;
+            this.Users = Users;
+            this.HubContext = HubContext;
 
-            HubContext = hubContext;
-
-            ClientController = new ClientController(this);
-            CryptoController = new CryptoController();
-            AgentController = new AgentController(this, CryptoController);
-            ListenerController = new ListenerController(this, AgentController, CryptoController);
-            PayloadController = new PayloadController(ListenerController);
-
-            ServerEvent += ServerEventHandler;
+            Crypto = new CryptoController();
+            Agent = new AgentController(Crypto, HubContext);
+            Listeners = new ListenerController(Agent);
         }
 
-        public void ServerEventHandler(object sender, ServerEvent e)
+        public void RegisterServerModule(IServerModule Module)
         {
-            ServerEvents.Add(e);
-            HubContext.Clients.All.SendAsync("NewServerEvent", e);
-            Log.Logger.Information("{Event} {Data} {Nick}", e.Type, e.Data, e.Nick);
-        }
-
-        public void RegisterServerModule(IServerModule module)
-        {
-            module.Init(this, AgentController);
-            var info = module.GetModuleInfo();
-            ServerModules.Add(info);
-
-            ServerEvent?.Invoke(this, new ServerEvent(ServerEventType.ServerModuleRegistered, info.Name));
+            Module.Init(this, Agent);
+            ServerModules.Add(Module.GetModuleInfo());
         }
 
         public void Start()
         {
-            ServerStatus = ModuleStatus.Running;
-
-
             Task.Factory.StartNew(delegate ()
             {
-                while (ServerStatus == ModuleStatus.Running)
+                while (true)
                 {
-                    var commModules = ListenerController.HttpListeners.ToList();
+                    var listeners = Listeners.HTTPListeners.Values.ToArray();
 
-                    foreach (var commModule in commModules)
+                    foreach (var listener in listeners)
                     {
-                        if (commModule != null && commModule.RecvData(out Tuple<AgentMetadata, AgentMessage> data))
+                        if (listener != null && listener.RecvData(out AgentMessage Message))
                         {
-                            if (data != null)
-                            {
-                                var message = data.Item2;
-
-                                if (!IdempotencyKeys.Contains(message.IdempotencyKey))
-                                {
-                                    IdempotencyKeys.Add(message.IdempotencyKey);
-
-                                    var checkinCallback = ServerModules
-                                        .Where(m => m.Name.Equals("Core", StringComparison.OrdinalIgnoreCase))
-                                        .Select(m => m.ServerCommands).FirstOrDefault()
-                                        .Where(c => c.Name.Equals("AgentCheckIn", StringComparison.OrdinalIgnoreCase))
-                                        .Select(c => c.CallBack).FirstOrDefault();
-
-                                    // checkin the parent agent
-                                    checkinCallback?.Invoke(data.Item1, null);
-
-                                    // checkin the p2p agent
-                                    if (!string.IsNullOrEmpty(message.Metadata.ParentAgentID))
-                                    {
-                                        checkinCallback?.Invoke(message.Metadata, message.Data);
-                                    }
-
-                                    if (!message.Data.Command.Equals("AgentCheckIn", StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        HandleC2Data(message.Metadata, message.Data);
-                                    }
-                                }
-                                else
-                                {
-                                    ServerEvent?.Invoke(this, new ServerEvent(ServerEventType.IdempotencyKeyError, $"Duplicate Idempotency Key received for {message.Metadata.AgentID}"));
-                                }
-                            }
+                            HandleC2Data(Message);
                         }
                     }
                 }
             });
         }
 
-        private void HandleC2Data(AgentMetadata metadata, C2Data c2Data)
+        void HandleC2Data(AgentMessage Message)
         {
-            OnServerCommand CallBack;
-
-            try
-            {
-                CallBack = ServerModules
-                .Where(m => m.Name.Equals(c2Data.Module, StringComparison.OrdinalIgnoreCase))
-                .Select(m => m.ServerCommands).FirstOrDefault()
-                .Where(c => c.Name.Equals(c2Data.Command, StringComparison.OrdinalIgnoreCase))
-                .Select(c => c.CallBack).FirstOrDefault();
-            }
-            catch
+            if (Message == null || Message.Data == null)  // I don't know why this happens
             {
                 return;
             }
 
-            CallBack?.Invoke(metadata, c2Data);
+            C2Data c2Data;
+
+            if (Message.IV == null)
+            {
+                try
+                {
+                    c2Data = Utilities.DeserialiseData<C2Data>(Message.Data);
+                }
+                catch
+                {
+                    c2Data = Crypto.Decrypt(Message.Data);
+                }
+                
+            }
+            else
+            {
+                var sessionKey = Crypto.GetSessionKey(Message.AgentID);
+                c2Data = Utilities.DecryptData<C2Data>(Message.Data, sessionKey, Message.IV);
+            }
+
+            var callback = ServerModules.FirstOrDefault(m => m.Name.Equals(c2Data.Module, StringComparison.OrdinalIgnoreCase)).Commands
+                .FirstOrDefault(c => c.Name.Equals(c2Data.Command, StringComparison.OrdinalIgnoreCase))
+                .Delegate;
+
+            callback?.Invoke(Message.AgentID, c2Data);
         }
 
-        public void Stop()
+        // Users
+
+        public AuthResult UserLogon(AuthRequest Request)
         {
-            ServerStatus = ModuleStatus.Stopped;
+            return Users.UserLogon(Request);
+        }
+
+        public bool UserLogoff(string Nick)
+        {
+            return Users.RemoveUser(Nick);
+        }
+
+        // Listeners
+
+        public IEnumerable<Listener> GetListeners(Listener.ListenerType Type)
+        {
+            switch (Type)
+            {
+                case Listener.ListenerType.HTTP:
+                    return Listeners.HTTPListeners.Keys;
+
+                case Listener.ListenerType.TCP:
+                    return Listeners.TCPListeners;
+
+                case Listener.ListenerType.SMB:
+                    return Listeners.SMBListeners;
+
+                default:
+                    return new List<Listener>();
+            }
+        }
+
+        public bool StartListener(ListenerRequest Request, out Listener Listener)
+        {
+            if (!Listeners.ValidRequest(Request))
+            {
+                Listener = null;
+                return false;
+            }
+            else
+            {
+                Listener = Listeners.NewListener(Request);
+                return true;
+            }
+        }
+
+        public bool StopListener(string Name)
+        {
+            return Listeners.StopListener(Name);
+        }
+
+        // Payloads
+
+        public bool GenerateStager(StagerRequest Request, out byte[] Stager)
+        {
+            var listener = Listeners.GetListener(Request.Listener);
+            var payload = new Payload(listener, Crypto);
+            var stager = payload.GenerateStager();
+
+            if (stager != null)
+            {
+                Stager = stager;
+                return true;
+            }
+            else
+            {
+                Stager = null;
+                return false;
+            }
+        }
+
+        // Agents
+
+        public IEnumerable<AgentMetadata> GetAgents()
+        {
+            return Agent.GetAgents();
+        }
+
+        public void SendAgentCommand(AgentCommandRequest Request, string Nick)
+        {
+            Agent.SendAgentCommand(Request, Nick);
+        }
+
+        public IEnumerable<AgentEvent> GetAgentEvents(string AgentID, DateTime Date)
+        {
+            var events = Agent.GetEventsSince(Date);
+            return events.Where(a => a.AgentID.Equals(AgentID, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

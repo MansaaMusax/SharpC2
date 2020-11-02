@@ -1,198 +1,170 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Shared.Models;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using TeamServer.Modules;
+using TeamServer.CommModules;
 
 namespace TeamServer.Controllers
 {
     public class ListenerController
     {
-        public ServerController ServerController { get; private set; }
-        private AgentController AgentController { get; set; }
-        private CryptoController CryptoController { get; set; }
+        AgentController Agent;
 
-        public List<HttpCommModule> HttpListeners { get; private set; } = new List<HttpCommModule>();
-        public List<ListenerTcp> TcpListeners { get; private set; } = new List<ListenerTcp>();
-        public List<ListenerSmb> SmbListeners { get; private set; } = new List<ListenerSmb>();
+        public Dictionary<ListenerHTTP, HTTPCommModule> HTTPListeners = new Dictionary<ListenerHTTP, HTTPCommModule>();
+        
+        public List<ListenerTCP> TCPListeners = new List<ListenerTCP>();
+        public List<ListenerSMB> SMBListeners = new List<ListenerSMB>();
 
-        private event EventHandler<ServerEvent> ServerEvent;
-
-        public ListenerController(ServerController server, AgentController agent, CryptoController crypto)
+        public ListenerController(AgentController Agent)
         {
-            ServerController = server;
-            AgentController = agent;
-            CryptoController = crypto;
-
-            ServerEvent += ServerController.ServerEventHandler;
+            this.Agent = Agent;
         }
 
-        public Listener StartListener(NewListenerRequest request, string nick)
+        public bool ValidRequest(ListenerRequest Request)
         {
-            Listener listener = null;
+            if (NameExists(Request.Name)) { return false; }
+            if (BindPortExits(Request.BindPort, Request.Type)) { return false; }
+            if (PipeNameExists(Request.PipeName)) { return false; }
 
-            switch (request.Type)
+            return true;
+        }
+
+        public Listener NewListener(ListenerRequest Request)
+        {
+            switch (Request.Type)
             {
-                case ListenerType.HTTP:
-                    listener = StartHttpListener(request);
-                    ServerController.HubContext.Clients.All.SendAsync("NewHttpListener", listener as ListenerHttp);
-                    break;
-                case ListenerType.TCP:
-                    listener = StartTcpListener(request);
-                    ServerController.HubContext.Clients.All.SendAsync("NewTcpListener", listener as ListenerTcp);
-                    break;
-                case ListenerType.SMB:
-                    listener = StartSmbListener(request);
-                    ServerController.HubContext.Clients.All.SendAsync("NewSmbListener", listener as ListenerSmb);
-                    break;
-            }
+                case Listener.ListenerType.HTTP:
+                    return NewHTTPListener(Request);
 
-            ServerEvent?.Invoke(this, new ServerEvent(ServerEventType.ListenerStarted, listener.Name, nick));
+                case Listener.ListenerType.TCP:
+                    return NewTCPListener(Request);
 
-            return listener;
-        }
-
-        private ListenerHttp StartHttpListener(NewListenerRequest request)
-        {
-            var listener = new ListenerHttp
-            {
-                Name = request.Name,
-                BindPort = request.BindPort,
-                ConnectAddress = request.ConnectAddress,
-                ConnectPort = request.ConnectPort
-            };
-
-            var module = new HttpCommModule { Listener = listener };
-            HttpListeners.Add(module);
-
-            module.Init(AgentController, CryptoController);
-            module.Start();
-
-            return listener;
-        }
-
-        private ListenerTcp StartTcpListener(NewListenerRequest request)
-        {
-            var listener = new ListenerTcp
-            {
-                Name = request.Name,
-                BindAddress = request.BindAddress,
-                BindPort = request.BindPort
-            };
-
-            TcpListeners.Add(listener);
-
-            return listener;
-        }
-
-        private ListenerSmb StartSmbListener(NewListenerRequest request)
-        {
-            var listener = new ListenerSmb
-            {
-                Name = request.Name,
-                PipeName = request.PipeName
-            };
-
-            SmbListeners.Add(listener);
-
-            return listener;
-        }
-
-        public IEnumerable<Listener> GetListeners()
-        {
-            var listeners = new List<Listener>();
-
-            foreach (var module in HttpListeners)
-            {
-                listeners.Add(module.Listener);
-            }
-
-            listeners.AddRange(TcpListeners);
-            listeners.AddRange(SmbListeners);
-
-            return listeners;
-        }
-
-        public Listener GetListener(string name)
-        {
-            return GetListeners().FirstOrDefault(l => l.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public List<ListenerHttp> GetHttpListeners()
-        {
-            var listeners = new List<ListenerHttp>();
-
-            foreach (var module in HttpListeners)
-            {
-                listeners.Add(module.Listener);
-            }
-
-            return listeners;
-        }
-
-        public List<ListenerTcp> GetTcpListeners()
-        {
-            return TcpListeners;
-        }
-
-        public List<ListenerSmb> GetSmbListeners()
-        {
-            return SmbListeners;
-        }
-
-        public bool StopListener(string name, string nick)
-        {
-            var result = false;
-            var listener = GetListeners().FirstOrDefault(l => l.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-            switch (listener.Type)
-            {
-                case ListenerType.HTTP:
-
-                    var module = HttpListeners.FirstOrDefault(l => l.Listener.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-                    if (module != null)
-                    {
-                        module.Stop();
-                    }
-
-                    result = HttpListeners.Remove(module);
-
-                    break;
-
-                case ListenerType.TCP:
-                    result = TcpListeners.Remove(listener as ListenerTcp);
-                    break;
-
-                case ListenerType.SMB:
-                    result = SmbListeners.Remove(listener as ListenerSmb);
-                    break;
+                case Listener.ListenerType.SMB:
+                    return NewSMBListener(Request);
 
                 default:
-                    break;
+                    return new Listener();
             }
-
-            if (result)
-            {
-                ServerEvent?.Invoke(this, new ServerEvent(ServerEventType.ListenerStopped, name, nick));
-                ServerController.HubContext.Clients.All.SendAsync("RemoveListener", name);
-            }
-
-            return result;
         }
 
-        public IOrderedEnumerable<WebLog> GetWebLogs()
+        public Listener GetListener(string Name)
         {
-            var result = new List<WebLog>();
-            var webLogs = HttpListeners.Select(l => l.WebLogs).ToList();
+            var listeners = GetListeners();
+            return listeners.FirstOrDefault(l => l.Name.Equals(Name, StringComparison.OrdinalIgnoreCase));
+        }
 
-            foreach (var webLog in webLogs)
+        public bool StopListener(string Name)
+        {
+            var listeners = GetListeners();
+            var listener = listeners.FirstOrDefault(l => l.Name.Equals(Name, StringComparison.OrdinalIgnoreCase));
+
+            if (listener != null)
             {
-                result.AddRange(webLog);
-            }
+                switch (listener.Type)
+                {
+                    case Listener.ListenerType.HTTP:
+                        HTTPListeners[listener as ListenerHTTP].Stop();
+                        return HTTPListeners.Remove(listener as ListenerHTTP);
 
-            return result.OrderBy(log => log.Date);
+                    case Listener.ListenerType.TCP:
+                        return TCPListeners.Remove(listener as ListenerTCP);
+
+                    case Listener.ListenerType.SMB:
+                        return SMBListeners.Remove(listener as ListenerSMB);
+
+                    default:
+                        return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        ListenerHTTP NewHTTPListener(ListenerRequest Request)
+        {
+            var listener = new ListenerHTTP
+            {
+                Name = Request.Name,
+                BindPort = Request.BindPort,
+                ConnectAddress = Request.ConnectAddress,
+                ConnectPort = Request.ConnectPort
+            };
+
+            var module = new HTTPCommModule(listener);
+            module.Init(Agent);
+            module.Start();
+
+            HTTPListeners.Add(listener, module);
+
+            return listener;
+        }
+
+        ListenerTCP NewTCPListener(ListenerRequest Request)
+        {
+            var listener = new ListenerTCP
+            {
+                Name = Request.Name,
+                BindAddress = Request.BindAddress,
+                BindPort = Request.BindPort,
+            };
+
+            TCPListeners.Add(listener);
+
+            return listener;
+        }
+
+        ListenerSMB NewSMBListener(ListenerRequest Request)
+        {
+            var listener = new ListenerSMB
+            {
+                Name = Request.Name,
+                PipeName = Request.PipeName
+            };
+
+            SMBListeners.Add(listener);
+
+            return listener;
+        }
+
+        List<Listener> GetListeners()
+        {
+            var newList = new List<Listener>();
+
+            newList.AddRange(HTTPListeners.Keys);
+            newList.AddRange(TCPListeners);
+            newList.AddRange(SMBListeners);
+
+            return newList;
+        }
+
+        bool NameExists(string Name)
+        {
+            var listeners = GetListeners();
+            return listeners.Any(l => l.Name.Equals(Name, StringComparison.OrdinalIgnoreCase));
+        }
+
+        bool BindPortExits(int BindPort, Listener.ListenerType Type)
+        {
+            switch (Type)
+            {
+                case Listener.ListenerType.HTTP:
+                    return HTTPListeners.Keys.Any(l => l.BindPort == BindPort);
+
+                case Listener.ListenerType.TCP:
+                    return TCPListeners.Any(l => l.BindPort == BindPort);
+
+                default:
+                    return false;
+            }
+        }
+
+        bool PipeNameExists(string PipeName)
+        {
+            return SMBListeners.Any(l => l.PipeName.Equals(PipeName, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
+using Shared.Models;
+
 using System.Threading.Tasks;
 
 namespace TeamServer.Hubs
@@ -8,9 +10,15 @@ namespace TeamServer.Hubs
     [Authorize]
     public class MessageHub : Hub
     {
-        public async Task SendChatMessage(ChatMessage message)
+        public async Task SendChatMessage(string Message)
         {
-            await Clients.All.SendAsync("MessageIn", message);
+            var message = new UserMessage
+            {
+                Nick = Context.User.Identity.Name,
+                Message = Message
+            };
+
+            await Clients.All.SendAsync("RecvMessage", message);
         }
     }
 }

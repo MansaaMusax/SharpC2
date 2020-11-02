@@ -5,7 +5,7 @@ namespace TeamServer.Interfaces
 {
     public interface IServerModule
     {
-        void Init(ServerController server, AgentController agent);
+        void Init(ServerController Server, AgentController Agent);
         ServerModule GetModuleInfo();
     }
 }

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net4.0;net5.0</TargetFrameworks>
+    <AssemblyName>stage</AssemblyName>
+    <RootNamespace>Agent</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Shared\Models\Agents\AgentMessage.cs" Link="Models\AgentMessage.cs" />
+    <Compile Include="..\..\Shared\Models\Agents\AgentMetadata.cs" Link="Models\AgentMetadata.cs" />
+    <Compile Include="..\..\Shared\Models\Modules\ModuleStatus.cs" Link="Models\ModuleStatus.cs" />
+    <Compile Include="..\..\Shared\Utilities\Utilities.cs" Link="Utilities\Utilities.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <PackageReference Include="System.Security.Principal.Windows">
+      <Version>4.7.0</Version>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

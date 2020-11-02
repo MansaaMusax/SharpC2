@@ -1,49 +1,118 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Shared.Models;
+using Shared.Utilities;
+
+using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace TeamServer.Controllers
 {
     public class CryptoController
     {
-        public byte[] EncryptionKey { get; private set; } = Encoding.UTF8.GetBytes("jO8JTskl6BMQTHsZNZ43gz5xEVXb76Zk"); // Cryptography.GetRandomData(32);
+        public string PublicKey;
+        string PrivateKey;
 
-        public byte[] Encrypt<T>(T data)
+        Dictionary<string, string> PublicKeys = new Dictionary<string, string>();
+        Dictionary<string, byte[]> SessionKeys = new Dictionary<string, byte[]>();
+        Dictionary<string, byte[]> Challenges = new Dictionary<string, byte[]>();
+
+        public CryptoController()
         {
-            var compressed = SharedHelpers.Compress(Serialisation.SerialiseData(data));
-
-            var encryptedData = Cryptography.Encrypt(compressed, EncryptionKey, out byte[] iv);
-            var hmac = Cryptography.ComputeHmac256(EncryptionKey, encryptedData);
-
-            var result = new byte[iv.Length + encryptedData.Length + hmac.Length];
-
-            Buffer.BlockCopy(iv, 0, result, 0, iv.Length);
-            Buffer.BlockCopy(encryptedData, 0, result, iv.Length, encryptedData.Length);
-            Buffer.BlockCopy(hmac, 0, result, iv.Length + encryptedData.Length, hmac.Length);
-
-            return result;
+            using (var rsa = new RSACryptoServiceProvider(2048))
+            {
+                PublicKey = rsa.ToXmlString(false);
+                PrivateKey = rsa.ToXmlString(true);
+            }
         }
 
-        public T Decrypt<T>(byte[] data)
+        public void AddAgentPublicKey(string AgentID, string PublicKey)
         {
-            var iv = data[0..16];
-            var hmac = data[(data.Length - 32)..data.Length];
-            var enc = data[iv.Length..(data.Length-hmac.Length)];
-
-            var decrypted = Cryptography.Decrypt(enc, EncryptionKey, iv);
-            var decompressed = SharedHelpers.Decompress(decrypted);
-
-            return Serialisation.DeserialiseData<T>(decompressed);
+            if (!PublicKeys.ContainsKey(AgentID))
+            {
+                PublicKeys.Add(AgentID, PublicKey);
+            }
+            else
+            {
+                PublicKeys[AgentID] = PublicKey;
+            }
         }
 
-        public bool VerifyHMAC(byte[] data)
+        public byte[] GenerateSessionKey(string AgentID)
         {
-            var iv = data[0..16];
-            var hmac = data[(data.Length - 32)..data.Length];
-            var enc = data[iv.Length..(data.Length - hmac.Length)];
+            var random = Utilities.GetRandomData(32);
 
-            var calculated = Cryptography.ComputeHmac256(EncryptionKey, enc);
-            return calculated.SequenceEqual(hmac);
+            if (!SessionKeys.ContainsKey(AgentID))
+            {
+                SessionKeys.Add(AgentID, random);
+            }
+            else
+            {
+                SessionKeys[AgentID] = random;
+            }
+
+            return random;
+        }
+
+        public byte[] GenerateChallenge(string AgentID)
+        {
+            var random = Utilities.GetRandomData(8);
+
+            if (!Challenges.ContainsKey(AgentID))
+            {
+                Challenges.Add(AgentID, random);
+            }
+            else
+            {
+                Challenges[AgentID] = random;
+            }
+
+            return random;
+        }
+
+        public byte[] GetAgentChallenge(string AgentID)
+        {
+            if (Challenges.ContainsKey(AgentID))
+            {
+                return Challenges[AgentID];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public byte[] GetSessionKey(string AgentID)
+        {
+            if (SessionKeys.ContainsKey(AgentID))
+            {
+                return SessionKeys[AgentID];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public byte[] Encrypt(string AgentID, C2Data C2Data)
+        {
+            var data = Utilities.SerialiseData(C2Data);
+
+            var agentKey = PublicKeys[AgentID];
+
+            using (var rsa = new RSACryptoServiceProvider(2048))
+            {
+                rsa.FromXmlString(agentKey);
+                return rsa.Encrypt(data, false);
+            }
+        }
+
+        public C2Data Decrypt(byte[] Data)
+        {
+            using (var rsa = new RSACryptoServiceProvider(2048))
+            {
+                rsa.FromXmlString(PrivateKey);
+                var decrypted = rsa.Decrypt(Data, false);
+                return Utilities.DeserialiseData<C2Data>(decrypted);
+            }
         }
     }
 }

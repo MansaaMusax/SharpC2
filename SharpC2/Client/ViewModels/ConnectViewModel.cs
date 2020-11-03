@@ -10,7 +10,7 @@ namespace Client.ViewModels
         public ConnectView ConnectView { get; set; }
         public string WelcomeMessage { get; set; } = "Welcome to SharpC2";
         public string Host { get; set; } = "127.0.0.1";
-        public string Port { get; set; } = "7443";
+        public string Port { get; set; } = "8443";
         public string Nick { get; set; } = "neo";
         public string Pass { get; set; }
 

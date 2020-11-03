@@ -1,8 +1,7 @@
-﻿using Client.ViewModels;
-using Client.Views;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 
-using Microsoft.AspNetCore.SignalR.Client;
 using Shared.Models;
+
 using System;
 using System.Threading.Tasks;
 
@@ -40,20 +39,7 @@ namespace Client.Services
 
             Connect().ContinueWith((task) =>
             {
-
-                if (task.Exception != null)
-                {
-                    var window = new ErrorView
-                    {
-                        DataContext = new ErrorViewModel
-                        {
-                            Error = task.Exception.Message
-                        }
-                    };
-
-                    window.Show();
-                }
-
+                // meh
             });
         }
 

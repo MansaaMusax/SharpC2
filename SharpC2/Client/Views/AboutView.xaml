@@ -1,0 +1,27 @@
+﻿<Window x:Class="Client.Views.AboutView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client.Views"
+        mc:Ignorable="d"
+        Title="About" Height="200" Width="250"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="SharpC2" Grid.Row="0" FontSize="24" Margin="5 5 5 20" HorizontalAlignment="Center"/>
+        <TextBlock Text="Developers:" Grid.Row="1" Margin="5 5 5 10"/>
+        <TextBlock Text="Daniel Duggan (@_RastaMouse)" Grid.Row="2" Margin="30 5 5 5" FontSize="12"/>
+        <TextBlock Text="Adam Chester [@_xpn_]" Grid.Row="3" Margin="30 5 5 5" FontSize="12"/>
+
+    </Grid>
+
+</Window>

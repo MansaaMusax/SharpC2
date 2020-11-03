@@ -50,6 +50,7 @@ namespace Client.ViewModels
 
         public ICommand OpenPayloadGenerator { get; }
 
+        public ICommand OpenAbout { get; }
         public ICommand ExitClient { get; }
 
         public MainViewModel(MainView MainView)
@@ -69,6 +70,7 @@ namespace Client.ViewModels
 
             OpenPayloadGenerator = new OpenWindowCommand(WindowType.PayloadGenerator);
 
+            OpenAbout = new OpenWindowCommand(WindowType.About);
             ExitClient = new ExitCommand();
 
             MainView.Closing += OnWindowClosing;

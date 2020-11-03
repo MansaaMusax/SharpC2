@@ -36,6 +36,9 @@ namespace Client.Commands
                     window = new PayloadGeneratorView();
                     viewModel = new PayloadGeneratorViewModel(window);
                     break;
+                case WindowType.About:
+                    window = new AboutView();
+                    break;
             }
 
             window.DataContext = viewModel;
@@ -46,6 +49,7 @@ namespace Client.Commands
     public enum WindowType
     {
         NewListener,
-        PayloadGenerator
+        PayloadGenerator,
+        About
     }
 }

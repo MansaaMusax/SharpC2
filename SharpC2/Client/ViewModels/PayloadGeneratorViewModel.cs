@@ -22,8 +22,7 @@ namespace Client.ViewModels
 
         public int SleepInterval { get; set; } = 60;
         public int SleepJitter { get; set; } = 25;
-
-        public DateTime KillDate { get; set; } = DateTime.UtcNow.AddDays(365);
+        public DateTime KillDate { get; set; } = DateTime.UtcNow.AddDays(30);
 
         public IList<PayloadFormat> PayloadFormats
         {
@@ -36,15 +35,8 @@ namespace Client.ViewModels
         private Listener _selectedListener;
         public Listener SelectedListener
         {
-            get
-            {
-                return _selectedListener;
-            }
-            set
-            {
-                _selectedListener = value;
-                UpdateSelectedPayloadView();
-            }
+            get { return _selectedListener; }
+            set { _selectedListener = value; UpdateSelectedPayloadView(); }
         }
 
         public PayloadFormat SelectedPayloadFormat { get; set; }
@@ -54,7 +46,9 @@ namespace Client.ViewModels
         public PayloadGeneratorViewModel(Window Window)
         {
             this.Window = Window;
+
             GeneratePayloadCommand = new GeneratePayloadCommand(this);
+            
             GetListeners();
         }
 

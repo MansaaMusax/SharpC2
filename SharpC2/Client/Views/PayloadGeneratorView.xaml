@@ -21,7 +21,6 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Listener:"/>
@@ -38,13 +37,10 @@
         <TextBlock Grid.Row="2" Grid.Column="0" Text="Kill Date:"/>
         <DatePicker Grid.Row="2" Grid.Column="1" SelectedDate="{Binding KillDate}"/>
 
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Framework:"/>
-        <ComboBox ItemsSource="{Binding Frameworks}" SelectedItem="{Binding SelectedFramework}" Grid.Column="1" Grid.Row="3"/>
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Format:"/>
+        <ComboBox ItemsSource="{Binding PayloadFormats}" SelectedItem="{Binding SelectedPayloadFormat}" Grid.Column="1" Grid.Row="3"/>
 
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="Format:"/>
-        <ComboBox ItemsSource="{Binding PayloadFormats}" SelectedItem="{Binding SelectedPayloadFormat}" Grid.Column="1" Grid.Row="4"/>
-
-        <Button Grid.Row="5" Grid.Column="0" Command="{Binding GeneratePayloadCommand}" Content="Generate" Grid.ColumnSpan="2"/>
+        <Button Grid.Row="4" Grid.Column="0" Command="{Binding GeneratePayloadCommand}" Content="Generate" Grid.ColumnSpan="2"/>
 
     </Grid>
     

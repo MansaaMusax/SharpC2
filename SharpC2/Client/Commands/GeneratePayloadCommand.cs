@@ -65,7 +65,7 @@ namespace Client.Commands
         {
             var progressBar = new ProgressBarView
             {
-                Height = 60,
+                Height = 80,
                 Width = 300,
 
                 DataContext = new ProgressBarViewModel

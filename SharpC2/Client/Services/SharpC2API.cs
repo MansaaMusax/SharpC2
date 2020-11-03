@@ -61,12 +61,12 @@ namespace Client.Services
                 Client.BaseUrl = new Uri($"https://{Host}:{Port}");
                 Client.AddDefaultHeader("Content-Type", "application/json");
 
-                ServicePointManager.ServerCertificateValidationCallback = SharpC2API.ValidateServerCertficate;
+                ServicePointManager.ServerCertificateValidationCallback = ValidateServerCertficate;
 
                 var apiRequest = new RestRequest("/api/users", Method.POST);
                 apiRequest.AddParameter("application/json", JsonConvert.SerializeObject(new AuthRequest { Nick = Nick, Password = Pass }), ParameterType.RequestBody);
 
-                var apiResponse = SharpC2API.Client.Execute(apiRequest);
+                var apiResponse = Client.Execute(apiRequest);
                 var result = JsonConvert.DeserializeObject<AuthResult>(apiResponse.Content);
 
                 if (result != null && result.Status == AuthResult.AuthStatus.LogonSuccess)

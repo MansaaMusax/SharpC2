@@ -13,13 +13,14 @@ namespace Client.Services
 
         public static event Action<UserMessage> ChatMessageReceived;
 
-        public event Action<ServerEvent> NewServerEventReceived;
-        public event Action<AgentEvent> NewAgentEvenReceived;
-        public event Action<WebLog> NewWebEvenReceived;
+        public static event Action<ServerEvent> ServerEventReceived;
+        public static event Action<AgentEvent> AgentEventReceived;
 
-        public event Action<ListenerHTTP> NewHttpListenerReceived;
-        public event Action<ListenerTCP> NewTcpListenerReceived;
-        public event Action<ListenerSMB> NewSmbListenerReceived;
+        //public event Action<WebLog> NewWebEvenReceived;
+
+        //public event Action<ListenerHTTP> NewHttpListenerReceived;
+        //public event Action<ListenerTCP> NewTcpListenerReceived;
+        //public event Action<ListenerSMB> NewSmbListenerReceived;
 
         public event Action<string> RemoveListenerReceived;
 
@@ -29,8 +30,10 @@ namespace Client.Services
 
             Connection.On<UserMessage>("RecvChatMessage", (msg) => ChatMessageReceived?.Invoke(msg));
 
-            //Connection.On<ServerEvent>("NewServerEvent", (e) => NewServerEventReceived?.Invoke(e));
-            //Connection.On<AgentEvent>("NewAgentEvent", (e) => NewAgentEvenReceived?.Invoke(e));
+            Connection.On<ServerEvent>("ServerEvent", (e) => ServerEventReceived?.Invoke(e));
+            Connection.On<AgentEvent>("AgentEvent", (e) => AgentEventReceived?.Invoke(e));
+            
+            
             //Connection.On<WebLog>("NewWebEvent", (e) => NewWebEvenReceived?.Invoke(e));
             
             //Connection.On<ListenerHTTP>("NewHttpListener", (l) => NewHttpListenerReceived?.Invoke(l));

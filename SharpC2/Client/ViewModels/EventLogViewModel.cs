@@ -1,6 +1,8 @@
 ﻿using Client.Commands;
 using Client.Services;
 
+using Newtonsoft.Json;
+
 using Shared.Models;
 using System;
 using System.Collections.ObjectModel;
@@ -25,8 +27,8 @@ namespace Client.ViewModels
         {
             SignalR.ChatMessageReceived += SignalR_ChatMessageReceived;
 
-            //SignalR.NewServerEventReceived += SignalR_NewServerEventReceived;
-            //SignalR.NewAgentEvenReceived += SignalR_NewAgentEvenReceived;
+            SignalR.ServerEventReceived += SignalR_ServerEventReceived;
+            SignalR.AgentEventReceived += SignalR_AgentEventReceived;
 
             CloseTab = new CloseTabCommand("Event Log", mainViewModel);
             DetachTab = new DetachTabCommand("Event Log", mainViewModel);
@@ -37,26 +39,27 @@ namespace Client.ViewModels
             GetServerEventData();
         }
 
-        void SignalR_ChatMessageReceived(UserMessage msg)
+        void SignalR_ChatMessageReceived(UserMessage Message)
         {
-            Events.Insert(0, $"<{msg.Nick}>     {msg.Message}");
+            Events.Insert(0, $"<{Message.Nick}>     {Message.Message}");
         }
 
-        void SignalR_NewAgentEvenReceived(AgentEvent ev)
+        void SignalR_AgentEventReceived(AgentEvent ev)
         {
             switch (ev.Type)
             {
                 case AgentEvent.EventType.InitialAgent:
-                    Events.Insert(0, $"[{ev.Date}]     Initial checkin from {ev.AgentID}");
+                    var agent = JsonConvert.DeserializeObject<AgentMetadata>(ev.Data.ToString());
+                    Events.Insert(0, $"[{ev.Date}]     Initial checkin from {agent.Identity}@{agent.Hostname}");
                     break;
                 default:
                     break;
             }
         }
 
-        void SignalR_NewServerEventReceived(ServerEvent ev)
+        void SignalR_ServerEventReceived(ServerEvent ev)
         {
-            AddEvent(ev);
+            AddServerEvent(ev);
         }
 
         async void GetServerEventData()
@@ -67,23 +70,38 @@ namespace Client.ViewModels
             {
                 foreach (var ev in serverEvents)
                 {
-                    AddEvent(ev);
+                    AddServerEvent(ev);
                 }
             }
         }
 
-        void AddEvent(ServerEvent ev)
+        void AddServerEvent(ServerEvent ev)
         {
             switch (ev.Type)
             {
                 case ServerEvent.EventType.UserLogon:
-                    Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has joined. Say hi!");
+
+                    var status = Enum.Parse<AuthResult.AuthStatus>(ev.Data.ToString());
+
+                    switch (status)
+                    {
+                        case AuthResult.AuthStatus.LogonSuccess:
+                            Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has joined. Say hi!");
+                            break;
+                        case AuthResult.AuthStatus.NickInUse:
+                            Events.Insert(0, $"[{ev.Date}]     {ev.Nick} tried to join again.");
+                            break;
+                        case AuthResult.AuthStatus.BadPassword:
+                            Events.Insert(0, $"[{ev.Date}]     {ev.Nick} got the password wrong. Duh!");
+                            break;
+                        default:
+                            break;
+                    }
+
                     break;
+
                 case ServerEvent.EventType.UserLogoff:
-                    Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has left. Goodbye!");
-                    break;
-                case ServerEvent.EventType.FailedAuth:
-                    Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has failed to login ({ev.Data}).");
+                    Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has left. Say goodbye!");
                     break;
                 case ServerEvent.EventType.ListenerStarted:
                     Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has started listener {ev.Data}.");

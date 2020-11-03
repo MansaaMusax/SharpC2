@@ -69,7 +69,7 @@ namespace Stager
             };
 
             LoadCommModule();
-            Thread.Sleep(30000);
+            Thread.Sleep(60000);
             SendStage0();
 
             while (!Staged)

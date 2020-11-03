@@ -2,8 +2,14 @@
 using Client.Models;
 using Client.Services;
 
+using Newtonsoft.Json;
+
+using Shared.Models;
+
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -14,18 +20,7 @@ namespace Client.ViewModels
         readonly MainView MainView;
 
         ObservableCollection<Agent> _agents;
-        public ObservableCollection<Agent> Agents
-        {
-            get
-            {
-                return _agents;
-            }
-            set
-            {
-                _agents = value;
-                NotifyPropertyChanged(nameof(Agents));
-            }
-        } 
+        public ObservableCollection<Agent> Agents { get; set; } = new ObservableCollection<Agent>();
 
         public Agent SelectedAgent { get; set; }
 
@@ -63,6 +58,8 @@ namespace Client.ViewModels
 
             Agents = new ObservableCollection<Agent>();
 
+            SignalR.AgentEventReceived += SignalR_AgentEventReceived;
+
             AgentInteract = new AgentInteractCommand(this);
             AgentRemove = new AgentRemoveCommand(this);
 
@@ -81,6 +78,35 @@ namespace Client.ViewModels
             GetAgentData();
         }
 
+        private void SignalR_AgentEventReceived(AgentEvent ev)
+        {
+            switch (ev.Type)
+            {
+                case AgentEvent.EventType.InitialAgent:
+
+                    var agent = JsonConvert.DeserializeObject<AgentMetadata>(ev.Data.ToString());
+
+                    if (!Agents.Any(a => a.AgentID.Equals(agent.AgentID, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        AddNewAgent(agent);
+                    }
+
+                    break;
+
+                case AgentEvent.EventType.AgentCheckin:
+
+                    var lastSeen = DateTime.Parse(ev.Data.ToString());
+
+                    Agents.FirstOrDefault(a => a.AgentID.Equals(ev.AgentID, StringComparison.OrdinalIgnoreCase))
+                        .LastSeen = lastSeen;
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
         async void GetAgentData()
         {
             var agentData = await SharpC2API.Agents.GetAgentData();
@@ -89,20 +115,25 @@ namespace Client.ViewModels
             {
                 foreach (var agent in agentData)
                 {
-                    Agents.Add(new Agent
-                    {
-                        AgentID = agent.AgentID,
-                        Hostname = agent.Hostname,
-                        IPAddress = agent.IPAddress,
-                        Identity = agent.Identity,
-                        Process = agent.Process,
-                        PID = agent.PID,
-                        Arch = agent.Arch,
-                        Integrity = agent.Elevation,
-                        LastSeen = agent.LastSeen
-                    });
+                    AddNewAgent(agent);
                 }
             }
+        }
+
+        void AddNewAgent(AgentMetadata AgentMetadata)
+        {
+            Agents.Add(new Agent
+            {
+                AgentID = AgentMetadata.AgentID,
+                Hostname = AgentMetadata.Hostname,
+                IPAddress = AgentMetadata.IPAddress,
+                Identity = AgentMetadata.Identity,
+                Process = AgentMetadata.Process,
+                PID = AgentMetadata.PID,
+                Arch = AgentMetadata.Arch,
+                Integrity = AgentMetadata.Elevation,
+                LastSeen = AgentMetadata.LastSeen
+            });
         }
 
         void OnWindowClosing(object sender, CancelEventArgs e)

@@ -21,9 +21,12 @@ namespace TeamServer.Controllers
         CryptoController Crypto;
         AgentController Agent;
 
-        IHubContext<MessageHub> HubContext;
+        event EventHandler<ServerEvent> OnServerEvent;
 
         List<ServerModule> ServerModules = new List<ServerModule>();
+
+        IHubContext<MessageHub> HubContext;
+        List<ServerEvent> ServerEvents = new List<ServerEvent>();
 
         public delegate void ServerCommand(string AgentID, C2Data C2Data);
 
@@ -32,9 +35,17 @@ namespace TeamServer.Controllers
             this.Users = Users;
             this.HubContext = HubContext;
 
+            OnServerEvent += ServerController_OnServerEvent;
+
             Crypto = new CryptoController();
             Agent = new AgentController(Crypto, HubContext);
             Listeners = new ListenerController(Agent);
+        }
+
+        private void ServerController_OnServerEvent(object sender, ServerEvent e)
+        {
+            ServerEvents.Add(e);
+            HubContext.Clients.All.SendAsync("ServerEvent", e);
         }
 
         public void RegisterServerModule(IServerModule Module)
@@ -96,16 +107,34 @@ namespace TeamServer.Controllers
             callback?.Invoke(Message.AgentID, c2Data);
         }
 
+        // Server
+
+        public IEnumerable<ServerEvent> GetServerEvents()
+        {
+            return ServerEvents;
+        }
+
         // Users
 
         public AuthResult UserLogon(AuthRequest Request)
         {
-            return Users.UserLogon(Request);
+            var logon = Users.UserLogon(Request);
+
+            OnServerEvent?.Invoke(this, new ServerEvent(ServerEvent.EventType.UserLogon, logon.Status, Request.Nick));
+
+            return logon;
         }
 
         public bool UserLogoff(string Nick)
         {
-            return Users.RemoveUser(Nick);
+            var logout = Users.RemoveUser(Nick);
+
+            if (logout)
+            {
+                OnServerEvent.Invoke(this, new ServerEvent(ServerEvent.EventType.UserLogoff, null, Nick));
+            }
+
+            return logout;
         }
 
         // Listeners

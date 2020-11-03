@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
 using Shared.Models;
-using Shared.Utilities;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using TeamServer.Hubs;
 
@@ -87,7 +85,7 @@ namespace TeamServer.Controllers
             if (!Agents.Contains(Metadata))
             {
                 Agents.Add(Metadata);
-                OnAgentEvent?.Invoke(this, new AgentEvent(Metadata.AgentID, AgentEvent.EventType.InitialAgent, $"Initial agent from {Metadata.Identity}@{Metadata.Hostname}"));
+                OnAgentEvent?.Invoke(this, new AgentEvent(Metadata.AgentID, AgentEvent.EventType.InitialAgent, Metadata));
             }
         }
 
@@ -106,14 +104,15 @@ namespace TeamServer.Controllers
             return AgentEvents.Where(e => e.Date >= Date);
         }
 
-        async void AgentCheckin(string AgentID)
+        void AgentCheckin(string AgentID)
         {
             var agent = Agents.FirstOrDefault(a => a.AgentID.Equals(AgentID, StringComparison.OrdinalIgnoreCase));
 
             if (agent != null)
             {
-                agent.LastSeen = DateTime.UtcNow;
-                await HubContext.Clients.All.SendAsync("AgentCheckin", AgentID);
+                var lastSeen = DateTime.UtcNow;
+                agent.LastSeen = lastSeen;
+                OnAgentEvent?.Invoke(this, new AgentEvent(AgentID, AgentEvent.EventType.AgentCheckin, lastSeen));
             }
         }
 

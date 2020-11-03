@@ -17,7 +17,7 @@
         <ListView Grid.Row="0" ItemsSource="{Binding Events}"/>
 
         <DockPanel Grid.Row="1" LastChildFill="True" Height="30">
-            <TextBlock Text="SharpC2 >" VerticalAlignment="Center" Width="80"/>
+            <TextBlock Text="SharpC2 >" VerticalAlignment="Center" Width="60"/>
             <Button Margin="0" Padding="0" Height="0" Width="0" Command="{Binding SendMessageCommand}" IsDefault="True"/>
             <TextBox Text="{Binding ChatMessage, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" FontFamily="Consolas"/>
         </DockPanel>

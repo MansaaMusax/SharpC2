@@ -7,10 +7,10 @@ namespace Shared.Models
         public string AgentID { get; set; }
         public DateTime Date { get; set; }
         public EventType Type { get; set; }
-        public string Data { get; set; }
+        public object Data { get; set; }
         public string Nick { get; set; }
 
-        public AgentEvent(string AgentID, EventType Type, string Data, string Nick = "")
+        public AgentEvent(string AgentID, EventType Type, object Data = null, string Nick = "")
         {
             this.AgentID = AgentID;
             this.Type = Type;
@@ -23,6 +23,7 @@ namespace Shared.Models
         public enum EventType
         {
             InitialAgent,
+            AgentCheckin,
             CommandRequest,
             AgentOutput,
             AgentError,

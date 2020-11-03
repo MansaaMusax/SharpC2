@@ -39,16 +39,15 @@
 
         <DataGrid x:Name="AgentGrid" Grid.Row="1" ItemsSource="{Binding Agents}" AutoGenerateColumns="False" IsReadOnly="True" ColumnWidth="*" SelectedItem="{Binding SelectedAgent}">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Agent ID" Binding="{Binding AgentId}"/>
-                <DataGridTextColumn Header="IP Address" Binding="{Binding IpAddress}"/>
+                <DataGridTextColumn Header="Agent ID" Binding="{Binding AgentID}"/>
+                <DataGridTextColumn Header="IP Address" Binding="{Binding IPAddress}"/>
                 <DataGridTextColumn Header="Identity" Binding="{Binding Identity}"/>
                 <DataGridTextColumn Header="Hostname" Binding="{Binding Hostname}"/>
-                <DataGridTextColumn Header="Process" Binding="{Binding ProcessName}"/>
-                <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}"/>
+                <DataGridTextColumn Header="Process" Binding="{Binding Process}"/>
+                <DataGridTextColumn Header="PID" Binding="{Binding PID}"/>
                 <DataGridTextColumn Header="Arch" Binding="{Binding Arch}"/>
-                <DataGridTextColumn Header="CLR" Binding="{Binding CLR}"/>
                 <DataGridTextColumn Header="Integrity" Binding="{Binding Integrity}"/>
-                <DataGridTextColumn Header="Last Seen" Binding="{Binding LastSeen}"/>
+                <DataGridTextColumn Header="Last Seen" Binding="{Binding Counter}"/>
             </DataGrid.Columns>
 
             <DataGrid.ContextMenu>

@@ -13,7 +13,7 @@ namespace Client.ViewModels
 
         public WebLogViewModel(MainViewModel mainViewModel, SignalR signalR)
         {
-            signalR.NewWebEvenReceived += SignalR_NewWebEvenReceived;
+            // signalR.NewWebEvenReceived += SignalR_NewWebEvenReceived;
 
             CloseTab = new CloseTabCommand("Web Log", mainViewModel);
             DetachTab = new DetachTabCommand("Web Log", mainViewModel);

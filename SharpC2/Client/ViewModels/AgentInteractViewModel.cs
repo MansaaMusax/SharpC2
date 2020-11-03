@@ -101,7 +101,7 @@ namespace Client.ViewModels
                     break;
                 case AgentEvent.EventType.AgentOutput:
                     message.AppendLine();
-                    message.AppendLine(ev.Data);
+                    message.AppendLine(ev.Data as string);
                     break;
                 case AgentEvent.EventType.AgentError:
                     message.AppendLine();

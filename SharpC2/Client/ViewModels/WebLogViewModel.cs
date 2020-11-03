@@ -1,7 +1,7 @@
 ﻿using Client.API;
 using Client.Commands;
 using Client.Services;
-
+using Shared.Models;
 using System.Collections.ObjectModel;
 
 namespace Client.ViewModels

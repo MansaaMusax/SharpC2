@@ -2,6 +2,8 @@
 using Client.Commands;
 using Client.Views;
 
+using Shared.Models;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,18 +20,10 @@ namespace Client.ViewModels
         public List<Listener> Listeners { get; set; } = new List<Listener>();
         public ContentControl PayloadCustomisation { get; set; } = new ContentControl();
 
-        public string SleepInterval { get; set; } = "60";
-        public string SleepJitter { get; set; } = "25";
+        public int SleepInterval { get; set; } = 60;
+        public int SleepJitter { get; set; } = 25;
 
         public DateTime KillDate { get; set; } = DateTime.UtcNow.AddDays(365);
-
-        public IList<TargetFramework> Frameworks
-        {
-            get
-            {
-                return Enum.GetValues(typeof(TargetFramework)).Cast<TargetFramework>().ToList();
-            }
-        }
 
         public IList<PayloadFormat> PayloadFormats
         {
@@ -53,7 +47,6 @@ namespace Client.ViewModels
             }
         }
 
-        public TargetFramework SelectedFramework { get; set; }
         public PayloadFormat SelectedPayloadFormat { get; set; }
 
         public ICommand GeneratePayloadCommand { get; }
@@ -79,7 +72,7 @@ namespace Client.ViewModels
         {
             object content = null;
 
-            if (SelectedListener.Type == ListenerType.HTTP)
+            if (SelectedListener.Type == Listener.ListenerType.HTTP)
             {
                 content = new HttpPayloadView
                 {

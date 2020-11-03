@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
 
+using Shared.Models;
+
 using System;
 using System.Threading.Tasks;
 

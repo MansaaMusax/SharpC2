@@ -9,30 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\TeamServer\Agents\Shared\Agents\AgentCommand.cs" Link="Models\AgentCommand.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Agents\AgentCommandRequest.cs" Link="Models\AgentCommandRequest.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Agents\AgentModule.cs" Link="Models\AgentModule.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Agents\AgentSessionData.cs" Link="Models\AgentSessionData.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Clients\ChatMessage.cs" Link="Models\ChatMessage.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Clients\ClientAuthRequest.cs" Link="Models\ClientAuthRequest.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Clients\ClientAuthResult.cs" Link="Models\ClientAuthResult.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Data\AgentMessage.cs" Link="Models\AgentMessage.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Data\AgentMetadata.cs" Link="Models\AgentMetadata.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Data\C2Data.cs" Link="Models\C2Data.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Events\AgentEvent.cs" Link="Models\AgentEvent.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Events\ServerEvent.cs" Link="Models\ServerEvent.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Listeners\Listener.cs" Link="Models\Listener.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Listeners\ListenerHttp.cs" Link="Models\ListenerHttp.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Listeners\ListenerSmb.cs" Link="Models\ListenerSmb.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Listeners\ListenerTcp.cs" Link="Models\ListenerTcp.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Listeners\NewListenerRequest.cs" Link="Models\NewListenerRequest.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Listeners\WebLog.cs" Link="Models\WebLog.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Misc\Developer.cs" Link="Models\Developer.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Misc\GenericObjectResult.cs" Link="Models\GenericObjectResult.cs" />
-    <Compile Include="..\TeamServer\Agents\Shared\Payload\PayloadRequest.cs" Link="Models\PayloadRequest.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.9" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="RestSharp" Version="106.11.7" />

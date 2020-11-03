@@ -5,6 +5,7 @@ using Client.Views;
 
 using Microsoft.Win32;
 
+using Shared.Models;
 using System;
 using System.IO;
 using System.Text;
@@ -32,26 +33,25 @@ namespace Client.Commands
             {
                 Listener = ViewModel.SelectedListener.Name,
                 KillDate = ViewModel.KillDate,
-                TargetFramework = ViewModel.SelectedFramework
             };
 
             switch (ViewModel.SelectedPayloadFormat)
             {
                 case PayloadFormat.PowerShell:
-                    request.OutputType = OutputType.EXE;
+                    request.Type = StagerRequest.OutputType.EXE;
                     break;
                 case PayloadFormat.EXE:
-                    request.OutputType = OutputType.EXE;
+                    request.Type = StagerRequest.OutputType.EXE;
                     break;
                 case PayloadFormat.DLL:
-                    request.OutputType = OutputType.DLL;
+                    request.Type = StagerRequest.OutputType.DLL;
                     break;
                 default:
-                    request.OutputType = OutputType.EXE;
+                    request.Type = StagerRequest.OutputType.EXE;
                     break;
             }
 
-            if (ViewModel.SelectedListener.Type == ListenerType.HTTP)
+            if (ViewModel.SelectedListener.Type == Listener.ListenerType.HTTP)
             {
                 request.SleepInterval = ViewModel.SleepInterval;
                 request.SleepJitter = ViewModel.SleepJitter;

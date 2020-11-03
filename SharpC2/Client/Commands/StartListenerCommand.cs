@@ -1,6 +1,6 @@
 ﻿using Client.API;
 using Client.ViewModels;
-
+using Shared.Models;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -25,26 +25,26 @@ namespace Client.Commands
 
         public async void Execute(object parameter)
         {
-            var request = new NewListenerRequest
+            var request = new ListenerRequest
             {
                 Name = ViewModel.ListenerName
             };
 
             switch (ViewModel.SelectedListener)
             {
-                case ListenerType.HTTP:
-                    request.Type = ListenerType.HTTP;
+                case Listener.ListenerType.HTTP:
+                    request.Type = Listener.ListenerType.HTTP;
                     request.ConnectAddress = ViewModel.ConnectAddress;
                     request.ConnectPort = ViewModel.ConnectPort;
                     request.BindPort = ViewModel.HttpBindPort;
                     break;
-                case ListenerType.TCP:
-                    request.Type = ListenerType.TCP;
+                case Listener.ListenerType.TCP:
+                    request.Type = Listener.ListenerType.TCP;
                     request.BindAddress = ViewModel.BindLocal ? "127.0.0.1" : "0.0.0.0";
                     request.BindPort = ViewModel.TcpBindPort;
                     break;
-                case ListenerType.SMB:
-                    request.Type = ListenerType.SMB;
+                case Listener.ListenerType.SMB:
+                    request.Type = Listener.ListenerType.SMB;
                     request.PipeName = ViewModel.PipeName;
                     break;
                 default:

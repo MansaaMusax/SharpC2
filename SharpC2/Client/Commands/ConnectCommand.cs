@@ -3,6 +3,7 @@ using Client.Services;
 using Client.ViewModels;
 using Client.Views;
 using Microsoft.AspNetCore.SignalR.Client;
+using Shared.Models;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace Client.Commands
 
             progressBar.Close();
 
-            if (result.Result == ClientAuthResult.LoginSuccess)
+            if (result.Status == AuthResult.AuthStatus.LogonSuccess)
             {
                 var connection = new HubConnectionBuilder()
                     .WithUrl($"https://{ConnectViewModel.Host}:{ConnectViewModel.Port}/MessageHub", options =>
@@ -66,12 +67,11 @@ namespace Client.Commands
             }
             else
             {
-                var errorText = result.Result switch
+                var errorText = result.Status switch
                 {
-                    ClientAuthResult.BadPassword => "Incorrect Password",
-                    ClientAuthResult.NickInUse => "This nick is already in use",
-                    ClientAuthResult.InvalidRequest => "Invalid request",
-                    _ => result.Result.ToString(),
+                    AuthResult.AuthStatus.BadPassword => "Incorrect Password",
+                    AuthResult.AuthStatus.NickInUse => "This nick is already in use",
+                    _ => result.Status.ToString(),
                 };
 
                 var errorView = new ErrorView

@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Shared.Models;
+
+using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Client.Models
 {
@@ -7,74 +10,67 @@ namespace Client.Models
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public string AgentId { get; set; }
+        public string AgentID { get; set; }
 
         private string _hostname;
         public string Hostname
         {
             get { return _hostname; }
-            set { _hostname = value; NotifyPropertyChanged("Hostname"); }
+            set { _hostname = value; NotifyPropertyChanged(nameof(Hostname)); }
         }
 
         private string _ipAddress { get; set; }
-        public string IpAddress
+        public string IPAddress
         {
             get { return _ipAddress; }
-            set { _ipAddress = value; NotifyPropertyChanged("IpAddress"); }
+            set { _ipAddress = value; NotifyPropertyChanged(nameof(IPAddress)); }
         }
 
         private string _identity;
         public string Identity
         {
             get { return _identity; }
-            set { _identity = value; NotifyPropertyChanged("Identity"); }
+            set { _identity = value; NotifyPropertyChanged(nameof(Identity)); }
         }
 
-        private string _processName;
-        public string ProcessName
+        private string _process;
+        public string Process
         {
-            get { return _processName; }
-            set { _processName = value; NotifyPropertyChanged("ProcessName"); }
+            get { return _process; }
+            set { _process = value; NotifyPropertyChanged(nameof(Process)); }
         }
 
-        private int _processId;
-        public int ProcessId
+        private int _pid;
+        public int PID
         {
-            get { return _processId; }
-            set { _processId = value; NotifyPropertyChanged("ProcessId"); }
+            get { return _pid; }
+            set { _pid = value; NotifyPropertyChanged(nameof(PID)); }
         }
 
-        private string _arch;
-        public string Arch
+        private AgentMetadata.Architecture _arch;
+        public AgentMetadata.Architecture Arch
         {
             get { return _arch; }
-            set { _arch = value; NotifyPropertyChanged("Arch"); }
+            set { _arch = value; NotifyPropertyChanged(nameof(Arch)); }
         }
 
-        private string _integrity;
-        public string Integrity
+        private AgentMetadata.Integrity _integrity;
+        public AgentMetadata.Integrity Integrity
         {
             get { return _integrity; }
-            set { _integrity = value; NotifyPropertyChanged("Integrity"); }
+            set { _integrity = value; NotifyPropertyChanged(nameof(Integrity)); }
         }
 
-        private int _clr;
-        public int CLR
+        public DateTime LastSeen { get; set; }
+
+        private string _counter;
+        public string Counter
         {
-            get { return _clr; }
-            set { _clr = value; NotifyPropertyChanged("CLR"); }
+            get { return _counter; }
+            set { _counter = value; NotifyPropertyChanged(nameof(LastSeen)); }
         }
 
-        public List<AgentModule> AgentModules { get; set; }
-
-        private string _lastSeen;
-        public string LastSeen
-        {
-            get { return _lastSeen; }
-            set { _lastSeen = value; NotifyPropertyChanged("LastSeen"); }
-        }
-
-        private void NotifyPropertyChanged(string propertyName)
+        void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

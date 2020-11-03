@@ -94,17 +94,15 @@ namespace Client.ViewModels
                 {
                     Agents.Add(new Agent
                     {
-                        AgentId = agent.Metadata.AgentID,
-                        Hostname = agent.Metadata.Hostname,
-                        IpAddress = agent.Metadata.IPAddress,
-                        Identity = agent.Metadata.Identity,
-                        ProcessName = agent.Metadata.ProcessName,
-                        ProcessId = agent.Metadata.ProcessID,
-                        Arch = agent.Metadata.Arch.ToString(),
-                        CLR = agent.Metadata.CLR,
-                        Integrity = agent.Metadata.Integrity.ToString(),
-                        AgentModules = agent.LoadModules,
-                        LastSeen = Core.Helpers.CalculateTimeDiff(agent.LastSeen)
+                        AgentID = agent.AgentID,
+                        Hostname = agent.Hostname,
+                        IPAddress = agent.IPAddress,
+                        Identity = agent.Identity,
+                        Process = agent.Process,
+                        PID = agent.PID,
+                        Arch = agent.Arch,
+                        Integrity = agent.Elevation,
+                        LastSeen = agent.LastSeen
                     });
                 }
             }

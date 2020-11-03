@@ -1,6 +1,6 @@
 ﻿using Client.Commands;
 using Client.Controls;
-
+using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,16 +30,16 @@ namespace Client.ViewModels
 
         public ContentControl NewListenerContent { get; set; } = new ContentControl();
 
-        public IList<ListenerType> ListenerTypes
+        public IList<Listener.ListenerType> ListenerTypes
         {
             get
             {
-                return Enum.GetValues(typeof(ListenerType)).Cast<ListenerType>().ToList();
+                return Enum.GetValues(typeof(Listener.ListenerType)).Cast<Listener.ListenerType>().ToList();
             }
         }
 
-        private ListenerType _selectedListener;
-        public ListenerType SelectedListener
+        private Listener.ListenerType _selectedListener;
+        public Listener.ListenerType SelectedListener
         {
             get
             {
@@ -67,13 +67,13 @@ namespace Client.ViewModels
 
             switch (SelectedListener)
             {
-                case ListenerType.HTTP:
+                case Listener.ListenerType.HTTP:
                     content = new HttpListenerControl { DataContext = this };
                     break;
-                case ListenerType.TCP:
+                case Listener.ListenerType.TCP:
                     content = new TcpListenerControl { DataContext = this };
                     break;
-                case ListenerType.SMB:
+                case Listener.ListenerType.SMB:
                     content = new SmbListenerControl { DataContext = this };
                     break;
                 default:

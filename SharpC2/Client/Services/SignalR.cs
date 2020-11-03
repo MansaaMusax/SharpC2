@@ -2,7 +2,7 @@
 using Client.Views;
 
 using Microsoft.AspNetCore.SignalR.Client;
-
+using Shared.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -12,14 +12,14 @@ namespace Client.Services
     {
         private readonly HubConnection Connection;
 
-        public event Action<ChatMessage> ChatMessageReceived;
+        public event Action<UserMessage> ChatMessageReceived;
         public event Action<ServerEvent> NewServerEventReceived;
         public event Action<AgentEvent> NewAgentEvenReceived;
         public event Action<WebLog> NewWebEvenReceived;
 
-        public event Action<ListenerHttp> NewHttpListenerReceived;
-        public event Action<ListenerTcp> NewTcpListenerReceived;
-        public event Action<ListenerSmb> NewSmbListenerReceived;
+        public event Action<ListenerHTTP> NewHttpListenerReceived;
+        public event Action<ListenerTCP> NewTcpListenerReceived;
+        public event Action<ListenerSMB> NewSmbListenerReceived;
 
         public event Action<string> RemoveListenerReceived;
 
@@ -27,14 +27,14 @@ namespace Client.Services
         {
             Connection = connection;
 
-            Connection.On<ChatMessage>("MessageIn", (msg) => ChatMessageReceived?.Invoke(msg));
+            Connection.On<UserMessage>("MessageIn", (msg) => ChatMessageReceived?.Invoke(msg));
             Connection.On<ServerEvent>("NewServerEvent", (e) => NewServerEventReceived?.Invoke(e));
             Connection.On<AgentEvent>("NewAgentEvent", (e) => NewAgentEvenReceived?.Invoke(e));
             Connection.On<WebLog>("NewWebEvent", (e) => NewWebEvenReceived?.Invoke(e));
             
-            Connection.On<ListenerHttp>("NewHttpListener", (l) => NewHttpListenerReceived?.Invoke(l));
-            Connection.On<ListenerTcp>("NewTcpListener", (l) => NewTcpListenerReceived?.Invoke(l));
-            Connection.On<ListenerSmb>("NewSmbListener", (l) => NewSmbListenerReceived?.Invoke(l));
+            Connection.On<ListenerHTTP>("NewHttpListener", (l) => NewHttpListenerReceived?.Invoke(l));
+            Connection.On<ListenerTCP>("NewTcpListener", (l) => NewTcpListenerReceived?.Invoke(l));
+            Connection.On<ListenerSMB>("NewSmbListener", (l) => NewSmbListenerReceived?.Invoke(l));
 
             Connection.On<string>("RemoveListener", (l) => RemoveListenerReceived?.Invoke(l));
 
@@ -62,7 +62,7 @@ namespace Client.Services
             await Connection.StartAsync();
         }
 
-        public async Task SendChatMessage(ChatMessage message)
+        public async Task SendChatMessage(UserMessage message)
         {
             await Connection.SendAsync("MessageOut", message);
         }

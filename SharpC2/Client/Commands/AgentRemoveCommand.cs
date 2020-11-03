@@ -23,11 +23,11 @@ namespace Client.Commands
 
         public void Execute(object parameter)
         {
-            var agent = MainViewModel.Agents.FirstOrDefault(a => a.AgentId.Equals(MainViewModel.SelectedAgent.AgentId));
+            var agent = MainViewModel.Agents.FirstOrDefault(a => a.AgentID.Equals(MainViewModel.SelectedAgent.AgentID));
 
             if (agent != null)
             {
-                AgentAPI.RemoveAgent(agent.AgentId);
+                AgentAPI.RemoveAgent(agent.AgentID);
                 MainViewModel.Agents.Remove(agent);
             }
         }

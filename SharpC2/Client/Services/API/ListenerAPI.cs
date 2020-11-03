@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
 
+using Shared.Models;
+
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,7 +10,7 @@ namespace Client.API
 {
     public class ListenerAPI
     {
-        public static async Task<Listener> StartListener(NewListenerRequest req)
+        public static async Task<Listener> StartListener(ListenerRequest req)
         {
             var apiRequest = new RestRequest("/api/Listeners", Method.POST);
             apiRequest.AddParameter("application/json", JsonConvert.SerializeObject(req), ParameterType.RequestBody);
@@ -66,28 +68,28 @@ namespace Client.API
             return result;
         }
 
-        private static async Task<List<ListenerHttp>> GetHttpListeners()
+        private static async Task<List<ListenerHTTP>> GetHttpListeners()
         {
             var apiRequest = new RestRequest("/api/Listeners/http", Method.GET);
             var apiResponse = await REST.Client.ExecuteAsync(apiRequest);
 
-            return JsonConvert.DeserializeObject<List<ListenerHttp>>(apiResponse.Content);
+            return JsonConvert.DeserializeObject<List<ListenerHTTP>>(apiResponse.Content);
         }
 
-        private static async Task<List<ListenerTcp>> GetTcpListeners()
+        private static async Task<List<ListenerTCP>> GetTcpListeners()
         {
             var apiRequest = new RestRequest("/api/Listeners/tcp", Method.GET);
             var apiResponse = await REST.Client.ExecuteAsync(apiRequest);
 
-            return JsonConvert.DeserializeObject<List<ListenerTcp>>(apiResponse.Content);
+            return JsonConvert.DeserializeObject<List<ListenerTCP>>(apiResponse.Content);
         }
 
-        private static async Task<List<ListenerSmb>> GetSmbListeners()
+        private static async Task<List<ListenerSMB>> GetSmbListeners()
         {
             var apiRequest = new RestRequest("/api/Listeners/smb", Method.GET);
             var apiResponse = await REST.Client.ExecuteAsync(apiRequest);
 
-            return JsonConvert.DeserializeObject<List<ListenerSmb>>(apiResponse.Content);
+            return JsonConvert.DeserializeObject<List<ListenerSMB>>(apiResponse.Content);
         }
     }
 }

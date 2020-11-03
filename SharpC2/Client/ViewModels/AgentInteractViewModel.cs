@@ -2,7 +2,7 @@
 using Client.Commands;
 using Client.Models;
 using Client.Services;
-
+using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -58,7 +58,7 @@ namespace Client.ViewModels
 
             SignalR.NewAgentEvenReceived += SignalR_NewAgentEvenReceived;
 
-            AgentLabel = $"{Agent.AgentId} >";
+            AgentLabel = $"{Agent.AgentID} >";
 
             SendAgentCommand = new SendAgentCommand(this, Agent);
 
@@ -67,7 +67,7 @@ namespace Client.ViewModels
 
         private void SignalR_NewAgentEvenReceived(AgentEvent ev)
         {
-            if (ev.AgentId.Equals(Agent.AgentId, StringComparison.OrdinalIgnoreCase))
+            if (ev.AgentID.Equals(Agent.AgentID, StringComparison.OrdinalIgnoreCase))
             {
                 AddEvent(ev);
             }
@@ -75,7 +75,7 @@ namespace Client.ViewModels
 
         private async void GetAgentData()
         {
-            var agentData = await AgentAPI.GetAgentData(Agent.AgentId);
+            var agentData = await AgentAPI.GetAgentData(Agent.AgentID);
 
             if (agentData != null)
             {
@@ -92,19 +92,19 @@ namespace Client.ViewModels
 
             switch (ev.Type)
             {
-                case AgentEventType.ModuleRegistered:
+                case AgentEvent.EventType.ModuleRegistered:
                     message.AppendLine();
                     message.AppendLine($"[+] Module Registered: {ev.Data}");
                     break;
-                case AgentEventType.CommandRequest:
+                case AgentEvent.EventType.CommandRequest:
                     message.AppendLine();
                     message.AppendLine($"[*] <{ev.Nick}> tasked agent to run: {ev.Data}");
                     break;
-                case AgentEventType.CommandResponse:
+                case AgentEvent.EventType.AgentOutput:
                     message.AppendLine();
                     message.AppendLine(ev.Data);
                     break;
-                case AgentEventType.AgentError:
+                case AgentEvent.EventType.AgentError:
                     message.AppendLine();
                     message.AppendLine($"[-] {ev.Data}");
                     break;

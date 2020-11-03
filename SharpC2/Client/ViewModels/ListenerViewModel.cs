@@ -1,7 +1,7 @@
 ﻿using Client.API;
 using Client.Commands;
 using Client.Services;
-
+using Shared.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -51,17 +51,17 @@ namespace Client.ViewModels
             }
         }
 
-        private void SignalR_NewListenerReceived(ListenerHttp l)
+        private void SignalR_NewListenerReceived(ListenerHTTP l)
         {
             Listeners.Add(l);
         }
 
-        private void SignalR_NewListenerReceived(ListenerTcp l)
+        private void SignalR_NewListenerReceived(ListenerTCP l)
         {
             Listeners.Add(l);
         }
 
-        private void SignalR_NewListenerReceived(ListenerSmb l)
+        private void SignalR_NewListenerReceived(ListenerSMB l)
         {
             Listeners.Add(l);
         }

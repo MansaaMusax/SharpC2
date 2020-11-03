@@ -36,7 +36,7 @@ namespace Client.Commands
         {
             var agent = ViewModel.SelectedAgent;
 
-            var openTab = new OpenTabCommand(agent.AgentId, TabType.Agent, ViewModel, SignalR);
+            var openTab = new OpenTabCommand(agent.AgentID, TabType.Agent, ViewModel, SignalR);
             openTab.Execute(null);
         }
     }

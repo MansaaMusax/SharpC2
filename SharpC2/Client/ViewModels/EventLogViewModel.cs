@@ -2,6 +2,8 @@
 using Client.Commands;
 using Client.Services;
 
+using Shared.Models;
+
 using System.Collections.ObjectModel;
 
 namespace Client.ViewModels
@@ -30,18 +32,8 @@ namespace Client.ViewModels
         {
             switch (ev.Type)
             {
-                case AgentEventType.InitialAgent:
-                    Events.Insert(0, $"[{ev.Date}]     Initial checkin from {ev.AgentId}");
-                    break;
-                case AgentEventType.ModuleRegistered:
-                    break;
-                case AgentEventType.CommandRequest:
-                    break;
-                case AgentEventType.CommandResponse:
-                    break;
-                case AgentEventType.AgentError:
-                    break;
-                case AgentEventType.CryptoError:
+                case AgentEvent.EventType.InitialAgent:
+                    Events.Insert(0, $"[{ev.Date}]     Initial checkin from {ev.AgentID}");
                     break;
                 default:
                     break;
@@ -70,27 +62,23 @@ namespace Client.ViewModels
         {
             switch (ev.Type)
             {
-                case ServerEventType.UserLogon:
+                case ServerEvent.EventType.UserLogon:
                     Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has joined. Say hi!");
                     break;
-                case ServerEventType.UserLogoff:
+                case ServerEvent.EventType.UserLogoff:
                     Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has left. Goodbye!");
                     break;
-                case ServerEventType.FailedAuth:
+                case ServerEvent.EventType.FailedAuth:
                     Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has failed to login ({ev.Data}).");
                     break;
-                case ServerEventType.ListenerStarted:
+                case ServerEvent.EventType.ListenerStarted:
                     Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has started listener {ev.Data}.");
                     break;
-                case ServerEventType.ListenerStopped:
+                case ServerEvent.EventType.ListenerStopped:
                     Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has stopped listener {ev.Data}.");
                     break;
-                case ServerEventType.IdempotencyKeyError:
-                    break;
-                case ServerEventType.ServerModuleRegistered:
+                case ServerEvent.EventType.ServerModuleRegistered:
                     Events.Insert(0, $"[{ev.Date}]     {ev.Data} module has started.");
-                    break;
-                case ServerEventType.RosylnError:
                     break;
                 default:
                     break;

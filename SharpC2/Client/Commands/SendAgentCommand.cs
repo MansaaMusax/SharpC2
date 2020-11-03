@@ -33,11 +33,10 @@ namespace Client.Commands
             {
                 builder.AppendLine("\nAgent Commands");
                 builder.AppendLine("==============");
-                builder.AppendLine(GetModuletHelpText());
             }
             else if (ViewModel.AgentCommand.Equals("core clear", StringComparison.OrdinalIgnoreCase))
             {
-                AgentAPI.ClearCommandQueue(Agent.AgentId);
+                AgentAPI.ClearCommandQueue(Agent.AgentID);
                 builder.AppendLine($"\n[*] Commands cleared\n");
             }
             else
@@ -54,46 +53,13 @@ namespace Client.Commands
                     var cmd = split[1];
                     var args = string.Join(" ", split[2..]);
 
-                    AgentAPI.SubmitAgentCommand(Agent.AgentId, mod, cmd, args);
+                    AgentAPI.SubmitAgentCommand(Agent.AgentID, mod, cmd, args);
                     ViewModel.CommandHistory.Insert(0, $"{mod} {cmd} {args}");
                 }
             }
 
             ViewModel.AgentOutput += builder.ToString();
             ViewModel.AgentCommand = string.Empty;
-        }
-
-        private string GetModuletHelpText()
-        {
-            var result = new SharpC2ResultList<ModuleHelpText>
-            {
-                new ModuleHelpText
-                {
-                    Module = "core",
-                    Command = "clear",
-                    Description = "Clear the queued commands for this agent",
-                    Usage = "core clear"
-                }
-            };
-
-            foreach (var module in Agent.AgentModules.OrderBy(m => m.Name))
-            {
-                foreach (var cmd in module.Commands.OrderBy(c => c.Name))
-                {
-                    if (cmd.Visible)
-                    {
-                        result.Add(new ModuleHelpText
-                        {
-                            Module = module.Name,
-                            Command = cmd.Name,
-                            Description = cmd.Description,
-                            Usage = cmd.HelpText
-                        });
-                    }
-                }
-            }
-
-            return result.ToString();
         }
     }
 }

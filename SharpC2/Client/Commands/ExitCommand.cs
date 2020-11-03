@@ -1,4 +1,4 @@
-﻿using Client.API;
+﻿using Client.Services;
 
 using System;
 using System.Windows.Input;
@@ -14,7 +14,7 @@ namespace Client.Commands
 
         public void Execute(object parameter)
         {
-            ClientAPI.ClientLogoff();
+            SharpC2API.Users.ClientLogoff();
             Environment.Exit(0);
         }
     }

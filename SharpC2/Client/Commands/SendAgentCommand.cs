@@ -1,9 +1,8 @@
-﻿using Client.API;
-using Client.Models;
+﻿using Client.Models;
+using Client.Services;
 using Client.ViewModels;
 
 using System;
-using System.Linq;
 using System.Text;
 using System.Windows.Input;
 
@@ -36,7 +35,7 @@ namespace Client.Commands
             }
             else if (ViewModel.AgentCommand.Equals("core clear", StringComparison.OrdinalIgnoreCase))
             {
-                AgentAPI.ClearCommandQueue(Agent.AgentID);
+                SharpC2API.Agents.ClearCommandQueue(Agent.AgentID);
                 builder.AppendLine($"\n[*] Commands cleared\n");
             }
             else
@@ -53,7 +52,7 @@ namespace Client.Commands
                     var cmd = split[1];
                     var args = string.Join(" ", split[2..]);
 
-                    AgentAPI.SubmitAgentCommand(Agent.AgentID, mod, cmd, args);
+                    SharpC2API.Agents.SubmitAgentCommand(Agent.AgentID, mod, cmd, args);
                     ViewModel.CommandHistory.Insert(0, $"{mod} {cmd} {args}");
                 }
             }

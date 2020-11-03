@@ -1,7 +1,8 @@
-﻿using Client.API;
-using Client.Commands;
+﻿using Client.Commands;
 using Client.Services;
+
 using Shared.Models;
+
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,8 +12,7 @@ namespace Client.ViewModels
 {
     public class ListenerViewModel : BaseViewModel
     {
-        private readonly MainViewModel MainViewModel;
-        private readonly SignalR SignalR;
+        readonly MainViewModel MainViewModel;
 
         public ObservableCollection<Listener> Listeners { get; set; } = new ObservableCollection<Listener>();
         public Listener SelectedListener { get; set; }
@@ -20,16 +20,15 @@ namespace Client.ViewModels
         public ICommand NewListener { get; }
         public ICommand RemoveListener { get; }
 
-        public ListenerViewModel(MainViewModel mainViewModel, SignalR signalR)
+        public ListenerViewModel(MainViewModel MainViewModel)
         {
-            MainViewModel = mainViewModel;
-            SignalR = signalR;
+            this.MainViewModel = MainViewModel;
 
-            SignalR.NewHttpListenerReceived += SignalR_NewListenerReceived;
-            SignalR.NewTcpListenerReceived += SignalR_NewListenerReceived;
-            SignalR.NewSmbListenerReceived += SignalR_NewListenerReceived;
+            //SignalR.NewHttpListenerReceived += SignalR_NewListenerReceived;
+            //SignalR.NewTcpListenerReceived += SignalR_NewListenerReceived;
+            //SignalR.NewSmbListenerReceived += SignalR_NewListenerReceived;
 
-            SignalR.RemoveListenerReceived += SignalR_RemoveListenerReceived;
+            //SignalR.RemoveListenerReceived += SignalR_RemoveListenerReceived;
 
             NewListener = new OpenWindowCommand(WindowType.NewListener);
             RemoveListener = new StopListenerCommand(this);
@@ -41,7 +40,7 @@ namespace Client.ViewModels
             GetActiveListeners();
         }
 
-        private void SignalR_RemoveListenerReceived(string name)
+        void SignalR_RemoveListenerReceived(string name)
         {
             var listener = Listeners.FirstOrDefault(l => l.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
@@ -51,24 +50,24 @@ namespace Client.ViewModels
             }
         }
 
-        private void SignalR_NewListenerReceived(ListenerHTTP l)
+        void SignalR_NewListenerReceived(ListenerHTTP l)
         {
             Listeners.Add(l);
         }
 
-        private void SignalR_NewListenerReceived(ListenerTCP l)
+        void SignalR_NewListenerReceived(ListenerTCP l)
         {
             Listeners.Add(l);
         }
 
-        private void SignalR_NewListenerReceived(ListenerSMB l)
+        void SignalR_NewListenerReceived(ListenerSMB l)
         {
             Listeners.Add(l);
         }
 
-        private async void GetActiveListeners()
+        async void GetActiveListeners()
         {
-            var listeners = await ListenerAPI.GetAllListeners();
+            var listeners = await SharpC2API.Listeners.GetAllListeners();
 
             if (listeners != null)
             {

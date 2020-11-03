@@ -1,7 +1,8 @@
-﻿using Client.API;
-using Client.Commands;
+﻿using Client.Commands;
 using Client.Services;
+
 using Shared.Models;
+
 using System.Collections.ObjectModel;
 
 namespace Client.ViewModels
@@ -21,14 +22,14 @@ namespace Client.ViewModels
             GetWebLogs();
         }
 
-        private void SignalR_NewWebEvenReceived(WebLog log)
+        void SignalR_NewWebEvenReceived(WebLog log)
         {
             AddWebLog(log);
         }
 
-        private async void GetWebLogs()
+        async void GetWebLogs()
         {
-            var logs = await ListenerAPI.GetWebLogs();
+            var logs = await SharpC2API.Listeners.GetWebLogs();
 
             if (logs != null)
             {
@@ -39,7 +40,7 @@ namespace Client.ViewModels
             }
         }
 
-        private void AddWebLog(WebLog l)
+        void AddWebLog(WebLog l)
         {
             WebLog.Insert(0, $"[{l.Date}]   visit ({l.Listener}) from {l.Origin}\n\n{l.WebRequest}");
         }

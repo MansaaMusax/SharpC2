@@ -8,7 +8,20 @@
              d:DesignHeight="450" d:DesignWidth="800">
     
     <Grid>
-        <ListView ItemsSource="{Binding Events}"/>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <ListView Grid.Row="0" ItemsSource="{Binding Events}"/>
+
+        <DockPanel Grid.Row="1" LastChildFill="True" Height="30">
+            <TextBlock Text="SharpC2 >" VerticalAlignment="Center" Width="80"/>
+            <Button Margin="0" Padding="0" Height="0" Width="0" Command="{Binding SendMessageCommand}" IsDefault="True"/>
+            <TextBox Text="{Binding ChatMessage, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" FontFamily="Consolas"/>
+        </DockPanel>
+        
     </Grid>
     
 </UserControl>

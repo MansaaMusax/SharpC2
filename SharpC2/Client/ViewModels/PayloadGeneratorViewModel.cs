@@ -1,5 +1,5 @@
-﻿using Client.API;
-using Client.Commands;
+﻿using Client.Commands;
+using Client.Services;
 using Client.Views;
 
 using Shared.Models;
@@ -15,7 +15,7 @@ namespace Client.ViewModels
 {
     class PayloadGeneratorViewModel : BaseViewModel
     {
-        public Window View { get; set; }
+        public readonly Window Window;
 
         public List<Listener> Listeners { get; set; } = new List<Listener>();
         public ContentControl PayloadCustomisation { get; set; } = new ContentControl();
@@ -51,16 +51,16 @@ namespace Client.ViewModels
 
         public ICommand GeneratePayloadCommand { get; }
 
-        public PayloadGeneratorViewModel(Window view)
+        public PayloadGeneratorViewModel(Window Window)
         {
-            View = view;
+            this.Window = Window;
             GeneratePayloadCommand = new GeneratePayloadCommand(this);
             GetListeners();
         }
 
-        private async void GetListeners()
+        async void GetListeners()
         {
-            var listeners = await ListenerAPI.GetAllListeners();
+            var listeners = await SharpC2API.Listeners.GetAllListeners();
 
             if (listeners != null)
             {
@@ -68,7 +68,7 @@ namespace Client.ViewModels
             }
         }
 
-        private void UpdateSelectedPayloadView()
+        void UpdateSelectedPayloadView()
         {
             object content = null;
 

@@ -9,9 +9,10 @@ namespace Client.Services
 {
     public class SignalR
     {
-        private readonly HubConnection Connection;
+        static HubConnection Connection;
 
-        public event Action<UserMessage> ChatMessageReceived;
+        public static event Action<UserMessage> ChatMessageReceived;
+
         public event Action<ServerEvent> NewServerEventReceived;
         public event Action<AgentEvent> NewAgentEvenReceived;
         public event Action<WebLog> NewWebEvenReceived;
@@ -26,20 +27,24 @@ namespace Client.Services
         {
             Connection = connection;
 
-            Connection.On<UserMessage>("MessageIn", (msg) => ChatMessageReceived?.Invoke(msg));
-            Connection.On<ServerEvent>("NewServerEvent", (e) => NewServerEventReceived?.Invoke(e));
-            Connection.On<AgentEvent>("NewAgentEvent", (e) => NewAgentEvenReceived?.Invoke(e));
-            Connection.On<WebLog>("NewWebEvent", (e) => NewWebEvenReceived?.Invoke(e));
-            
-            Connection.On<ListenerHTTP>("NewHttpListener", (l) => NewHttpListenerReceived?.Invoke(l));
-            Connection.On<ListenerTCP>("NewTcpListener", (l) => NewTcpListenerReceived?.Invoke(l));
-            Connection.On<ListenerSMB>("NewSmbListener", (l) => NewSmbListenerReceived?.Invoke(l));
+            Connection.On<UserMessage>("RecvChatMessage", (msg) => ChatMessageReceived?.Invoke(msg));
 
-            Connection.On<string>("RemoveListener", (l) => RemoveListenerReceived?.Invoke(l));
+            //Connection.On<ServerEvent>("NewServerEvent", (e) => NewServerEventReceived?.Invoke(e));
+            //Connection.On<AgentEvent>("NewAgentEvent", (e) => NewAgentEvenReceived?.Invoke(e));
+            //Connection.On<WebLog>("NewWebEvent", (e) => NewWebEvenReceived?.Invoke(e));
+            
+            //Connection.On<ListenerHTTP>("NewHttpListener", (l) => NewHttpListenerReceived?.Invoke(l));
+            //Connection.On<ListenerTCP>("NewTcpListener", (l) => NewTcpListenerReceived?.Invoke(l));
+            //Connection.On<ListenerSMB>("NewSmbListener", (l) => NewSmbListenerReceived?.Invoke(l));
+
+            //Connection.On<string>("RemoveListener", (l) => RemoveListenerReceived?.Invoke(l));
 
             Connect().ContinueWith((task) =>
             {
-                // meh
+                if (task.Exception != null)
+                {
+                    var message = task.Exception.Message;
+                }
             });
         }
 
@@ -48,9 +53,9 @@ namespace Client.Services
             await Connection.StartAsync();
         }
 
-        public async Task SendChatMessage(UserMessage message)
+        public static async Task SendChatMessage(string Message)
         {
-            await Connection.SendAsync("MessageOut", message);
+            await Connection.SendAsync("SendChatMessage", Message);
         }
     }
 }

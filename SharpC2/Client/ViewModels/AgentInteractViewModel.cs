@@ -1,8 +1,9 @@
-﻿using Client.API;
-using Client.Commands;
+﻿using Client.Commands;
 using Client.Models;
 using Client.Services;
+
 using Shared.Models;
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,9 +13,8 @@ namespace Client.ViewModels
 {
     public class AgentInteractViewModel : BaseViewModel
     {
-        private readonly MainViewModel MainViewModel;
-        private readonly SignalR SignalR;
-        private readonly Agent Agent;
+        readonly MainViewModel MainViewModel;
+        readonly Agent Agent;
 
         public List<string> CommandHistory { get; set; } = new List<string>();
 
@@ -50,13 +50,12 @@ namespace Client.ViewModels
 
         public ICommand SendAgentCommand { get; }
 
-        public AgentInteractViewModel(MainViewModel viewModel, Agent agent, SignalR signalR)
+        public AgentInteractViewModel(MainViewModel MainViewModel, Agent Agent)
         {
-            MainViewModel = viewModel;
-            Agent = agent;
-            SignalR = signalR;
+            this.MainViewModel = MainViewModel;
+            this.Agent = Agent;
 
-            SignalR.NewAgentEvenReceived += SignalR_NewAgentEvenReceived;
+            //SignalR.NewAgentEvenReceived += SignalR_NewAgentEvenReceived;
 
             AgentLabel = $"{Agent.AgentID} >";
 
@@ -75,7 +74,7 @@ namespace Client.ViewModels
 
         private async void GetAgentData()
         {
-            var agentData = await AgentAPI.GetAgentData(Agent.AgentID);
+            var agentData = await SharpC2API.Agents.GetAgentData(Agent.AgentID);
 
             if (agentData != null)
             {

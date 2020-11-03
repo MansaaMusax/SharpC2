@@ -18,7 +18,7 @@ namespace TeamServer.Hubs
                 Message = Message
             };
 
-            await Clients.All.SendAsync("RecvMessage", message);
+            await Clients.All.SendAsync("RecvChatMessage", message);
         }
     }
 }

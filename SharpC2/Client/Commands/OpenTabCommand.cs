@@ -11,19 +11,18 @@ namespace Client.Commands
 {
     public class OpenTabCommand : ICommand
     {
-        private readonly MainViewModel MainViewModel;
-        private readonly string TabName;
-        private readonly TabType TabType;
-        private readonly SignalR SignalR;
+        readonly MainViewModel MainViewModel;
+        readonly string TabName;
+        readonly TabType TabType;
+        readonly SignalR SignalR;
 
         public event EventHandler CanExecuteChanged;
 
-        public OpenTabCommand(string tabName, TabType tabType, MainViewModel mainViewModel, SignalR signalR)
+        public OpenTabCommand(string TabName, TabType TabType, MainViewModel MainViewModel)
         {
-            TabName = tabName;
-            TabType = tabType;
-            MainViewModel = mainViewModel;
-            SignalR = signalR;
+            this.TabName = TabName;
+            this.TabType = TabType;
+            this.MainViewModel = MainViewModel;
         }
 
         public bool CanExecute(object parameter)
@@ -45,7 +44,7 @@ namespace Client.Commands
                 {
                     case TabType.EventLog:
                         tab.Content = new EventLogControl();
-                        tab.DataContext = new EventLogViewModel(MainViewModel, SignalR);
+                        tab.DataContext = new EventLogViewModel(MainViewModel);
                         break;
                     case TabType.WebLog:
                         tab.Content = new WebLogControl();
@@ -53,11 +52,11 @@ namespace Client.Commands
                         break;
                     case TabType.Listeners:
                         tab.Content = new ListenerControl();
-                        tab.DataContext = new ListenerViewModel(MainViewModel, SignalR);
+                        tab.DataContext = new ListenerViewModel(MainViewModel);
                         break;
                     case TabType.Agent:
                         tab.Content = new AgentInteractControl();
-                        tab.DataContext = new AgentInteractViewModel(MainViewModel, MainViewModel.SelectedAgent, SignalR);
+                        tab.DataContext = new AgentInteractViewModel(MainViewModel, MainViewModel.SelectedAgent);
                         break;
                     default:
                         break;

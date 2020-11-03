@@ -1,6 +1,8 @@
-﻿using Client.API;
+﻿using Client.Services;
 using Client.ViewModels;
+
 using Shared.Models;
+
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -51,7 +53,7 @@ namespace Client.Commands
                     break;
             }
 
-            await ListenerAPI.StartListener(request);
+            await SharpC2API.Listeners.StartListener(request);
 
             Window.Close();
         }

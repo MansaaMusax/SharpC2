@@ -1,4 +1,4 @@
-﻿using Client.API;
+﻿using Client.Services;
 using Client.ViewModels;
 
 using System;
@@ -27,7 +27,7 @@ namespace Client.Commands
 
             if (agent != null)
             {
-                AgentAPI.RemoveAgent(agent.AgentID);
+                SharpC2API.Agents.RemoveAgent(agent.AgentID);
                 MainViewModel.Agents.Remove(agent);
             }
         }

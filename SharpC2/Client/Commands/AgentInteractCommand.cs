@@ -1,5 +1,4 @@
-﻿using Client.Services;
-using Client.ViewModels;
+﻿using Client.ViewModels;
 
 using System;
 using System.Windows.Input;
@@ -8,35 +7,23 @@ namespace Client.Commands
 {
     public class AgentInteractCommand : ICommand
     {
-        private readonly MainViewModel ViewModel;
-        private readonly SignalR SignalR;
+        readonly MainViewModel MainViewModel;
 
         public event EventHandler CanExecuteChanged;
 
-        public AgentInteractCommand(MainViewModel viewModel, SignalR signalR)
+        public AgentInteractCommand(MainViewModel MainViewModel)
         {
-            ViewModel = viewModel;
-            SignalR = signalR;
-
+            this.MainViewModel = MainViewModel;
         }
 
         public bool CanExecute(object parameter)
-        {
-            if (ViewModel.SelectedAgent == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+            => true;
 
         public void Execute(object parameter)
         {
-            var agent = ViewModel.SelectedAgent;
+            var agent = MainViewModel.SelectedAgent;
 
-            var openTab = new OpenTabCommand(agent.AgentID, TabType.Agent, ViewModel, SignalR);
+            var openTab = new OpenTabCommand(agent.AgentID, TabType.Agent, MainViewModel);
             openTab.Execute(null);
         }
     }

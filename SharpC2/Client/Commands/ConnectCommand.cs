@@ -1,5 +1,4 @@
-﻿using Client.API;
-using Client.Services;
+﻿using Client.Services;
 using Client.ViewModels;
 using Client.Views;
 
@@ -8,6 +7,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Shared.Models;
 
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -41,7 +41,7 @@ namespace Client.Commands
 
             progressBar.Show();
 
-            var result = ClientAPI.ClientLogin(ConnectViewModel.Host, ConnectViewModel.Port, ConnectViewModel.Nick, ConnectViewModel.Pass);
+            var result = SharpC2API.Users.ClientLogin(ConnectViewModel.Host, ConnectViewModel.Port, ConnectViewModel.Nick, ConnectViewModel.Pass);
 
             progressBar.Close();
 
@@ -52,15 +52,19 @@ namespace Client.Commands
             else if (result.Status == AuthResult.AuthStatus.LogonSuccess)
             {
                 var connection = new HubConnectionBuilder()
-                    .WithUrl($"http://{ConnectViewModel.Host}:{ConnectViewModel.Port}/MessageHub", options =>
+                    .WithUrl($"https://{ConnectViewModel.Host}:{ConnectViewModel.Port}/MessageHub", options =>
                     {
                         options.AccessTokenProvider = () => Task.FromResult(result.Token);
+                        options.HttpMessageHandlerFactory = (x) => new HttpClientHandler
+                        {
+                            ServerCertificateCustomValidationCallback = SharpC2API.ValidateServerCertficate
+                        };
                     }).Build();
 
-                var signalR = new SignalR(connection);
+                new SignalR(connection);
 
                 var mainView = new MainView();
-                var mainViewModel = new MainViewModel(mainView, signalR);
+                var mainViewModel = new MainViewModel(mainView);
                 mainView.DataContext = mainViewModel;
 
                 mainView.Show();

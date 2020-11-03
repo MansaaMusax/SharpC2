@@ -1,5 +1,4 @@
-﻿using Client.API;
-using Client.Commands;
+﻿using Client.Commands;
 using Client.Models;
 using Client.Services;
 
@@ -12,10 +11,9 @@ namespace Client.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private MainView MainView { get; set; }
-        private SignalR SignalR { get; set; }
+        readonly MainView MainView;
 
-        private ObservableCollection<Agent> _agents;
+        ObservableCollection<Agent> _agents;
         public ObservableCollection<Agent> Agents
         {
             get
@@ -59,19 +57,18 @@ namespace Client.ViewModels
 
         public ICommand ExitClient { get; }
 
-        public MainViewModel(MainView mainView, SignalR signalR)
+        public MainViewModel(MainView MainView)
         {
-            MainView = mainView;
-            SignalR = signalR;
+            this.MainView = MainView;
 
             Agents = new ObservableCollection<Agent>();
 
-            AgentInteract = new AgentInteractCommand(this, SignalR);
+            AgentInteract = new AgentInteractCommand(this);
             AgentRemove = new AgentRemoveCommand(this);
 
-            OpenEventLog = new OpenTabCommand("Event Log", TabType.EventLog, this, SignalR);
-            OpenWebLog = new OpenTabCommand("Web Log", TabType.WebLog, this, SignalR);
-            OpenListeners = new OpenTabCommand("Listeners", TabType.Listeners, this, SignalR);
+            OpenEventLog = new OpenTabCommand("Event Log", TabType.EventLog, this);
+            OpenWebLog = new OpenTabCommand("Web Log", TabType.WebLog, this);
+            OpenListeners = new OpenTabCommand("Listeners", TabType.Listeners, this);
 
             OpenPayloadGenerator = new OpenWindowCommand(WindowType.PayloadGenerator);
 
@@ -84,9 +81,9 @@ namespace Client.ViewModels
             GetAgentData();
         }
 
-        private async void GetAgentData()
+        async void GetAgentData()
         {
-            var agentData = await AgentAPI.GetAgentData();
+            var agentData = await SharpC2API.Agents.GetAgentData();
 
             if (agentData != null)
             {
@@ -108,7 +105,7 @@ namespace Client.ViewModels
             }
         }
 
-        private void OnWindowClosing(object sender, CancelEventArgs e)
+        void OnWindowClosing(object sender, CancelEventArgs e)
         {
             ExitClient.Execute(null);
         }

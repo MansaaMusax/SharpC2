@@ -1,34 +1,48 @@
-﻿using Client.API;
-using Client.Commands;
+﻿using Client.Commands;
 using Client.Services;
 
 using Shared.Models;
-
+using System;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace Client.ViewModels
 {
-    class EventLogViewModel : BaseViewModel
+    public class EventLogViewModel : BaseViewModel
     {
-        private readonly SignalR SignalR;
-
         public ObservableCollection<string> Events { get; set; } = new ObservableCollection<string>();
 
-        public EventLogViewModel(MainViewModel mainViewModel, SignalR signalR)
+        private string _chatMessage;
+        public string ChatMessage
         {
-            SignalR = signalR;
+            get { return _chatMessage; }
+            set { _chatMessage = value; NotifyPropertyChanged(nameof(ChatMessage)); }
+        }
 
-            SignalR.NewServerEventReceived += SignalR_NewServerEventReceived;
-            SignalR.NewAgentEvenReceived += SignalR_NewAgentEvenReceived;
+        public ICommand SendMessageCommand { get; }
+
+        public EventLogViewModel(MainViewModel mainViewModel)
+        {
+            SignalR.ChatMessageReceived += SignalR_ChatMessageReceived;
+
+            //SignalR.NewServerEventReceived += SignalR_NewServerEventReceived;
+            //SignalR.NewAgentEvenReceived += SignalR_NewAgentEvenReceived;
 
             CloseTab = new CloseTabCommand("Event Log", mainViewModel);
             DetachTab = new DetachTabCommand("Event Log", mainViewModel);
             RenameTab = new RenameTabCommand("Event Log", mainViewModel);
 
+            SendMessageCommand = new SendMessageCommand(this);
+
             GetServerEventData();
         }
 
-        private void SignalR_NewAgentEvenReceived(AgentEvent ev)
+        void SignalR_ChatMessageReceived(UserMessage msg)
+        {
+            Events.Insert(0, $"<{msg.Nick}>     {msg.Message}");
+        }
+
+        void SignalR_NewAgentEvenReceived(AgentEvent ev)
         {
             switch (ev.Type)
             {
@@ -40,14 +54,14 @@ namespace Client.ViewModels
             }
         }
 
-        private void SignalR_NewServerEventReceived(ServerEvent ev)
+        void SignalR_NewServerEventReceived(ServerEvent ev)
         {
             AddEvent(ev);
         }
 
-        private async void GetServerEventData()
+        async void GetServerEventData()
         {
-            var serverEvents = await ServerAPI.GetServerEvents();
+            var serverEvents = await SharpC2API.Server.GetServerEvents();
 
             if (serverEvents != null)
             {
@@ -58,7 +72,7 @@ namespace Client.ViewModels
             }
         }
 
-        private void AddEvent(ServerEvent ev)
+        void AddEvent(ServerEvent ev)
         {
             switch (ev.Type)
             {

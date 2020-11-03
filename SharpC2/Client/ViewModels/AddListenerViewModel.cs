@@ -54,9 +54,9 @@ namespace Client.ViewModels
 
         public ICommand StartListener { get; }
 
-        public AddListenerViewModel(Window window)
+        public AddListenerViewModel(Window Window)
         {
-            StartListener = new StartListenerCommand(window, this);
+            StartListener = new StartListenerCommand(Window, this);
 
             UpdateSelectedListenerView();
         }

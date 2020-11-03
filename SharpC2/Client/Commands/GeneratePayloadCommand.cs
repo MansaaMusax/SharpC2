@@ -1,11 +1,12 @@
-﻿using Client.API;
-using Client.Models;
+﻿using Client.Models;
+using Client.Services;
 using Client.ViewModels;
 using Client.Views;
 
 using Microsoft.Win32;
 
 using Shared.Models;
+
 using System;
 using System.IO;
 using System.Text;
@@ -15,13 +16,13 @@ namespace Client.Commands
 {
     class GeneratePayloadCommand : ICommand
     {
-        private readonly PayloadGeneratorViewModel ViewModel;
+        private readonly PayloadGeneratorViewModel PayloadGeneratorViewModel;
 
         public event EventHandler CanExecuteChanged;
 
-        public GeneratePayloadCommand(PayloadGeneratorViewModel viewModel)
+        public GeneratePayloadCommand(PayloadGeneratorViewModel PayloadGeneratorViewModel)
         {
-            ViewModel = viewModel;
+            this.PayloadGeneratorViewModel = PayloadGeneratorViewModel;
         }
 
         public bool CanExecute(object parameter)
@@ -31,11 +32,11 @@ namespace Client.Commands
         {
             var request = new StagerRequest
             {
-                Listener = ViewModel.SelectedListener.Name,
-                KillDate = ViewModel.KillDate,
+                Listener = PayloadGeneratorViewModel.SelectedListener.Name,
+                KillDate = PayloadGeneratorViewModel.KillDate,
             };
 
-            switch (ViewModel.SelectedPayloadFormat)
+            switch (PayloadGeneratorViewModel.SelectedPayloadFormat)
             {
                 case PayloadFormat.PowerShell:
                     request.Type = StagerRequest.OutputType.EXE;
@@ -51,10 +52,10 @@ namespace Client.Commands
                     break;
             }
 
-            if (ViewModel.SelectedListener.Type == Listener.ListenerType.HTTP)
+            if (PayloadGeneratorViewModel.SelectedListener.Type == Listener.ListenerType.HTTP)
             {
-                request.SleepInterval = ViewModel.SleepInterval;
-                request.SleepJitter = ViewModel.SleepJitter;
+                request.SleepInterval = PayloadGeneratorViewModel.SleepInterval;
+                request.SleepJitter = PayloadGeneratorViewModel.SleepJitter;
             }
 
             GenerateStager(request);
@@ -75,7 +76,7 @@ namespace Client.Commands
 
             progressBar.Show();
 
-            var stager = await PayloadAPI.GenerateStager(request);
+            var stager = await SharpC2API.Payloads.GenerateStager(request);
 
             progressBar.Close();
 
@@ -87,7 +88,7 @@ namespace Client.Commands
 
         private void SaveStager(byte[] stager)
         {
-            if (ViewModel.SelectedPayloadFormat == PayloadFormat.PowerShell)
+            if (PayloadGeneratorViewModel.SelectedPayloadFormat == PayloadFormat.PowerShell)
             {
                 var launcher = PowerShellLauncher.GenerateLauncher(stager);
                 var encLauncher = Convert.ToBase64String(Encoding.Unicode.GetBytes(launcher));
@@ -107,7 +108,7 @@ namespace Client.Commands
             {
                 var save = new SaveFileDialog();
 
-                switch (ViewModel.SelectedPayloadFormat)
+                switch (PayloadGeneratorViewModel.SelectedPayloadFormat)
                 {
                     case PayloadFormat.EXE:
                         save.Filter = "EXE (*.exe)|*.exe";
@@ -123,7 +124,7 @@ namespace Client.Commands
                 }
             }
 
-            ViewModel.View.Close();
+            PayloadGeneratorViewModel.Window.Close();
         }
     }
 }

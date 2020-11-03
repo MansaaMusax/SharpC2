@@ -1,4 +1,4 @@
-﻿using Client.API;
+﻿using Client.Services;
 using Client.ViewModels;
 
 using System;
@@ -22,7 +22,7 @@ namespace Client.Commands
 
         public void Execute(object parameter)
         {
-            ListenerAPI.StopListener(ViewModel.SelectedListener.Name);
+            SharpC2API.Listeners.StopListener(ViewModel.SelectedListener.Name);
         }
     }
 }

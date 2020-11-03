@@ -48,7 +48,7 @@ namespace Client.Commands
                         break;
                     case TabType.WebLog:
                         tab.Content = new WebLogControl();
-                        tab.DataContext = new WebLogViewModel(MainViewModel, SignalR);
+                        tab.DataContext = new WebLogViewModel(MainViewModel);
                         break;
                     case TabType.Listeners:
                         tab.Content = new ListenerControl();

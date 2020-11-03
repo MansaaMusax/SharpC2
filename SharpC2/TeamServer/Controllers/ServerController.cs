@@ -39,10 +39,10 @@ namespace TeamServer.Controllers
 
             Crypto = new CryptoController();
             Agent = new AgentController(Crypto, HubContext);
-            Listeners = new ListenerController(Agent);
+            Listeners = new ListenerController(this, Agent);
         }
 
-        private void ServerController_OnServerEvent(object sender, ServerEvent e)
+        public void ServerController_OnServerEvent(object sender, ServerEvent e)
         {
             ServerEvents.Add(e);
             HubContext.Clients.All.SendAsync("ServerEvent", e);

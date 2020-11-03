@@ -24,7 +24,8 @@ namespace Shared.Models
             UserLogoff,
             ListenerStarted,
             ListenerStopped,
-            ServerModuleRegistered
+            ServerModuleRegistered,
+            WebLog
         }
     }
 }

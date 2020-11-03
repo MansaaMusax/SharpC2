@@ -18,18 +18,27 @@ namespace TeamServer.CommModules
     public class HTTPCommModule : ICommModule
     {
         ListenerHTTP Listener;
+        ServerController Server;
         AgentController Agent;
 
         ModuleStatus Status = ModuleStatus.Starting;
         Socket Socket = new Socket(SocketType.Stream, ProtocolType.IP);
 
+        event EventHandler<ServerEvent> OnServerEvent;
+
         Queue<AgentMessage> Inbound = new Queue<AgentMessage>();
 
         ManualResetEvent AllDone = new ManualResetEvent(false);
 
-        public HTTPCommModule(ListenerHTTP Listener)
+        List<WebLog> WebLogs = new List<WebLog>();
+        List<HostedFile> HostedFiles = new List<HostedFile>();
+
+        public HTTPCommModule(ServerController Server, ListenerHTTP Listener)
         {
+            this.Server = Server;
             this.Listener = Listener;
+
+            OnServerEvent += Server.ServerController_OnServerEvent;
         }
 
         public void Init(AgentController Agent)
@@ -137,6 +146,7 @@ namespace TeamServer.CommModules
                 }
                 else
                 {
+                    GenerateWebLog(webRequest, handler.RemoteEndPoint as IPEndPoint);
                     messageOut = Get404Response();
                 }
 
@@ -157,6 +167,19 @@ namespace TeamServer.CommModules
             {
                 
             }
+        }
+
+        void GenerateWebLog(string WebRequest, IPEndPoint RemoteEndPoint)
+        {
+            var log = new WebLog
+            {
+                Listener = Listener.Name,
+                Origin = RemoteEndPoint.Address.ToString(),
+                WebRequest = WebRequest.Replace("\0", "")
+            };
+
+            WebLogs.Add(log);
+            OnServerEvent?.Invoke(this, new ServerEvent(ServerEvent.EventType.WebLog, log));
         }
 
         public void Stop()

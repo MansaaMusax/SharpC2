@@ -1,6 +1,8 @@
 ﻿using Client.Commands;
 using Client.Services;
 
+using Newtonsoft.Json;
+
 using Shared.Models;
 
 using System.Collections.ObjectModel;
@@ -9,11 +11,11 @@ namespace Client.ViewModels
 {
     class WebLogViewModel : BaseViewModel
     {
-        public ObservableCollection<string> WebLog { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<WebLog> WebLog { get; set; } = new ObservableCollection<WebLog>();
 
-        public WebLogViewModel(MainViewModel mainViewModel, SignalR signalR)
+        public WebLogViewModel(MainViewModel mainViewModel)
         {
-            // signalR.NewWebEvenReceived += SignalR_NewWebEvenReceived;
+            SignalR.ServerEventReceived += SignalR_ServerEventReceived;
 
             CloseTab = new CloseTabCommand("Web Log", mainViewModel);
             DetachTab = new DetachTabCommand("Web Log", mainViewModel);
@@ -22,9 +24,13 @@ namespace Client.ViewModels
             GetWebLogs();
         }
 
-        void SignalR_NewWebEvenReceived(WebLog log)
+        void SignalR_ServerEventReceived(ServerEvent ev)
         {
-            AddWebLog(log);
+            if (ev.Type == ServerEvent.EventType.WebLog)
+            {
+                var log = JsonConvert.DeserializeObject<WebLog>(ev.Data.ToString());
+                WebLog.Insert(0, log);
+            }
         }
 
         async void GetWebLogs()
@@ -35,14 +41,9 @@ namespace Client.ViewModels
             {
                 foreach (var log in logs)
                 {
-                    AddWebLog(log);
+                    WebLog.Insert(0, log);
                 }
             }
-        }
-
-        void AddWebLog(WebLog l)
-        {
-            WebLog.Insert(0, $"[{l.Date}]   visit ({l.Listener}) from {l.Origin}\n\n{l.WebRequest}");
         }
     }
 }

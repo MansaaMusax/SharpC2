@@ -10,6 +10,7 @@ namespace TeamServer.Controllers
 {
     public class ListenerController
     {
+        ServerController Server;
         AgentController Agent;
 
         public Dictionary<ListenerHTTP, HTTPCommModule> HTTPListeners = new Dictionary<ListenerHTTP, HTTPCommModule>();
@@ -17,8 +18,9 @@ namespace TeamServer.Controllers
         public List<ListenerTCP> TCPListeners = new List<ListenerTCP>();
         public List<ListenerSMB> SMBListeners = new List<ListenerSMB>();
 
-        public ListenerController(AgentController Agent)
+        public ListenerController(ServerController Server, AgentController Agent)
         {
+            this.Server = Server;
             this.Agent = Agent;
         }
 
@@ -94,7 +96,7 @@ namespace TeamServer.Controllers
                 ConnectPort = Request.ConnectPort
             };
 
-            var module = new HTTPCommModule(listener);
+            var module = new HTTPCommModule(Server, listener);
             module.Init(Agent);
             module.Start();
 

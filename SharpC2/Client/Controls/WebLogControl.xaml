@@ -6,9 +6,20 @@
              xmlns:local="clr-namespace:Client.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
     <Grid>
-        <ListView ItemsSource="{Binding WebLog}" />
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <ListView ItemsSource="{Binding WebLog}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding Date}" Width="150"/>
+                        <GridViewColumn Header="Listener" DisplayMemberBinding="{Binding Listener}" Width="100"/>
+                        <GridViewColumn Header="Origin" DisplayMemberBinding="{Binding Origin}" Width="150"/>
+                        <GridViewColumn Header="Data" DisplayMemberBinding="{Binding WebRequest}" Width="800"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </ScrollViewer>
     </Grid>
-    
+
 </UserControl>

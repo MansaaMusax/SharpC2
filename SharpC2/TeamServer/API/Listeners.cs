@@ -21,7 +21,9 @@ namespace TeamServer.API
         [HttpPost]
         public Listener StartListener([FromBody] ListenerRequest Request)
         {
-            if (TeamServer.Server.StartListener(Request, out Listener Listener))
+            var nick = HttpContext.User.Identity.Name;
+
+            if (TeamServer.Server.StartListener(Request, nick, out Listener Listener))
             {
                 return Listener;
             }
@@ -34,7 +36,8 @@ namespace TeamServer.API
         [HttpDelete]
         public bool StopListener(string Name)
         {
-            return TeamServer.Server.StopListener(Name);
+            var nick = HttpContext.User.Identity.Name;
+            return TeamServer.Server.StopListener(Name, nick);
         }
     }
 }

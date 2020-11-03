@@ -157,7 +157,7 @@ namespace TeamServer.Controllers
             }
         }
 
-        public bool StartListener(ListenerRequest Request, out Listener Listener)
+        public bool StartListener(ListenerRequest Request, string Nick, out Listener Listener)
         {
             if (!Listeners.ValidRequest(Request))
             {
@@ -167,13 +167,21 @@ namespace TeamServer.Controllers
             else
             {
                 Listener = Listeners.NewListener(Request);
+                OnServerEvent?.Invoke(this, new ServerEvent(ServerEvent.EventType.ListenerStarted, Listener, Nick));
                 return true;
             }
         }
 
-        public bool StopListener(string Name)
+        public bool StopListener(string ListenerName, string Nick)
         {
-            return Listeners.StopListener(Name);
+            var stopped = Listeners.StopListener(ListenerName);
+
+            if (stopped)
+            {
+                OnServerEvent?.Invoke(this, new ServerEvent(ServerEvent.EventType.ListenerStopped, ListenerName, Nick));
+            }
+
+            return stopped;
         }
 
         // Payloads

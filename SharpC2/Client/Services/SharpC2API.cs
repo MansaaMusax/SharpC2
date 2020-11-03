@@ -154,7 +154,7 @@ namespace Client.Services
 
             public static async void StopListener(string Name)
             {
-                var apiRequest = new RestRequest($"/api/listeners/{Name}", Method.DELETE);
+                var apiRequest = new RestRequest($"/api/listeners?name={Name}", Method.DELETE);
                 await Client.ExecuteAsync(apiRequest);
             }
 
@@ -203,7 +203,7 @@ namespace Client.Services
 
             private static async Task<List<ListenerHTTP>> GetHttpListeners()
             {
-                var apiRequest = new RestRequest("/api/listeners/http", Method.GET);
+                var apiRequest = new RestRequest("/api/listeners?type=http", Method.GET);
                 var apiResponse = await Client.ExecuteAsync(apiRequest);
 
                 return JsonConvert.DeserializeObject<List<ListenerHTTP>>(apiResponse.Content);
@@ -211,7 +211,7 @@ namespace Client.Services
 
             private static async Task<List<ListenerTCP>> GetTcpListeners()
             {
-                var apiRequest = new RestRequest("/api/listeners/tcp", Method.GET);
+                var apiRequest = new RestRequest("/api/listeners?type=tcp", Method.GET);
                 var apiResponse = await Client.ExecuteAsync(apiRequest);
 
                 return JsonConvert.DeserializeObject<List<ListenerTCP>>(apiResponse.Content);
@@ -219,7 +219,7 @@ namespace Client.Services
 
             private static async Task<List<ListenerSMB>> GetSmbListeners()
             {
-                var apiRequest = new RestRequest("/api/listeners/smb", Method.GET);
+                var apiRequest = new RestRequest("/api/listeners?type=smb", Method.GET);
                 var apiResponse = await Client.ExecuteAsync(apiRequest);
 
                 return JsonConvert.DeserializeObject<List<ListenerSMB>>(apiResponse.Content);

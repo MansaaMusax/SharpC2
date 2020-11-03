@@ -1,6 +1,6 @@
 ﻿using Client.Commands;
 using Client.Services;
-
+using Newtonsoft.Json;
 using Shared.Models;
 
 using System;
@@ -24,6 +24,8 @@ namespace Client.ViewModels
         {
             this.MainViewModel = MainViewModel;
 
+            SignalR.ServerEventReceived += SignalR_ServerEventReceived;
+
             //SignalR.NewHttpListenerReceived += SignalR_NewListenerReceived;
             //SignalR.NewTcpListenerReceived += SignalR_NewListenerReceived;
             //SignalR.NewSmbListenerReceived += SignalR_NewListenerReceived;
@@ -40,29 +42,45 @@ namespace Client.ViewModels
             GetActiveListeners();
         }
 
-        void SignalR_RemoveListenerReceived(string name)
+        private void SignalR_ServerEventReceived(ServerEvent ev)
         {
-            var listener = Listeners.FirstOrDefault(l => l.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            Listener listener;
 
-            if (listener != null)
+            switch (ev.Type)
             {
-                Listeners.Remove(listener);
+                case ServerEvent.EventType.ListenerStarted:
+
+                    listener = JsonConvert.DeserializeObject<Listener>(ev.Data.ToString());
+
+                    switch (listener.Type)
+                    {
+                        case Listener.ListenerType.HTTP:
+                            listener = JsonConvert.DeserializeObject<ListenerHTTP>(ev.Data.ToString());
+                            break;
+                        case Listener.ListenerType.TCP:
+                            listener = JsonConvert.DeserializeObject<ListenerTCP>(ev.Data.ToString());
+                            break;
+                        case Listener.ListenerType.SMB:
+                            listener = JsonConvert.DeserializeObject<ListenerSMB>(ev.Data.ToString());
+                            break;
+                        default:
+                            break;
+                    }
+
+                    Listeners.Add(listener);
+                    break;
+
+                case ServerEvent.EventType.ListenerStopped:
+
+                    var name = ev.Data.ToString();
+                    listener = Listeners.FirstOrDefault(l => l.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                    Listeners.Remove(listener);
+                    
+                    break;
+                
+                default:
+                    break;
             }
-        }
-
-        void SignalR_NewListenerReceived(ListenerHTTP l)
-        {
-            Listeners.Add(l);
-        }
-
-        void SignalR_NewListenerReceived(ListenerTCP l)
-        {
-            Listeners.Add(l);
-        }
-
-        void SignalR_NewListenerReceived(ListenerSMB l)
-        {
-            Listeners.Add(l);
         }
 
         async void GetActiveListeners()

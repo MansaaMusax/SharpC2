@@ -104,7 +104,8 @@ namespace Client.ViewModels
                     Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has left. Say goodbye!");
                     break;
                 case ServerEvent.EventType.ListenerStarted:
-                    Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has started listener {ev.Data}.");
+                    var listener = JsonConvert.DeserializeObject<Listener>(ev.Data.ToString());
+                    Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has started listener {listener.Name}.");
                     break;
                 case ServerEvent.EventType.ListenerStopped:
                     Events.Insert(0, $"[{ev.Date}]     {ev.Nick} has stopped listener {ev.Data}.");

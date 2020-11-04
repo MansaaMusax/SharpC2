@@ -55,11 +55,14 @@ namespace TeamServer.Controllers
 
             var parameters = JsonConvert.DeserializeObject<AgentTask>(Encoding.UTF8.GetString(Request.Data)).Parameters;
 
-            foreach (var param in parameters)
+            if (parameters != null)
             {
-                if (param.Value != null)
+                foreach (var param in parameters)
                 {
-                    builder.Append(" " + param.Value);
+                    if (param.Value != null)
+                    {
+                        builder.Append(" " + param.Value);
+                    }
                 }
             }
 

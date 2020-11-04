@@ -1,0 +1,4 @@
+﻿- Alias: ipconfig
+  Usage: ipconfig
+  Module: Net
+  Command: Info

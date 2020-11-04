@@ -65,6 +65,7 @@ namespace Agent
             CommModule.Start();
 
             agent.RegisterAgentModule(new CoreAgentModule());
+            agent.RegisterAgentModule(new NetAgentModule());
 
             agent.Start();
         }

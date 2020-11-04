@@ -28,7 +28,6 @@
         <ComboBox ItemsSource="{Binding Listeners}" Grid.Column="1" Grid.Row="0"
                   DisplayMemberPath="Name"
                   SelectedValuePath="Name"
-                  SelectedValue="{Binding Name}"
                   SelectedItem="{Binding SelectedListener}"/>
         
         

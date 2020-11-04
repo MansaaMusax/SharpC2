@@ -1,0 +1,13 @@
+﻿- Alias: sleep
+  Usage: sleep [interval] <jitter>
+  Module: Core
+  Command: Sleep
+  Parameters:
+  - Name: Interval
+    Type: Integer
+  - Name: Jitter
+    Type: Integer
+- Alias: exit
+  Usage: exit
+  Module: Core
+  Command: Exit

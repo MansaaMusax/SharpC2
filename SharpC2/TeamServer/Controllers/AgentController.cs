@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-
+using Newtonsoft.Json;
 using Shared.Models;
-
+using Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Text;
 using TeamServer.Hubs;
 
 namespace TeamServer.Controllers
@@ -32,27 +32,38 @@ namespace TeamServer.Controllers
 
         public void SendAgentCommand(AgentCommandRequest Request, string Nick)
         {
-            //var sessionKey = Crypto.GetSessionKey(Request.AgentID);
+            var sessionKey = Crypto.GetSessionKey(Request.AgentID);
 
-            //Utilities.EncryptData(sessionKey, new C2Data
-            //{
-            //    Module = Request.Module,
-            //    Command = Request.Command,
-            //    Data = Request.Data
-            //},
-            //out byte[] encrypted, out byte[] iv);
+            var data = Utilities.EncryptData(new C2Data
+            {
+                Module = Request.Module,
+                Command = Request.Command,
+                Data = Request.Data
+            },
+            sessionKey, out byte[] iv);
 
-            //var message = new AgentMessage
-            //{
-            //    AgentID = Request.AgentID,
-            //    Data = encrypted,
-            //    IV = iv
-            //};
+            SendAgentMessage(new AgentMessage
+            {
+                AgentID = Request.AgentID,
+                Data = data,
+                IV = iv
+            });
 
-            //SendAgentMessage(message);
+            var builder = new StringBuilder();
+            builder.Append(Request.Module.ToLower());
+            builder.Append(" " + Request.Command.ToLower());
 
-            //var task = $"{Request.Module} {Request.Command}";
-            //OnAgentEvent?.Invoke(this, new AgentEvent(Request.AgentID, AgentEvent.EventType.CommandRequest, task, Nick));
+            var parameters = JsonConvert.DeserializeObject<AgentTask>(Encoding.UTF8.GetString(Request.Data)).Parameters;
+
+            foreach (var param in parameters)
+            {
+                if (param.Value != null)
+                {
+                    builder.Append(" " + param.Value);
+                }
+            }
+
+            OnAgentEvent?.Invoke(this, new AgentEvent(Request.AgentID, AgentEvent.EventType.CommandRequest, builder.ToString(), Nick));
         }
 
         public void SendAgentMessage(AgentMessage Message)

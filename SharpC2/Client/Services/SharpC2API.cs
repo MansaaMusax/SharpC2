@@ -123,7 +123,7 @@ namespace Client.Services
                     Data = Encoding.UTF8.GetBytes(Data)
                 };
 
-                var apiRequest = new RestRequest($"/api/Agents/command", Method.POST);
+                var apiRequest = new RestRequest($"/api/agents", Method.POST);
                 apiRequest.AddParameter("application/json", JsonConvert.SerializeObject(cmdRequest), ParameterType.RequestBody);
                 await Client.ExecuteAsync(apiRequest);
             }

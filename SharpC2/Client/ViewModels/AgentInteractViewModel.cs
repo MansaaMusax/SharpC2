@@ -1,7 +1,7 @@
 ﻿using Client.Commands;
 using Client.Models;
 using Client.Services;
-
+using Newtonsoft.Json;
 using Shared.Models;
 
 using System;
@@ -55,16 +55,16 @@ namespace Client.ViewModels
             this.MainViewModel = MainViewModel;
             this.Agent = Agent;
 
-            //SignalR.NewAgentEvenReceived += SignalR_NewAgentEvenReceived;
+            SignalR.AgentEventReceived += SignalR_AgentEventReceived;
 
             AgentLabel = $"{Agent.AgentID} >";
 
-            SendAgentCommand = new SendAgentCommand(this, Agent);
+            SendAgentCommand = new SendAgentCommand(this, Agent, MainViewModel.AgentTasks);
 
             GetAgentData();
         }
 
-        private void SignalR_NewAgentEvenReceived(AgentEvent ev)
+        private void SignalR_AgentEventReceived(AgentEvent ev)
         {
             if (ev.AgentID.Equals(Agent.AgentID, StringComparison.OrdinalIgnoreCase))
             {
@@ -92,13 +92,16 @@ namespace Client.ViewModels
             switch (ev.Type)
             {
                 case AgentEvent.EventType.ModuleRegistered:
+
                     message.AppendLine();
                     message.AppendLine($"[+] Module Registered: {ev.Data}");
                     break;
+
                 case AgentEvent.EventType.CommandRequest:
                     message.AppendLine();
                     message.AppendLine($"[*] <{ev.Nick}> tasked agent to run: {ev.Data}");
                     break;
+
                 case AgentEvent.EventType.AgentOutput:
                     message.AppendLine();
                     message.AppendLine(ev.Data as string);
@@ -112,11 +115,6 @@ namespace Client.ViewModels
             }
 
             AgentOutput += message.ToString();
-        }
-
-        private void ClearCommandInput()
-        {
-            AgentCommand = string.Empty;
         }
     }
 }

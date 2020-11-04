@@ -7,11 +7,16 @@ using Newtonsoft.Json;
 using Shared.Models;
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Input;
+
+using YamlDotNet.Serialization;
 
 namespace Client.ViewModels
 {
@@ -19,7 +24,6 @@ namespace Client.ViewModels
     {
         readonly MainView MainView;
 
-        ObservableCollection<Agent> _agents;
         public ObservableCollection<Agent> Agents { get; set; } = new ObservableCollection<Agent>();
 
         public Agent SelectedAgent { get; set; }
@@ -39,6 +43,8 @@ namespace Client.ViewModels
                 NotifyPropertyChanged(nameof(SelectedTabIndex));
             }
         }
+
+        public List<AgentTask> AgentTasks = new List<AgentTask>();
 
         public ICommand AgentInteract { get; }
         public ICommand AgentRemove { get; }
@@ -77,6 +83,7 @@ namespace Client.ViewModels
 
             OpenEventLog.Execute(null);
 
+            LoadTaskDefinitions();
             GetAgentData();
         }
 
@@ -144,6 +151,20 @@ namespace Client.ViewModels
         void OnWindowClosing(object sender, CancelEventArgs e)
         {
             ExitClient.Execute(null);
+        }
+
+        void LoadTaskDefinitions()
+        {
+            var path = Path.Combine(Assembly.GetExecutingAssembly().Location.Replace("SharpC2.dll", ""), "Core", "Tasks");
+            var files = Directory.GetFiles(path);
+            var yamlDotNet = new DeserializerBuilder().IgnoreUnmatchedProperties().Build();
+
+            foreach (var file in files)
+            {
+                var yaml = File.ReadAllText(file);
+                var tasks = yamlDotNet.Deserialize<List<AgentTask>>(yaml);
+                AgentTasks.AddRange(tasks);
+            }
         }
     }
 }

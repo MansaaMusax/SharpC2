@@ -47,13 +47,21 @@ namespace Agent.Modules
         {
             try
             {
-                var sleep = Shared.Utilities.Utilities.DeserialiseData<SleepModel>(C2Data.Data);
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
 
-                var interval = (int)sleep.Command.Parameters.FirstOrDefault(p => p.Name.Equals("Interval", StringComparison.OrdinalIgnoreCase)).Value;
-                var jitter = (int)sleep.Command.Parameters.FirstOrDefault(p => p.Name.Equals("Jitter", StringComparison.OrdinalIgnoreCase)).Value;
+                var interval = parameters.FirstOrDefault(p => p.Name.Equals("Interval", StringComparison.OrdinalIgnoreCase)).Value;
 
-                Config.Set(AgentConfig.SleepInterval, interval);
-                Config.Set(AgentConfig.SleepJitter, jitter);
+                if (interval != null)
+                {
+                    Config.Set(AgentConfig.SleepInterval, (int)interval);
+                }
+
+                var jitter = parameters.FirstOrDefault(p => p.Name.Equals("Jitter", StringComparison.OrdinalIgnoreCase)).Value;
+
+                if (jitter != null)
+                {
+                    Config.Set(AgentConfig.SleepJitter, (int)jitter);
+                }
             }
             catch (Exception e)
             {

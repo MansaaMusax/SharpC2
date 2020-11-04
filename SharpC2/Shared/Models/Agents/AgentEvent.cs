@@ -22,6 +22,9 @@ namespace Shared.Models
 
         public enum EventType
         {
+            Stage0,
+            Stage1,
+            Stage2,
             InitialAgent,
             AgentCheckin,
             CommandRequest,

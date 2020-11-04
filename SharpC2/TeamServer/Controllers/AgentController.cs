@@ -116,7 +116,7 @@ namespace TeamServer.Controllers
             }
         }
 
-        async void AgentController_OnAgentEvent(object sender, AgentEvent e)
+        public async void AgentController_OnAgentEvent(object sender, AgentEvent e)
         {
             AgentEvents.Add(e);
             await HubContext.Clients.All.SendAsync("AgentEvent", e);

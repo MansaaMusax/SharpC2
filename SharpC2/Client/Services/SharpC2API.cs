@@ -230,7 +230,7 @@ namespace Client.Services
         {
             public static async Task<byte[]> GenerateStager(StagerRequest Request)
             {
-                var apiRequest = new RestRequest("/api/Payload/stager", Method.POST);
+                var apiRequest = new RestRequest("/api/stager", Method.POST);
                 apiRequest.AddParameter("application/json", JsonConvert.SerializeObject(Request), ParameterType.RequestBody);
                 
                 var apiResponse = await Client.ExecuteAsync(apiRequest);

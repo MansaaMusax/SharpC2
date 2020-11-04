@@ -12,13 +12,13 @@
 
   <ItemGroup>
     <None Remove="Resources\stage.dll" />
-    <None Remove="Resources\stager.exe" />
+    <None Remove="Resources\stager_http.exe" />
     <None Remove="SharpC2_Log.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\stage.dll" />
-    <EmbeddedResource Include="Resources\stager.exe" />
+    <EmbeddedResource Include="Resources\stager_http.exe" />
   </ItemGroup>
 
   <ItemGroup>

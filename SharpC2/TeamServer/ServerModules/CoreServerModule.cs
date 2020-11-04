@@ -17,10 +17,14 @@ namespace TeamServer.ServerModules
         ServerController Server;
         AgentController Agent;
 
+        event EventHandler<AgentEvent> OnAgentEvent;
+
         public void Init(ServerController Server, AgentController Agent)
         {
             this.Server = Server;
             this.Agent = Agent;
+
+            OnAgentEvent += Agent.AgentController_OnAgentEvent;
         }
 
         public ServerModule GetModuleInfo()
@@ -81,6 +85,8 @@ namespace TeamServer.ServerModules
                 AgentID = AgentID,
                 Data = data
             });
+
+            OnAgentEvent?.Invoke(this, new AgentEvent(AgentID, AgentEvent.EventType.Stage0));
         }
 
         void HandleStage1Request(string AgentID, C2Data C2Data)
@@ -104,6 +110,8 @@ namespace TeamServer.ServerModules
                 AgentID = AgentID,
                 Data = data
             });
+
+            OnAgentEvent?.Invoke(this, new AgentEvent(AgentID, AgentEvent.EventType.Stage1));
         }
 
         void HandleStage2Request(string AgentID, C2Data C2Data)
@@ -129,6 +137,8 @@ namespace TeamServer.ServerModules
                         Data = data,
                         IV = iv
                     });
+
+                    OnAgentEvent?.Invoke(this, new AgentEvent(AgentID, AgentEvent.EventType.Stage2));
                 }
             }
         }

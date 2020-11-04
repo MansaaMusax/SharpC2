@@ -66,7 +66,7 @@ namespace TeamServer.CommModules
 
             try
             {
-                Socket.Bind(new IPEndPoint(IPAddress.Parse("0.0.0.0"), 8080));
+                Socket.Bind(new IPEndPoint(IPAddress.Parse(Listener.BindAddress), Listener.BindPort));
                 Socket.Listen(100);
             }
             catch

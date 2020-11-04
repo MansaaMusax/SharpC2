@@ -189,8 +189,8 @@ namespace TeamServer.Controllers
         public bool GenerateStager(StagerRequest Request, out byte[] Stager)
         {
             var listener = Listeners.GetListener(Request.Listener);
-            var payload = new Payload(listener, Crypto);
-            var stager = payload.GenerateStager();
+            var payload = new Payload(listener);
+            var stager = payload.GenerateStager(Request);
 
             if (stager != null)
             {

@@ -86,11 +86,11 @@ namespace Client.ViewModels
             {
                 case AgentEvent.EventType.InitialAgent:
 
-                    var agent = JsonConvert.DeserializeObject<AgentMetadata>(ev.Data.ToString());
+                    var metadata = JsonConvert.DeserializeObject<AgentMetadata>(ev.Data.ToString());
 
-                    if (!Agents.Any(a => a.AgentID.Equals(agent.AgentID, StringComparison.OrdinalIgnoreCase)))
+                    if (!Agents.Any(a => a.AgentID.Equals(metadata.AgentID, StringComparison.OrdinalIgnoreCase)))
                     {
-                        AddNewAgent(agent);
+                        AddNewAgent(metadata);
                     }
 
                     break;
@@ -98,9 +98,12 @@ namespace Client.ViewModels
                 case AgentEvent.EventType.AgentCheckin:
 
                     var lastSeen = DateTime.Parse(ev.Data.ToString());
+                    var agent = Agents.FirstOrDefault(a => a.AgentID.Equals(ev.AgentID, StringComparison.OrdinalIgnoreCase));
 
-                    Agents.FirstOrDefault(a => a.AgentID.Equals(ev.AgentID, StringComparison.OrdinalIgnoreCase))
-                        .LastSeen = lastSeen;
+                    if (agent != null)
+                    {
+                        agent.LastSeen = lastSeen;
+                    }    
 
                     break;
 

@@ -19,9 +19,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stage", "Agent\Stage\Stage.
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "StagerCore", "Agent\StagerCore\StagerCore.shproj", "{1654E398-F4E8-49F0-B48B-311218799CF5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StagerSMB", "Agent\StagerSMB\StagerSMB.csproj", "{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StagerTCP", "Agent\StagerTCP\StagerTCP.csproj", "{51E868AA-A678-4CDA-BA69-F2CF27D67D58}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Agent\StagerCore\StagerCore.projitems*{0da34830-86d3-4ca6-86ca-5efbf6bbc66d}*SharedItemsImports = 4
 		Agent\StagerCore\StagerCore.projitems*{1654e398-f4e8-49f0-b48b-311218799cf5}*SharedItemsImports = 13
+		Agent\StagerCore\StagerCore.projitems*{51e868aa-a678-4cda-ba69-f2cf27d67d58}*SharedItemsImports = 4
 		Agent\StagerCore\StagerCore.projitems*{b8774827-6a54-4da7-8133-191d51938339}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +99,30 @@ Global
 		{85E8780D-335E-4BF2-B39A-AA50FAB379DC}.Release|x64.Build.0 = Release|Any CPU
 		{85E8780D-335E-4BF2-B39A-AA50FAB379DC}.Release|x86.ActiveCfg = Release|Any CPU
 		{85E8780D-335E-4BF2-B39A-AA50FAB379DC}.Release|x86.Build.0 = Release|Any CPU
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}.Debug|x64.Build.0 = Debug|Any CPU
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}.Debug|x86.Build.0 = Debug|Any CPU
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}.Release|x64.ActiveCfg = Release|Any CPU
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}.Release|x64.Build.0 = Release|Any CPU
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}.Release|x86.ActiveCfg = Release|Any CPU
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D}.Release|x86.Build.0 = Release|Any CPU
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58}.Debug|x64.Build.0 = Debug|Any CPU
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58}.Debug|x86.Build.0 = Debug|Any CPU
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58}.Release|x64.ActiveCfg = Release|Any CPU
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58}.Release|x64.Build.0 = Release|Any CPU
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58}.Release|x86.ActiveCfg = Release|Any CPU
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,6 +131,8 @@ Global
 		{B8774827-6A54-4DA7-8133-191D51938339} = {6CE68D0A-2F0E-4F8E-8AE7-AC447281F973}
 		{85E8780D-335E-4BF2-B39A-AA50FAB379DC} = {6CE68D0A-2F0E-4F8E-8AE7-AC447281F973}
 		{1654E398-F4E8-49F0-B48B-311218799CF5} = {6CE68D0A-2F0E-4F8E-8AE7-AC447281F973}
+		{0DA34830-86D3-4CA6-86CA-5EFBF6BBC66D} = {6CE68D0A-2F0E-4F8E-8AE7-AC447281F973}
+		{51E868AA-A678-4CDA-BA69-F2CF27D67D58} = {6CE68D0A-2F0E-4F8E-8AE7-AC447281F973}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8541C2A-D9D1-4CEA-B560-05DFA8606392}

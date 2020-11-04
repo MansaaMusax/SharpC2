@@ -10,9 +10,9 @@ namespace Stager.Comms
 {
     public class HTTPCommModule : CommModule
     {
-        string AgentID;
-        string ConnectAddress;
-        int ConnectPort;
+        readonly string AgentID;
+        readonly string ConnectAddress;
+        readonly int ConnectPort;
 
         public HTTPCommModule(string AgentID, string ConnectAddress, int ConnectPort)
         {

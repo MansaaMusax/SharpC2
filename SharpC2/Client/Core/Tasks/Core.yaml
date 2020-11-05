@@ -12,8 +12,6 @@
   Module: Core
   Command: LoadModule
   Parameters:
-  - Name: Path
-    Type: String
   - Name: Assembly
     Type: File
 - Alias: exit

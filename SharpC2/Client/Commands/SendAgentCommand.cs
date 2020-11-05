@@ -85,14 +85,27 @@ namespace Client.Commands
                         switch (task.Parameters[i].Type)
                         {
                             case AgentTask.Parameter.ParameterType.String:
+
                                 task.Parameters[i].Value = args[i];
                                 break;
+                            
                             case AgentTask.Parameter.ParameterType.Integer:
+
                                 task.Parameters[i].Value = Convert.ToInt32(args[i]);
                                 break;
+
                             case AgentTask.Parameter.ParameterType.File:
+
                                 var bytes = File.ReadAllBytes(args[i]);
                                 task.Parameters[i].Value = bytes;
+
+                                task.Parameters.Insert(i + 1, new AgentTask.Parameter
+                                {
+                                    Name = "Path",
+                                    Value = args[i],
+                                    Type = AgentTask.Parameter.ParameterType.String
+                                });
+
                                 break;
                             case AgentTask.Parameter.ParameterType.Listener:
                                 break;
@@ -102,11 +115,6 @@ namespace Client.Commands
                             default:
                                 break;
                         }
-                    }
-
-                    if (task.Module.Equals("Core", StringComparison.OrdinalIgnoreCase) && task.Command.Equals("LoadModule", StringComparison.OrdinalIgnoreCase))
-                    {
-                        task.Parameters[1].Value = File.ReadAllBytes((string)task.Parameters[0].Value);
                     }
 
                     var json = JsonConvert.SerializeObject(task);

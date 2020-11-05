@@ -1,0 +1,9 @@
+﻿- Alias: execute-assembly
+  Usage: execute-assembly [path] [args]
+  Module: Exec
+  Command: Assembly
+  Parameters:
+  - Name: Assembly
+    Type: File
+  - Name: Arguments
+    Type: String

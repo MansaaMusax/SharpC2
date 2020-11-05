@@ -2,7 +2,11 @@
 using Client.ViewModels;
 
 using Microsoft.Win32;
+
 using Newtonsoft.Json;
+
+using Shared.Models;
+
 using System;
 using System.IO;
 using System.Linq;
@@ -34,8 +38,14 @@ namespace Client.Commands
 
                 var task = MainViewModel.AgentTasks.FirstOrDefault(t => t.Command.Equals("LoadModule", StringComparison.OrdinalIgnoreCase));
                 
-                task.Parameters[0].Value = openFile.FileName;
-                task.Parameters[1].Value = module;
+                task.Parameters[0].Value = module;
+
+                task.Parameters.Add(new AgentTask.Parameter
+                {
+                    Name = "Path",
+                    Value = openFile.FileName,
+                    Type = AgentTask.Parameter.ParameterType.String
+                });
 
                 var json = JsonConvert.SerializeObject(task);
 

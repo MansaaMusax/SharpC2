@@ -23,6 +23,9 @@
     <None Update="Core\Tasks\Demo.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Core\Tasks\Exec.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Core\Tasks\Env.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

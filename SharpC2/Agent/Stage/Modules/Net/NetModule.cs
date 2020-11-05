@@ -13,7 +13,7 @@ using System.Text;
 
 namespace Agent.Modules
 {
-    public class NetAgentModule : IAgentModule
+    public class NetModule : IAgentModule
     {
         AgentController Agent;
         ConfigController Config;

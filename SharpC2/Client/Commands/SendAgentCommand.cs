@@ -1,8 +1,11 @@
 ﻿using Client.Models;
 using Client.Services;
 using Client.ViewModels;
+
 using Newtonsoft.Json;
+
 using Shared.Models;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,6 +69,13 @@ namespace Client.Commands
                 }
                 else
                 {
+                    // null out current values first
+                    foreach (var param in task.Parameters)
+                    {
+                        param.Value = null;
+                    }
+
+                    // add new values
                     for (var i = 0; i < args.Length; i++)
                     {
                         switch (task.Parameters[i].Type)

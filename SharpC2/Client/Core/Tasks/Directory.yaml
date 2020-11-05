@@ -1,0 +1,32 @@
+﻿- Alias: pwd
+  Usage: pwd
+  Module: Dir
+  Command: Print
+- Alias: cd
+  Usage: cd [path]
+  Module: Dir
+  Command: Change
+  Parameters:
+  - Name: Path
+    Type: String
+- Alias: ls
+  Usage: ls <path>
+  Module: Dir
+  Command: List
+  Parameters:
+  - Name: Path
+    Type: String
+- Alias: mkdir
+  Usage: mkdir [path]
+  Module: Dir
+  Command: Create
+  Parameters:
+  - Name: Path
+    Type: String
+- Alias: rmdir
+  Usage: rmdir [path]
+  Module: Dir
+  Command: Remove
+  Parameters:
+  - Name: Path
+    Type: String

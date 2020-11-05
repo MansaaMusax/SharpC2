@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Core\Tasks\Directory.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Core\Tasks\Net.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

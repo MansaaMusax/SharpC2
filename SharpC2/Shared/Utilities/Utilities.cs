@@ -23,11 +23,11 @@ namespace Shared.Utilities
             }
         }
 
-        public static string GetRandomString(int length)
+        public static string GetRandomString(int Length)
         {
             var random = new Random();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            return new string(Enumerable.Repeat(chars, length)
+            return new string(Enumerable.Repeat(chars, Length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
@@ -65,43 +65,52 @@ namespace Shared.Utilities
             }
         }
 
-        public static byte[] SerialiseData<T>(T data)
+        public static byte[] SerialiseData<T>(T Data)
         {
             using (var ms = new MemoryStream())
             {
                 var serialiser = new DataContractJsonSerializer(typeof(T));
-                serialiser.WriteObject(ms, data);
+                serialiser.WriteObject(ms, Data);
                 return Compress(ms.ToArray());
             }
         }
 
-        public static T DeserialiseData<T>(byte[] data)
+        public static T DeserialiseData<T>(byte[] Data, bool Compressed = true)
         {
-            var decompressed = Decompress(data);
+            byte[] data;
 
-            using (var ms = new MemoryStream(decompressed))
+            if (Compressed)
+            {
+                data = Decompress(Data);
+            }
+            else
+            {
+                data = Data;
+            }
+
+            using (var ms = new MemoryStream(data))
             {
                 var serialiser = new DataContractJsonSerializer(typeof(T));
                 return (T)serialiser.ReadObject(ms);
             }
         }
 
-        public static byte[] Compress(byte[] data)
+        public static byte[] Compress(byte[] Data)
         {
             using (var ms = new MemoryStream())
             {
                 using (var gzs = new BufferedStream(new GZipStream(ms, CompressionMode.Compress), BufferSize))
                 {
-                    gzs.Write(data, 0, data.Length);
+                    gzs.Write(Data, 0, Data.Length);
                 }
 
                 return ms.ToArray();
             }
         }
 
-        static byte[] Decompress(byte[] data)
+        static byte[] Decompress(byte[] Data)
         {
-            using (var compressedMs = new MemoryStream(data))
+            using (var compressedMs = new MemoryStream(Data))
             {
                 using (var decompressedMs = new MemoryStream())
                 {

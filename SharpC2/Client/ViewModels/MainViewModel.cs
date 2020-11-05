@@ -47,6 +47,7 @@ namespace Client.ViewModels
         public List<AgentTask> AgentTasks = new List<AgentTask>();
 
         public ICommand AgentInteract { get; }
+        public ICommand LoadAgentModule { get; }
         public ICommand AgentRemove { get; }
         public ICommand AgentExit { get; }
 
@@ -68,6 +69,7 @@ namespace Client.ViewModels
             SignalR.AgentEventReceived += SignalR_AgentEventReceived;
 
             AgentInteract = new AgentInteractCommand(this);
+            LoadAgentModule = new LoadAgentModuleCommand(this);
             AgentRemove = new AgentRemoveCommand(this);
 
             OpenEventLog = new OpenTabCommand("Event Log", TabType.EventLog, this);

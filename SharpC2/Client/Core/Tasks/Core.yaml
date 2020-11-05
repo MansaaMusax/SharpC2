@@ -7,6 +7,15 @@
     Type: Integer
   - Name: Jitter
     Type: Integer
+- Alias: load-module
+  Usage: load-module [path]
+  Module: Core
+  Command: LoadModule
+  Parameters:
+  - Name: Path
+    Type: String
+  - Name: Assembly
+    Type: File
 - Alias: exit
   Usage: exit
   Module: Core

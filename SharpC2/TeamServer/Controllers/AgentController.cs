@@ -61,6 +61,11 @@ namespace TeamServer.Controllers
                 {
                     if (param.Value != null)
                     {
+                        if (param.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        };
+
                         builder.Append(" " + param.Value);
                     }
                 }

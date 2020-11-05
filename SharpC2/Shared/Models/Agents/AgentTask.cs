@@ -27,6 +27,7 @@ namespace Shared.Models
             {
                 String,
                 Integer,
+                File,
                 Listener,
                 ShellCode
             }

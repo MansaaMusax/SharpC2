@@ -54,6 +54,8 @@
                 <ContextMenu>
                     <MenuItem Header="_Interact" Command="{Binding AgentInteract}"/>
                     <Separator/>
+                    <MenuItem Header="_Load Module" Command="{Binding LoadAgentModule}"/>
+                    <Separator/>
                     <MenuItem Header="_Exit" Command="{Binding AgentExit}"/>
                     <MenuItem Header="_Remove" Command="{Binding AgentRemove}"/>
                 </ContextMenu>

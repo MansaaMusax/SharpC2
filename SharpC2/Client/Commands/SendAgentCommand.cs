@@ -8,6 +8,7 @@ using Shared.Models;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
@@ -89,6 +90,10 @@ namespace Client.Commands
                             case AgentTask.Parameter.ParameterType.Integer:
                                 task.Parameters[i].Value = Convert.ToInt32(args[i]);
                                 break;
+                            case AgentTask.Parameter.ParameterType.File:
+                                var bytes = File.ReadAllBytes(args[i]);
+                                task.Parameters[i].Value = bytes;
+                                break;
                             case AgentTask.Parameter.ParameterType.Listener:
                                 break;
                             case AgentTask.Parameter.ParameterType.ShellCode:
@@ -97,6 +102,11 @@ namespace Client.Commands
                             default:
                                 break;
                         }
+                    }
+
+                    if (task.Module.Equals("Core", StringComparison.OrdinalIgnoreCase) && task.Command.Equals("LoadModule", StringComparison.OrdinalIgnoreCase))
+                    {
+                        task.Parameters[1].Value = File.ReadAllBytes((string)task.Parameters[0].Value);
                     }
 
                     var json = JsonConvert.SerializeObject(task);

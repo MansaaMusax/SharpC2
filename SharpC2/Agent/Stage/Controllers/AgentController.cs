@@ -60,9 +60,27 @@ namespace Agent.Controllers
         {
             var c2Data = Shared.Utilities.Utilities.DecryptData<C2Data>(Message.Data, SessionKey, Message.IV);
 
-            var callback = AgentModules.FirstOrDefault(m => m.Name.Equals(c2Data.Module, StringComparison.OrdinalIgnoreCase)).Commands
-                .FirstOrDefault(c => c.Name.Equals(c2Data.Command, StringComparison.OrdinalIgnoreCase))
-                .Delegate;
+            AgentCommand callback = null;
+
+            var module = AgentModules.FirstOrDefault(m => m.Name.Equals(c2Data.Module, StringComparison.OrdinalIgnoreCase));
+
+            if (module == null)
+            {
+                SendMessage("Requested module not found");
+            }
+            else
+            {
+                var command = module.Commands.FirstOrDefault(c => c.Name.Equals(c2Data.Command, StringComparison.OrdinalIgnoreCase));
+
+                if (command == null)
+                {
+                    SendMessage($"Request command not found in module {module}");
+                }
+                else
+                {
+                    callback = command.Delegate;
+                }
+            }
 
             callback?.Invoke(Message.AgentID, c2Data);
         }

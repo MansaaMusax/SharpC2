@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net4.0</TargetFramework>
+    <AssemblyName>demo</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Agent\Stage\Stage.csproj" />
+  </ItemGroup>
+
+</Project>

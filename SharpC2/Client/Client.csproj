@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Core\Tasks\Demo.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Core\Tasks\Env.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -38,7 +38,7 @@ namespace Stager
 
         public static void Execute()
         {
-            AgentID = Helpers.GetRandomString(6);
+            AgentID = Utilities.GetRandomString(6);
             Crypto = new Crypto();
 
             StagerModule = new StagerModule

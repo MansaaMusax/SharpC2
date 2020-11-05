@@ -67,6 +67,8 @@ namespace Agent
             agent.RegisterAgentModule(new CoreModule());
             agent.RegisterAgentModule(new NetModule());
             agent.RegisterAgentModule(new DirectoryModule());
+            agent.RegisterAgentModule(new DriveModule());
+            agent.RegisterAgentModule(new EnvModule());
 
             agent.Start();
         }

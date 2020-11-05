@@ -70,9 +70,12 @@ namespace Client.Commands
                 else
                 {
                     // null out current values first
-                    foreach (var param in task.Parameters)
+                    if (task.Parameters != null)
                     {
-                        param.Value = null;
+                        foreach (var param in task.Parameters)
+                        {
+                            param.Value = null;
+                        }
                     }
 
                     // add new values

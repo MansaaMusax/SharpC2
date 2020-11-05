@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Include="..\..\Shared\Models\Agents\AgentMessage.cs" Link="Models\AgentMessage.cs" />
     <Compile Include="..\..\Shared\Models\Agents\AgentMetadata.cs" Link="Models\AgentMetadata.cs" />
+    <Compile Include="..\..\Shared\Models\Comms\HTTPChunk.cs" Link="Models\HTTPChunk.cs" />
     <Compile Include="..\..\Shared\Models\Modules\ModuleStatus.cs" Link="Models\ModuleStatus.cs" />
     <Compile Include="..\..\Shared\Utilities\Utilities.cs" Link="Utilities\Utilities.cs" />
   </ItemGroup>

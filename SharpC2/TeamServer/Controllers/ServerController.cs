@@ -6,6 +6,7 @@ using Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 using TeamServer.Hubs;
@@ -27,6 +28,8 @@ namespace TeamServer.Controllers
 
         IHubContext<MessageHub> HubContext;
         List<ServerEvent> ServerEvents = new List<ServerEvent>();
+
+        Dictionary<string, List<HTTPChunk>> HTTPChunks = new Dictionary<string, List<HTTPChunk>>();
 
         public delegate void ServerCommand(string AgentID, C2Data C2Data);
 
@@ -64,9 +67,34 @@ namespace TeamServer.Controllers
 
                     foreach (var listener in listeners)
                     {
-                        if (listener != null && listener.RecvData(out AgentMessage Message))
+                        if (listener != null && listener.RecvData(out HTTPChunk Chunk))
                         {
-                            HandleC2Data(Message);
+                            if (!HTTPChunks.ContainsKey(Chunk.AgentID))
+                            {
+                                HTTPChunks.Add(Chunk.AgentID, new List<HTTPChunk>());
+                            }
+
+                            HTTPChunks[Chunk.AgentID].Add(Chunk);
+
+                            if (Chunk.Final)
+                            {
+                                var allChunks = HTTPChunks[Chunk.AgentID].Where(c => c.ChunkID.Equals(Chunk.ChunkID, StringComparison.OrdinalIgnoreCase))
+                                    .Select(c => c.Data).ToList();
+
+                                var final = new StringBuilder();
+
+                                foreach (var chunk in allChunks)
+                                {
+                                    final.Append(chunk);
+                                }
+
+                                var message = Utilities.DeserialiseData<AgentMessage>(Convert.FromBase64String(final.ToString()));
+                                
+                                if (message != null)
+                                {
+                                    HandleC2Data(message);
+                                }
+                            }
                         }
                     }
                 }

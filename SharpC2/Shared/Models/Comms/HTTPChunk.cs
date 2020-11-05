@@ -2,7 +2,9 @@
 {
     public class HTTPChunk
     {
-        public byte Data { get; set; }
-        public bool Final { get; set; } = false;
+        public string AgentID { get; set; }
+        public string ChunkID { get; set; }
+        public string Data { get; set; }
+        public bool Final { get; set; }
     }
 }

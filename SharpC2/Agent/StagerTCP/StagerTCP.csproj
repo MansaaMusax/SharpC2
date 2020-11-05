@@ -51,9 +51,6 @@
     <Compile Include="..\..\Shared\Utilities\Extensions.cs">
       <Link>Utilities\Extensions.cs</Link>
     </Compile>
-    <Compile Include="..\..\Shared\Utilities\Helpers.cs">
-      <Link>Utilities\Helpers.cs</Link>
-    </Compile>
     <Compile Include="..\..\Shared\Utilities\Utilities.cs">
       <Link>Utilities\Utilities.cs</Link>
     </Compile>

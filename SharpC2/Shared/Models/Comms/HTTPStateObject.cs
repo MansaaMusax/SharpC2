@@ -7,6 +7,6 @@ namespace Shared.Models
         public Socket workSocket = null;
         public const int BufferSize = 65535;
         public byte[] buffer = new byte[BufferSize];
-        public byte[] data = null;
+        public byte[] swapBuffer = null;
     }
 }

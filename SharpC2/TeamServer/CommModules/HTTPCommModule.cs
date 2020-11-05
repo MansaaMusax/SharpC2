@@ -3,6 +3,7 @@ using Shared.Utilities;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -26,7 +27,7 @@ namespace TeamServer.CommModules
 
         event EventHandler<ServerEvent> OnServerEvent;
 
-        Queue<AgentMessage> Inbound = new Queue<AgentMessage>();
+        Queue<HTTPChunk> Inbound = new Queue<HTTPChunk>();
 
         ManualResetEvent AllDone = new ManualResetEvent(false);
 
@@ -46,16 +47,16 @@ namespace TeamServer.CommModules
             this.Agent = Agent;
         }
 
-        public bool RecvData(out AgentMessage Message)
+        public bool RecvData(out HTTPChunk Chunk)
         {
             if (Inbound.Count > 0)
             {
-                Message = Inbound.Dequeue();
+                Chunk = Inbound.Dequeue();
                 return true;
             }
             else
             {
-                Message = null;
+                Chunk = null;
                 return false;
             }
         }
@@ -119,29 +120,31 @@ namespace TeamServer.CommModules
             {
                 var dataReceived = state.buffer.TrimBytes();
                 var webRequest = Encoding.UTF8.GetString(dataReceived);
-                var regex = Regex.Match(webRequest, "data=([^\\s]+)");
+                var regex = Regex.Match(webRequest, "GET /\\?agentid=([^&]+)&chunkid=([^&]+)&data=([^&]*)&final=([^\\s]+)");
 
-                AgentMessage messageIn = null;
                 byte[] messageOut = null;
 
-                if (regex.Captures.Count > 0)
+                if (regex.Groups.Count == 5)
                 {
-                    messageIn = Utilities.DeserialiseData<AgentMessage>(Convert.FromBase64String(regex.Groups[1].Value));
-
-                    if (messageIn != null)
+                    var chunk = new HTTPChunk
                     {
-                        Inbound.Enqueue(messageIn);
+                        AgentID = regex.Groups[1].Value,
+                        ChunkID = regex.Groups[2].Value,
+                        Data = regex.Groups[3].Value,
+                        Final = bool.Parse(regex.Groups[4].Value)
+                    };
 
-                        var task = Agent.GetAgentTask(messageIn.AgentID);
+                    Inbound.Enqueue(chunk);
 
-                        if (task != null)
-                        {
-                            messageOut = Get200Response(Utilities.SerialiseData(task));
-                        }
-                        else
-                        {
-                            messageOut = Get200Response();
-                        }
+                    var task = Agent.GetAgentTask(chunk.AgentID);
+
+                    if (task != null)
+                    {
+                        messageOut = Get200Response(Utilities.SerialiseData(task));
+                    }
+                    else
+                    {
+                        messageOut = Get200Response();
                     }
                 }
                 else
@@ -151,7 +154,7 @@ namespace TeamServer.CommModules
                 }
 
                 handler.BeginSend(messageOut, 0, messageOut.Length, 0, new AsyncCallback(SendCallback), handler);
-            }
+            } 
         }
 
         void SendCallback(IAsyncResult ar)

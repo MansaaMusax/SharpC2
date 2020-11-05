@@ -1,4 +1,4 @@
-﻿using Client.Core;
+﻿using Shared.Utilities;
 
 using System;
 
@@ -10,7 +10,7 @@ namespace Client.Models
 
         public static string GenerateLauncher(byte[] payload)
         {
-            var compressed = Convert.ToBase64String(Helpers.Compress(payload));
+            var compressed = Convert.ToBase64String(Utilities.Compress(payload));
             var launcher = Template.Replace("{{COMPRESSED}}", compressed);
             return launcher;
         }

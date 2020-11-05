@@ -46,11 +46,11 @@
     <Compile Include="..\..\Shared\Models\Agents\AgentMessage.cs">
       <Link>Models\AgentMessage.cs</Link>
     </Compile>
+    <Compile Include="..\..\Shared\Models\Comms\HTTPChunk.cs">
+      <Link>Models\HTTPChunk.cs</Link>
+    </Compile>
     <Compile Include="..\..\Shared\Models\Modules\ModuleStatus.cs">
       <Link>Models\ModuleStatus.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Shared\Utilities\Helpers.cs">
-      <Link>Utilities\Helpers.cs</Link>
     </Compile>
     <Compile Include="..\..\Shared\Utilities\Utilities.cs">
       <Link>Utilities\Utilities.cs</Link>

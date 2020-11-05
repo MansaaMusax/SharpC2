@@ -1,7 +1,6 @@
 ﻿using Client.Commands;
 using Client.Models;
 using Client.Services;
-using Newtonsoft.Json;
 using Shared.Models;
 
 using System;
@@ -104,7 +103,7 @@ namespace Client.ViewModels
 
                 case AgentEvent.EventType.AgentOutput:
                     message.AppendLine();
-                    message.AppendLine(ev.Data as string);
+                    message.AppendLine(ev.Data.ToString());
                     break;
                 case AgentEvent.EventType.AgentError:
                     message.AppendLine();

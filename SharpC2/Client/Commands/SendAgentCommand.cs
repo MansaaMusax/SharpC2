@@ -44,7 +44,7 @@ namespace Client.Commands
 
                 var taskOutput = new SharpC2ResultList<AgentHelp>();
 
-                foreach (var task in AgentTasks)
+                foreach (var task in AgentTasks.OrderBy(t => t.Alias))
                 {
                     taskOutput.Add(new AgentHelp
                     {
@@ -60,7 +60,7 @@ namespace Client.Commands
                 var split = AgentInteractViewModel.AgentCommand.Split(" ");
 
                 var alias = split[0];
-                var args = split[1..];
+                var args = split[1..].ToList();
 
                 var task = AgentTasks.FirstOrDefault(t => t.Alias.Equals(alias, StringComparison.OrdinalIgnoreCase));
 
@@ -80,7 +80,7 @@ namespace Client.Commands
                     }
 
                     // add new values
-                    for (var i = 0; i < args.Length; i++)
+                    for (var i = 0; i < args.Count; i++)
                     {
                         switch (task.Parameters[i].Type)
                         {
@@ -105,6 +105,8 @@ namespace Client.Commands
                                     Value = args[i],
                                     Type = AgentTask.Parameter.ParameterType.String
                                 });
+
+                                args.Insert(i, string.Empty);
 
                                 break;
                             case AgentTask.Parameter.ParameterType.Listener:

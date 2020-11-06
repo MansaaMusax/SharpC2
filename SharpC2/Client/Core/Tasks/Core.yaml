@@ -28,6 +28,20 @@
   Parameters:
   - Name: BlockDLLs
     Type: Boolean
+- Alias: disable-amsi
+  Usage: disable-amsi [true|false]
+  Module: Core
+  Command: DisableAMSI
+  Parameters:
+  - Name: DisableAMSI
+    Type: Boolean
+- Alias: disable-etw
+  Usage: disable-etw [true|false]
+  Module: Core
+  Command: DisableETW
+  Parameters:
+  - Name: DisableETW
+    Type: Boolean
 - Alias: exit
   Usage: exit
   Module: Core

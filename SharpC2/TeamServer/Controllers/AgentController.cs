@@ -61,7 +61,7 @@ namespace TeamServer.Controllers
                 {
                     if (param.Value != null)
                     {
-                        if (param.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase))
+                        if (param.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase) || param.Name.Equals("Script", StringComparison.OrdinalIgnoreCase))
                         {
                             continue;
                         };

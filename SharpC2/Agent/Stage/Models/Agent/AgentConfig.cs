@@ -6,6 +6,8 @@
         SleepJitter,
         KillDate,
         PPID,
-        BlockDLLs
+        BlockDLLs,
+        DisableAMSI,
+        DisableETW
     }
 }

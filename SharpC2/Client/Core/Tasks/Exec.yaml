@@ -1,5 +1,35 @@
-﻿- Alias: execute-netexe
-  Usage: execute-netexe [path] <args>
+﻿- Alias: shell
+  Usage: shell [args]
+  Module: Exec
+  Command: Shell
+  Parameters:
+  - Name: Arguments
+    Type: String
+- Alias: run
+  Usage: run [command] <args>
+  Module: Exec
+  Command: Run
+  Parameters:
+  - Name: Command
+    Type: String
+  - Name: Arguments
+    Type: String
+- Alias: powershell
+  Usage: powershell [args]
+  Module: Exec
+  Command: PowerShell
+  Parameters:
+  - Name: Arguments
+    Type: String
+- Alias: powerpick
+  Usage: powerpick [args]
+  Module: Exec
+  Command: PowerPick
+  Parameters:
+  - Name: Arguments
+    Type: String
+- Alias: exec-asm
+  Usage: exec-asm [path] <args>
   Module: Exec
   Command: Assembly
   Parameters:
@@ -7,15 +37,22 @@
     Type: File
   - Name: Arguments
     Type: String
-- Alias: import-netdll
-  Usage: import-netdll [path]
+- Alias: import-asm
+  Usage: import-asm [path]
   Module: Exec
   Command: ImportAssembly
   Parameters:
   - Name: Assembly
     Type: File
-- Alias: execute-netdll
-  Usage: execute-netdll [type] [method] <args>
+- Alias: import-powershell
+  Usage: import-powershell [path]
+  Module: Exec
+  Command: ImportPowerShell
+  Parameters:
+  - Name: Script
+    Type: File
+- Alias: exec-imported-asm
+  Usage: exec-imported-asm [type] [method] <args>
   Module: Exec
   Command: AssemblyMethod
   Parameters:

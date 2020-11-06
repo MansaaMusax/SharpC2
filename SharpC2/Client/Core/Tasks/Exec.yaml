@@ -1,9 +1,27 @@
 ﻿- Alias: execute-assembly
-  Usage: execute-assembly [path] [args]
+  Usage: execute-assembly [path] <args>
   Module: Exec
   Command: Assembly
   Parameters:
   - Name: Assembly
     Type: File
+  - Name: Arguments
+    Type: String
+- Alias: import-assembly
+  Usage: import-assembly [path]
+  Module: Exec
+  Command: ImportAssembly
+  Parameters:
+  - Name: Assembly
+    Type: File
+- Alias: execute-assembly-method
+  Usage: execute-assembly-method [type] [method] <args>
+  Module: Exec
+  Command: AssemblyMethod
+  Parameters:
+  - Name: Type
+    Type: String
+  - Name: Method
+    Type: String
   - Name: Arguments
     Type: String

@@ -14,6 +14,20 @@
   Parameters:
   - Name: Assembly
     Type: File
+- Alias: ppid
+  Usage: ppid [pid]
+  Module: Core
+  Command: PPID
+  Parameters:
+  - Name: PPID
+    Type: Integer
+- Alias: blockdlls
+  Usage: blockdlls [true|false]
+  Module: Core
+  Command: BlockDLLs
+  Parameters:
+  - Name: BlockDLLs
+    Type: Boolean
 - Alias: exit
   Usage: exit
   Module: Core

@@ -1,5 +1,5 @@
-﻿- Alias: execute-assembly
-  Usage: execute-assembly [path] <args>
+﻿- Alias: execute-netexe
+  Usage: execute-netexe [path] <args>
   Module: Exec
   Command: Assembly
   Parameters:
@@ -7,15 +7,15 @@
     Type: File
   - Name: Arguments
     Type: String
-- Alias: import-assembly
-  Usage: import-assembly [path]
+- Alias: import-netdll
+  Usage: import-netdll [path]
   Module: Exec
   Command: ImportAssembly
   Parameters:
   - Name: Assembly
     Type: File
-- Alias: execute-assembly-method
-  Usage: execute-assembly-method [type] [method] <args>
+- Alias: execute-netdll
+  Usage: execute-netdll [type] [method] <args>
   Module: Exec
   Command: AssemblyMethod
   Parameters:

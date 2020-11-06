@@ -94,6 +94,11 @@ namespace Client.Commands
                                 task.Parameters[i].Value = Convert.ToInt32(args[i]);
                                 break;
 
+                            case AgentTask.Parameter.ParameterType.Boolean:
+
+                                task.Parameters[i].Value = Convert.ToBoolean(args[i]);
+                                break;
+
                             case AgentTask.Parameter.ParameterType.File:
 
                                 var bytes = File.ReadAllBytes(args[i]);

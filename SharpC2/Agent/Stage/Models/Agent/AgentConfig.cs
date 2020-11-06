@@ -4,6 +4,8 @@
     {
         SleepInterval,
         SleepJitter,
-        KillDate
+        KillDate,
+        PPID,
+        BlockDLLs
     }
 }

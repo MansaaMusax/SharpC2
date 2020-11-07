@@ -1,0 +1,9 @@
+﻿- Alias: jump-winrm
+  Usage: jump-winrm [target] [listener]
+  Module: Jump
+  Command: WinRM
+  Parameters:
+  - Name: Target
+    Type: String
+  - Name: Listener
+    Type: Listener

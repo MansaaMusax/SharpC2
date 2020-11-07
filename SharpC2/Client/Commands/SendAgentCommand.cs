@@ -34,7 +34,7 @@ namespace Client.Commands
         public bool CanExecute(object parameter)
             => true;
 
-        public void Execute(object parameter)
+        public async void Execute(object parameter)
         {
             var builder = new StringBuilder();
 
@@ -127,8 +127,29 @@ namespace Client.Commands
                                 args.Insert(i, string.Empty);
 
                                 break;
+
                             case AgentTask.Parameter.ParameterType.Listener:
+
+                                var listeners = await SharpC2API.Listeners.GetAllListeners();
+                                var listener = listeners.FirstOrDefault(l => l.Name.Equals(args[i], StringComparison.OrdinalIgnoreCase));
+
+                                task.Parameters[i].Value = listener.Name;
+
+                                var stager = await SharpC2API.Payloads.GenerateStager(new StagerRequest
+                                {
+                                    Listener = listener.Name,
+                                    Type = StagerRequest.OutputType.EXE
+                                });
+
+                                task.Parameters.Insert(i + 1, new AgentTask.Parameter
+                                {
+                                    Name = "Assembly",
+                                    Value = stager,
+                                    Type = AgentTask.Parameter.ParameterType.File
+                                });
+
                                 break;
+
                             case AgentTask.Parameter.ParameterType.ShellCode:
                                 break;
 

@@ -1,0 +1,9 @@
+﻿- Alias: link-tcp
+  Usage: link-tcp [target] [port]
+  Module: Link
+  Command: TCP
+  Parameters:
+  - Name: Target
+    Type: String
+  - Name: Port
+    Type: Integer

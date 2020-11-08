@@ -16,15 +16,16 @@ namespace Agent.Comms
 {
     public class TCPCommModule : ICommModule
     {
-        readonly string Hostname;
-        readonly int Port;
+        ModuleMode Mode;
+        ModuleStatus Status;
 
         TcpListener Listener;
 
-        ConfigController Config;
+        readonly string Hostname;
+        readonly int Port;
 
-        ModuleMode Mode;
-        ModuleStatus Status;
+        ConfigController Config;
+        AgentMetadata Metadata;
 
         Queue<AgentMessage> Inbound = new Queue<AgentMessage>();
         Queue<AgentMessage> Outbound = new Queue<AgentMessage>();
@@ -34,10 +35,10 @@ namespace Agent.Comms
         public TCPCommModule(string Hostname, int Port)
         {
             Status = ModuleStatus.Starting;
-
+            
             this.Hostname = Hostname;
             this.Port = Port;
-
+            
             Mode = ModuleMode.Client;
         }
 
@@ -89,22 +90,20 @@ namespace Agent.Comms
             }
         }
 
-        void StartClient()
+        public void Stop()
         {
-            Task.Factory.StartNew(delegate ()
+            switch (Mode)
             {
-                while (Status == ModuleStatus.Running)
-                {
-                    Event.Reset();
+                case ModuleMode.Client:
+                    break;
+                case ModuleMode.Server:
+                    Listener.Stop();
+                    break;
+                default:
+                    break;
+            }
 
-                    var client = new TcpClient();
-                    client.BeginConnect(Hostname, Port, new AsyncCallback(ClientConnectCallback), client);
-                    
-                    Event.WaitOne();
-
-                    Thread.Sleep(1000);
-                }
-            });
+            Status = ModuleStatus.Stopped;
         }
 
         void StartServer()
@@ -122,8 +121,24 @@ namespace Agent.Comms
             });
         }
 
-        #region ServerMethods
+        void StartClient()
+        {
+            Task.Factory.StartNew(delegate ()
+            {
+                while (Status == ModuleStatus.Running)
+                {
+                    Event.Reset();
 
+                    var client = new TcpClient();
+                    client.BeginConnect(Hostname, Port, new AsyncCallback(ClientConnectCallback), client);
+                    Event.WaitOne();
+
+                    Thread.Sleep(1000);
+                }
+            });
+        }
+
+        #region Server
         void ServerAcceptCallback(IAsyncResult ar)
         {
             Event.Set();
@@ -156,20 +171,23 @@ namespace Agent.Comms
             if (bytesRead > 0)
             {
                 var data = DataJuggle(bytesRead, stream, state);
-                var messageIn = Shared.Utilities.Utilities.DeserialiseData<AgentMessage>(data);
 
-                if (messageIn != null)
+                var inbound = Shared.Utilities.Utilities.DeserialiseData<AgentMessage>(data);
+
+                if (inbound != null)
                 {
-                    Inbound.Enqueue(messageIn);
+                    Inbound.Enqueue(inbound);
                 }
+
+                var outbound = new AgentMessage();
 
                 if (Outbound.Count > 0)
                 {
-                    var messageOut = Outbound.Dequeue();
-                    var serialised = Shared.Utilities.Utilities.SerialiseData(messageOut);
-
-                    stream.BeginWrite(serialised, 0, serialised.Length, new AsyncCallback(ServerWriteCallback), stream);
+                    outbound = Outbound.Dequeue();
                 }
+
+                var serialised = Shared.Utilities.Utilities.SerialiseData(outbound);
+                stream.BeginWrite(serialised, 0, serialised.Length, new AsyncCallback(ServerWriteCallback), stream);
             }
         }
 
@@ -180,11 +198,9 @@ namespace Agent.Comms
             stream.EndWrite(ar);
             stream.Close();
         }
-
         #endregion
 
-        #region ClientMethods
-
+        #region Client
         void ClientConnectCallback(IAsyncResult ar)
         {
             Event.Set();
@@ -211,7 +227,7 @@ namespace Agent.Comms
             catch
             {
                 // Agent has probably been closed or killed
-                Status = ModuleStatus.Stopped;
+                Status = ModuleStatus.Terminated;
             }
         }
 
@@ -241,9 +257,10 @@ namespace Agent.Comms
             if (bytesRead > 0)
             {
                 var data = DataJuggle(bytesRead, stream, state);
+
                 var inbound = Shared.Utilities.Utilities.DeserialiseData<AgentMessage>(data);
 
-                if (inbound != null)
+                if (inbound != null && inbound.Data != null)
                 {
                     Inbound.Enqueue(inbound);
                 }
@@ -295,22 +312,6 @@ namespace Agent.Comms
             }
 
             return final.TrimBytes();
-        }
-
-        public void Stop()
-        {
-            switch (Mode)
-            {
-                case ModuleMode.Client:
-                    break;
-                case ModuleMode.Server:
-                    Listener.Stop();
-                    break;
-                default:
-                    break;
-            }
-
-            Status = ModuleStatus.Stopped;
         }
     }
 }

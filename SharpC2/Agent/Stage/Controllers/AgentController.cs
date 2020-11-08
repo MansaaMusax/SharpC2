@@ -16,10 +16,12 @@ namespace Agent.Controllers
     {
         ModuleStatus Status;
 
-        string AgentID;
+        public string AgentID;
+
         byte[] SessionKey;
         ICommModule CommModule;
         ConfigController Config;
+        PeerToPeerController P2PController;
 
         List<ModuleInfo> AgentModules = new List<ModuleInfo>();
 
@@ -33,6 +35,9 @@ namespace Agent.Controllers
             this.SessionKey = SessionKey;
             this.CommModule = CommModule;
             this.Config = Config;
+
+            P2PController = new PeerToPeerController(this);
+            P2PController.Start();
         }
 
         public void RegisterAgentModule(IAgentModule Module)
@@ -191,6 +196,11 @@ namespace Agent.Controllers
                 Data = data,
                 IV = iv
             });
+        }
+
+        public void AddP2PAgent(ICommModule CommModule)
+        {
+            P2PController.LinkAgent(CommModule);
         }
 
         public void Stop()

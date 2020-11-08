@@ -1,0 +1,66 @@
+﻿- Alias: cp
+  Usage: cp [source] [destination]
+  Module: File
+  Command: Copy
+  Parameters:
+  - Name: Source
+    Type: String
+  - Name: Destination
+    Type: String
+- Alias: mv
+  Usage: mv [source] [destination]
+  Module: File
+  Command: Move
+  Parameters:
+  - Name: Source
+    Type: String
+  - Name: Destination
+    Type: String
+- Alias: rm
+  Usage: rm [path]
+  Module: File
+  Command: Delete
+  Parameters:
+  - Name: Path
+    Type: String
+- Alias: cat
+  Usage: cat [path]
+  Module: File
+  Command: Read
+  Parameters:
+  - Name: Path
+    Type: String
+- Alias: download
+  Usage: download [path]
+  Module: File
+  Command: Download
+  Parameters:
+  - Name: Path
+    Type: String
+- Alias: upload
+  Usage: upload [source] [destination]
+  Module: File
+  Command: Upload
+  Parameters:
+  - Name: Source
+    Type: File
+  - Name: Destination
+    Type: String
+- Alias: search
+  Usage: search [path] [pattern]
+  Module: File
+  Command: Search
+  Parameters:
+  - Name: Path
+    Type: String
+  - Name: Pattern
+    Type: String
+- Alias: timestomp
+  Usage: timestomp [source] [target]
+  Module: File
+  Command: TimeStomp
+  Parameters:
+  - Name: Source
+    Type: String
+  - Name: Target
+    Type: String

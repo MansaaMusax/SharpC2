@@ -72,6 +72,7 @@ namespace Agent
             agent.RegisterAgentModule(new CoreModule());
             agent.RegisterAgentModule(new NetModule());
             agent.RegisterAgentModule(new DirectoryModule());
+            agent.RegisterAgentModule(new FileModule());
             agent.RegisterAgentModule(new DriveModule());
             agent.RegisterAgentModule(new EnvModule());
             agent.RegisterAgentModule(new ExecModule());

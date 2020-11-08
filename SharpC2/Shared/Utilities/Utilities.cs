@@ -31,9 +31,9 @@ namespace Shared.Utilities
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        public static byte[] EncryptData(C2Data C2Data, byte[] Key, out byte[] IV)
+        public static byte[] EncryptData(object Data, byte[] Key, out byte[] IV)
         {
-            var data = SerialiseData(C2Data);
+            var data = SerialiseData(Data);
 
             using (var aes = Aes.Create())
             {

@@ -13,6 +13,7 @@
     <Compile Include="..\..\Shared\Models\Misc\GenericObjectResult.cs" Link="Models\Misc\GenericObjectResult.cs" />
     <Compile Include="..\..\Shared\Models\Modules\ModuleStatus.cs" Link="Models\Module\ModuleStatus.cs" />
     <Compile Include="..\..\Shared\Models\Native\Native.cs" Link="Models\Native\Native.cs" />
+    <Compile Include="..\..\Shared\Utilities\Extensions.cs" Link="Utilities\Extensions.cs" />
     <Compile Include="..\..\Shared\Utilities\Utilities.cs" Link="Utilities\Utilities.cs" />
   </ItemGroup>
 
@@ -24,7 +25,6 @@
 
   <ItemGroup>
     <Folder Include="Models\Misc\" />
-    <Folder Include="Models\Comms\" />
     <Folder Include="Models\Native\" />
   </ItemGroup>
 

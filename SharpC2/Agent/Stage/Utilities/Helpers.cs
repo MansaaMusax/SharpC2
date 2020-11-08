@@ -7,6 +7,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Principal;
 
+using static Agent.PInvoke.NativeMethods;
+
 namespace Agent.Utilities
 {
     public class Helpers
@@ -51,11 +53,28 @@ namespace Agent.Utilities
             }
         }
 
-        public static AgentMetadata.Architecture GetArch
+        public static Native.Platform GetArchitecture
         {
             get
             {
-                return IntPtr.Size == 8 ? AgentMetadata.Architecture.x64 : AgentMetadata.Architecture.x86;
+                const ushort PROCESSOR_ARCHITECTURE_INTEL = 0;
+                const ushort PROCESSOR_ARCHITECTURE_IA64 = 6;
+                const ushort PROCESSOR_ARCHITECTURE_AMD64 = 9;
+
+                var sysInfo = new SYSTEM_INFO();
+                Kernel32.GetNativeSystemInfo(ref sysInfo);
+
+                switch (sysInfo.wProcessorArchitecture)
+                {
+                    case PROCESSOR_ARCHITECTURE_AMD64:
+                        return Native.Platform.x64;
+                    case PROCESSOR_ARCHITECTURE_INTEL:
+                        return Native.Platform.x86;
+                    case PROCESSOR_ARCHITECTURE_IA64:
+                        return Native.Platform.IA64;
+                    default:
+                        return Native.Platform.Unknown;
+                }
             }
         }
 

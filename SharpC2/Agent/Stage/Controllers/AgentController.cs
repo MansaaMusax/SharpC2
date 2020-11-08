@@ -90,7 +90,7 @@ namespace Agent.Controllers
             var metadata = new AgentMetadata
             {
                 AgentID = AgentID,
-                Arch = Helpers.GetArch,
+                Arch = Helpers.GetArchitecture,
                 Elevation = Helpers.GetIntegrity,
                 Hostname = Helpers.GetHostname,
                 Identity = Helpers.GetIdentity,

@@ -17,7 +17,7 @@ namespace Client.Models
         public string Identity { get; set; }
         public string Process { get; set; }
         public int PID { get; set; }
-        public AgentMetadata.Architecture Arch { get; set; }
+        public Native.Platform Arch { get; set; }
         public AgentMetadata.Integrity Integrity { get; set; }
 
         private DateTime _lastSeen;

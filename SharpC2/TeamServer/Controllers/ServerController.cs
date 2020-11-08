@@ -69,6 +69,8 @@ namespace TeamServer.Controllers
                     {
                         if (listener != null && listener.RecvData(out HTTPChunk Chunk))
                         {
+                            if (Chunk == null) { return; }
+
                             if (!HTTPChunks.ContainsKey(Chunk.AgentID))
                             {
                                 HTTPChunks.Add(Chunk.AgentID, new List<HTTPChunk>());
@@ -78,17 +80,27 @@ namespace TeamServer.Controllers
 
                             if (Chunk.Final)
                             {
-                                var allChunks = HTTPChunks[Chunk.AgentID].Where(c => c.ChunkID.Equals(Chunk.ChunkID, StringComparison.OrdinalIgnoreCase))
-                                    .Select(c => c.Data).ToList();
+                                var allChunks = HTTPChunks[Chunk.AgentID].Where(c => c.ChunkID.Equals(Chunk.ChunkID, StringComparison.OrdinalIgnoreCase)).ToList();
+                                    //.Select(c => c.Data).ToList();
 
                                 var final = new StringBuilder();
 
                                 foreach (var chunk in allChunks)
                                 {
-                                    final.Append(chunk);
+                                    final.Append(chunk.Data);
+                                    HTTPChunks[Chunk.AgentID].Remove(chunk);
                                 }
 
-                                var message = Utilities.DeserialiseData<AgentMessage>(Convert.FromBase64String(final.ToString()));
+                                AgentMessage message;
+
+                                try
+                                {
+                                    message = Utilities.DeserialiseData<AgentMessage>(Convert.FromBase64String(final.ToString()));
+                                }
+                                catch
+                                {
+                                    message = null;
+                                }
                                 
                                 if (message != null)
                                 {

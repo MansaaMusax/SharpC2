@@ -1,0 +1,11 @@
+﻿- Alias: ps
+  Usage: ps
+  Module: Proc
+  Command: List
+- Alias: kill
+  Usage: kill [pid]
+  Module: Proc
+  Command: Kill
+  Parameters:
+  - Name: PID
+    Type: Integer

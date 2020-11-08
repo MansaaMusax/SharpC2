@@ -75,6 +75,7 @@ namespace Agent
             agent.RegisterAgentModule(new DriveModule());
             agent.RegisterAgentModule(new EnvModule());
             agent.RegisterAgentModule(new ExecModule());
+            agent.RegisterAgentModule(new ProcModule());
             agent.RegisterAgentModule(new JumpModule());
 
             agent.Start();

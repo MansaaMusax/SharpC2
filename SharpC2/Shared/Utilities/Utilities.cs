@@ -90,8 +90,15 @@ namespace Shared.Utilities
 
             using (var ms = new MemoryStream(data))
             {
-                var serialiser = new DataContractJsonSerializer(typeof(T));
-                return (T)serialiser.ReadObject(ms);
+                try
+                {
+                    var serialiser = new DataContractJsonSerializer(typeof(T));
+                    return (T)serialiser.ReadObject(ms);
+                }
+                catch
+                {
+                    return default;
+                }
             }
         }
 

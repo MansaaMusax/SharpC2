@@ -63,7 +63,7 @@ namespace Agent.Modules
                     var processName = process.ProcessName;
                     var processPath = string.Empty;
                     var sessionId = process.SessionId;
-                    var owner = GetProcessOwner(process);
+                    var owner = Helpers.GetProcessOwner(process);
                     var arch = Native.Platform.Unknown;
 
                     if (PPID != 0)
@@ -145,22 +145,7 @@ namespace Agent.Modules
             return (int)pbi.InheritedFromUniqueProcessId;
         }
 
-        string GetProcessOwner(Process Process)
-        {
-            try
-            {
-                Kernel32.OpenProcessToken(Process.Handle, 8, out IntPtr handle);
-
-                using (var winIdentity = new WindowsIdentity(handle))
-                {
-                    return winIdentity.Name;
-                }
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
+        
 
         bool IsWow64(Process Process)
         {

@@ -77,6 +77,7 @@ namespace Agent
             agent.RegisterAgentModule(new EnvModule());
             agent.RegisterAgentModule(new ExecModule());
             agent.RegisterAgentModule(new ProcModule());
+            agent.RegisterAgentModule(new TokenModule());
             agent.RegisterAgentModule(new JumpModule());
 
             agent.Start();

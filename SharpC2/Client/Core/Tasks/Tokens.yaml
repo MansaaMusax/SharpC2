@@ -1,0 +1,20 @@
+﻿- Alias: make-token
+  Usage: make-token [DOMAIN\user] [password]
+  Module: Token
+  Command: Create
+  Parameters:
+  - Name: UserDomain
+    Type: String
+  - Name: Password
+    Type: String
+- Alias: steal-token
+  Usage: steal-token [pid]
+  Module: Token
+  Command: Steal
+  Parameters:
+  - Name: PID
+    Type: Integer
+- Alias: rev2self
+  Usage: rev2self
+  Module: Token
+  Command: Revert

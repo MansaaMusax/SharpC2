@@ -110,5 +110,22 @@ namespace Agent.Utilities
 
             return result;
         }
+
+        public static string GetProcessOwner(Process Process)
+        {
+            try
+            {
+                Kernel32.OpenProcessToken(Process.Handle, DesiredAccess.TOKEN_QUERY, out IntPtr handle);
+
+                using (var winIdentity = new WindowsIdentity(handle))
+                {
+                    return winIdentity.Name;
+                }
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
     }
 }

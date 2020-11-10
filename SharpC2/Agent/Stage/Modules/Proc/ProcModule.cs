@@ -112,7 +112,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var pid = (int)parameters.FirstOrDefault(p => p.Name.Equals("PID", StringComparison.OrdinalIgnoreCase)).Value;
 
                 var process = Process.GetProcessById(pid);

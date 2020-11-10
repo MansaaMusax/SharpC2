@@ -71,7 +71,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
 
                 var name = (string)parameters.FirstOrDefault(p => p.Name.Equals("EnvName", StringComparison.OrdinalIgnoreCase)).Value;
                 var value = (string)parameters.FirstOrDefault(p => p.Name.Equals("EnvValue", StringComparison.OrdinalIgnoreCase)).Value;

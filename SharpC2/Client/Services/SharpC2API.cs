@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using RestSharp;
 
 using Shared.Models;
-
+using Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -113,14 +113,14 @@ namespace Client.Services
                 return JsonConvert.DeserializeObject<List<AgentEvent>>(apiResponse.Content);
             }
 
-            public static async void SubmitAgentCommand(string AgentID, string Module, string Command, string Data = "")
+            public static async void SubmitAgentCommand(string AgentID, string Module, string Command, AgentTask TaskData)
             {
                 var cmdRequest = new AgentCommandRequest
                 {
                     AgentID = AgentID,
                     Module = Module,
                     Command = Command,
-                    Data = Encoding.UTF8.GetBytes(Data)
+                    TaskData = TaskData
                 };
 
                 var apiRequest = new RestRequest($"/api/agents", Method.POST);

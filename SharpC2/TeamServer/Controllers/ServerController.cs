@@ -122,22 +122,14 @@ namespace TeamServer.Controllers
 
             C2Data c2Data;
 
-            if (Message.IV == null)
+            try
             {
-                try
-                {
-                    c2Data = Utilities.DeserialiseData<C2Data>(Message.Data);
-                }
-                catch
-                {
-                    c2Data = Crypto.Decrypt(Message.Data);
-                }
-                
+                c2Data = Crypto.Decrypt<C2Data>(Message.Data, Message.IV);
             }
-            else
+            catch
             {
-                var sessionKey = Crypto.GetSessionKey(Message.AgentID);
-                c2Data = Utilities.DecryptData<C2Data>(Message.Data, sessionKey, Message.IV);
+                var message = Crypto.Decrypt<AgentMessage>(Message.Data, Message.IV);
+                c2Data = Crypto.Decrypt<C2Data>(message.Data, Message.IV);
             }
 
             var callback = ServerModules.FirstOrDefault(m => m.Name.Equals(c2Data.Module, StringComparison.OrdinalIgnoreCase)).Commands

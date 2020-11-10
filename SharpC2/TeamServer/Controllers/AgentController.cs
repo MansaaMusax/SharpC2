@@ -32,15 +32,13 @@ namespace TeamServer.Controllers
 
         public void SendAgentCommand(AgentCommandRequest Request, string Nick)
         {
-            var sessionKey = Crypto.GetSessionKey(Request.AgentID);
-
-            var data = Utilities.EncryptData(new C2Data
+            var data = Crypto.Encrypt(new C2Data
             {
                 Module = Request.Module,
                 Command = Request.Command,
-                Data = Request.Data
+                Data = Utilities.SerialiseData(Request.TaskData)
             },
-            sessionKey, out byte[] iv);
+            out byte[] iv);
 
             SendAgentMessage(new AgentMessage
             {
@@ -53,7 +51,7 @@ namespace TeamServer.Controllers
             builder.Append(Request.Module.ToLower());
             builder.Append(" " + Request.Command.ToLower());
 
-            var parameters = JsonConvert.DeserializeObject<AgentTask>(Encoding.UTF8.GetString(Request.Data)).Parameters;
+            var parameters = Request.TaskData.Parameters;
 
             if (parameters != null)
             {
@@ -87,6 +85,16 @@ namespace TeamServer.Controllers
         public AgentMessage GetAgentTask(string AgentID)
         {
             AgentCheckin(AgentID);
+
+            //var destinationAgent = Agents.FirstOrDefault(a => a.AgentID.Equals(AgentID, StringComparison.OrdinalIgnoreCase));
+
+            //while (true)
+            //{
+            //    if (!string.IsNullOrEmpty(destinationAgent.ParentAgentID))
+            //    {
+                    
+            //    }
+            //}
 
             if (AgentTasks.ContainsKey(AgentID))
             {

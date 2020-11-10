@@ -53,7 +53,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 
                 var userDomain = (string)parameters.FirstOrDefault(p => p.Name.Equals("UserDomain", StringComparison.OrdinalIgnoreCase)).Value;
                 var password = (string)parameters.FirstOrDefault(p => p.Name.Equals("Password", StringComparison.OrdinalIgnoreCase)).Value;
@@ -93,7 +93,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var pid = (int)parameters.FirstOrDefault(p => p.Name.Equals("PID", StringComparison.OrdinalIgnoreCase)).Value;
 
                 var process = Process.GetProcessById(pid);

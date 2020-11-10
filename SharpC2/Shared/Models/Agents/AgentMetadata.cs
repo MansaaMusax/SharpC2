@@ -5,6 +5,7 @@ namespace Shared.Models
     public class AgentMetadata
     {
         public string AgentID { get; set; }
+        public string ParentAgentID { get; set; }
         public string IPAddress { get; set; }
         public string Hostname { get; set; }
         public string Identity { get; set; }

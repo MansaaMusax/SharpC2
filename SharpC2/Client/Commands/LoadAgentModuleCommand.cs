@@ -49,7 +49,7 @@ namespace Client.Commands
 
                 var json = JsonConvert.SerializeObject(task);
 
-                SharpC2API.Agents.SubmitAgentCommand(MainViewModel.SelectedAgent.AgentID, "Core", "LoadModule", json);
+                SharpC2API.Agents.SubmitAgentCommand(MainViewModel.SelectedAgent.AgentID, "Core", "LoadModule", task);
             }   
         }
     }

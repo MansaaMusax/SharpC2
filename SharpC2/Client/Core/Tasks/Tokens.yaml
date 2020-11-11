@@ -1,20 +1,28 @@
 ﻿- Alias: make-token
-  Usage: make-token [DOMAIN\user] [password]
+  Description: Create a token using plaintext credentials
+  Usage: make-token [domain] [username] [password]
+  OpSec: Inline
   Module: Token
   Command: Create
   Parameters:
-  - Name: UserDomain
+  - Name: Domain
+    Type: String
+  - Name: Username
     Type: String
   - Name: Password
     Type: String
 - Alias: steal-token
+  Description: Impersonate the access token from the target process
   Usage: steal-token [pid]
+  OpSec: Inline
   Module: Token
   Command: Steal
   Parameters:
   - Name: PID
     Type: Integer
 - Alias: rev2self
+  Description: Revert to your original token
   Usage: rev2self
+  OpSec: Inline
   Module: Token
   Command: Revert

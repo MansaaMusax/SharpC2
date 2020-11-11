@@ -44,7 +44,7 @@ namespace Client.ViewModels
             }
         }
 
-        public List<AgentTask> AgentTasks = new List<AgentTask>();
+        public List<TaskDefinition> AgentTasks = new List<TaskDefinition>();
 
         public ICommand AgentInteract { get; }
         public ICommand LoadAgentModule { get; }
@@ -89,7 +89,7 @@ namespace Client.ViewModels
             GetAgentData();
         }
 
-        private void SignalR_AgentEventReceived(AgentEvent ev)
+        void SignalR_AgentEventReceived(AgentEvent ev)
         {
             switch (ev.Type)
             {
@@ -164,7 +164,7 @@ namespace Client.ViewModels
             foreach (var file in files)
             {
                 var yaml = File.ReadAllText(file);
-                var tasks = yamlDotNet.Deserialize<List<AgentTask>>(yaml);
+                var tasks = yamlDotNet.Deserialize<List<TaskDefinition>>(yaml);
                 AgentTasks.AddRange(tasks);
             }
         }

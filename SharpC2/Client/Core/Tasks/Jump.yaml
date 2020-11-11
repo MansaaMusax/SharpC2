@@ -1,5 +1,7 @@
 ﻿- Alias: jump-winrm
+  Description: Execute an Agent on the remote target over WinRM
   Usage: jump-winrm [target] [listener]
+  OpSec: Inline
   Module: Jump
   Command: WinRM
   Parameters:

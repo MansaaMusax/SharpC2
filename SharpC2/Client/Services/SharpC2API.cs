@@ -113,14 +113,14 @@ namespace Client.Services
                 return JsonConvert.DeserializeObject<List<AgentEvent>>(apiResponse.Content);
             }
 
-            public static async void SubmitAgentCommand(string AgentID, string Module, string Command, AgentTask TaskData)
+            public static async void SubmitAgentCommand(string AgentID, string Module, string Command, TaskDefinition Task)
             {
                 var cmdRequest = new AgentCommandRequest
                 {
                     AgentID = AgentID,
                     Module = Module,
                     Command = Command,
-                    TaskData = TaskData
+                    Task = Task
                 };
 
                 var apiRequest = new RestRequest($"/api/agents", Method.POST);

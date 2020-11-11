@@ -1,9 +1,13 @@
 ﻿- Alias: ps
+  Description: List running processes
   Usage: ps
+  OpSec: Inline
   Module: Proc
   Command: List
 - Alias: kill
+  Description: Kill a process
   Usage: kill [pid]
+  OpSec: Inline
   Module: Proc
   Command: Kill
   Parameters:

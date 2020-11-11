@@ -1,30 +1,40 @@
 ﻿- Alias: pwd
+  Description: Print the current working directory
   Usage: pwd
+  OpSec: Inline
   Module: Dir
   Command: Print
 - Alias: cd
+  Description: Change the current working directory
   Usage: cd [path]
+  OpSec: Inline
   Module: Dir
   Command: Change
   Parameters:
   - Name: Path
     Type: String
 - Alias: ls
+  Description: List files in the current or provided directory
   Usage: ls <path>
+  OpSec: Inline
   Module: Dir
   Command: List
   Parameters:
   - Name: Path
     Type: String
 - Alias: mkdir
+  Description: Create a new directory
   Usage: mkdir [path]
+  OpSec: Inline
   Module: Dir
   Command: Create
   Parameters:
   - Name: Path
     Type: String
 - Alias: rmdir
+  Description: Delete a directory
   Usage: rmdir [path]
+  OpSec: Inline
   Module: Dir
   Command: Remove
   Parameters:

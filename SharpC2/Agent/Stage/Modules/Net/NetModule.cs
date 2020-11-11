@@ -40,7 +40,7 @@ namespace Agent.Modules
             };
         }
 
-        private void GetNetInfo(string AgentID, C2Data C2Data)
+        private void GetNetInfo(string AgentID, AgentTask Task)
         {
             try
             {

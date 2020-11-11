@@ -1,12 +1,16 @@
 ﻿- Alias: shell
+  Description: Execute a command via cmd.exe
   Usage: shell [args]
+  OpSec: ForkAndRun
   Module: Exec
   Command: Shell
   Parameters:
   - Name: Arguments
     Type: String
 - Alias: run
+  Description: Execute a command without cmd.exe
   Usage: run [command] <args>
+  OpSec: ForkAndRun
   Module: Exec
   Command: Run
   Parameters:
@@ -15,21 +19,18 @@
   - Name: Arguments
     Type: String
 - Alias: powershell
+  Description: Execute powershell via a custom runspace
   Usage: powershell [args]
+  OpSec: Inline
   Module: Exec
   Command: PowerShell
   Parameters:
   - Name: Arguments
     Type: String
-- Alias: powerpick
-  Usage: powerpick [args]
-  Module: Exec
-  Command: PowerPick
-  Parameters:
-  - Name: Arguments
-    Type: String
-- Alias: exec-asm
-  Usage: exec-asm [path] <args>
+- Alias: execute-assembly
+  Description: Execute a .NET assembly from memory
+  Usage: execute-assembly [path] <args>
+  OpSec: Inline
   Module: Exec
   Command: Assembly
   Parameters:
@@ -37,28 +38,12 @@
     Type: File
   - Name: Arguments
     Type: String
-- Alias: import-asm
-  Usage: import-asm [path]
-  Module: Exec
-  Command: ImportAssembly
-  Parameters:
-  - Name: Assembly
-    Type: File
 - Alias: import-powershell
+  Description: Import a powershell script
   Usage: import-powershell [path]
+  OpSec: Inline
   Module: Exec
   Command: ImportPowerShell
   Parameters:
   - Name: Script
     Type: File
-- Alias: exec-imported-asm
-  Usage: exec-imported-asm [type] [method] <args>
-  Module: Exec
-  Command: AssemblyMethod
-  Parameters:
-  - Name: Type
-    Type: String
-  - Name: Method
-    Type: String
-  - Name: Arguments
-    Type: String

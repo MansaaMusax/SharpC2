@@ -9,11 +9,11 @@
   <ItemGroup>
     <Compile Include="..\..\Shared\Models\Agents\AgentMessage.cs" Link="Models\Agent\AgentMessage.cs" />
     <Compile Include="..\..\Shared\Models\Agents\AgentMetadata.cs" Link="Models\Agent\AgentMetadata.cs" />
-    <Compile Include="..\..\Shared\Models\Agents\AgentTask.cs" Link="Models\Agent\AgentTask.cs" />
     <Compile Include="..\..\Shared\Models\Comms\HTTPChunk.cs" Link="Models\Comms\HTTPChunk.cs" />
     <Compile Include="..\..\Shared\Models\Misc\GenericObjectResult.cs" Link="Models\Misc\GenericObjectResult.cs" />
     <Compile Include="..\..\Shared\Models\Modules\ModuleStatus.cs" Link="Models\Module\ModuleStatus.cs" />
     <Compile Include="..\..\Shared\Models\Native\Native.cs" Link="Models\Native\Native.cs" />
+    <Compile Include="..\..\Shared\Models\Tasks\AgentTask.cs" Link="Models\Tasks\AgentTask.cs" />
     <Compile Include="..\..\Shared\Utilities\Extensions.cs" Link="Utilities\Extensions.cs" />
     <Compile Include="..\..\Shared\Utilities\Utilities.cs" Link="Utilities\Utilities.cs" />
   </ItemGroup>
@@ -27,6 +27,7 @@
   <ItemGroup>
     <Folder Include="Models\Misc\" />
     <Folder Include="Models\Native\" />
+    <Folder Include="Models\Tasks\" />
   </ItemGroup>
 
   <ItemGroup>

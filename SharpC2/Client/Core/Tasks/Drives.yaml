@@ -1,4 +1,6 @@
 ﻿- Alias: drives
+  Description: List the available drives
   Usage: drives
+  OpSec: Inline
   Module: Drives
   Command: List

@@ -1,5 +1,7 @@
 ﻿- Alias: sleep
+  Description: Set the Agent's sleep and jitter
   Usage: sleep [interval] <jitter>
+  OpSec: NA
   Module: Core
   Command: Sleep
   Parameters:
@@ -8,41 +10,34 @@
   - Name: Jitter
     Type: Integer
 - Alias: load-module
+  Description: Load an external Agent Module
   Usage: load-module [path]
+  OpSec: NA
   Module: Core
   Command: LoadModule
   Parameters:
   - Name: Assembly
     Type: File
 - Alias: ppid
+  Description: Set the PPID for fork and run commands
   Usage: ppid [pid]
+  OpSec: NA
   Module: Core
   Command: PPID
   Parameters:
   - Name: PPID
     Type: Integer
 - Alias: blockdlls
+  Description: Enable or disable BlockDLLS for fork and run commands
   Usage: blockdlls [true|false]
+  OpSec: NA
   Module: Core
   Command: BlockDLLs
   Parameters:
   - Name: BlockDLLs
     Type: Boolean
-- Alias: disable-amsi
-  Usage: disable-amsi [true|false]
-  Module: Core
-  Command: DisableAMSI
-  Parameters:
-  - Name: DisableAMSI
-    Type: Boolean
-- Alias: disable-etw
-  Usage: disable-etw [true|false]
-  Module: Core
-  Command: DisableETW
-  Parameters:
-  - Name: DisableETW
-    Type: Boolean
 - Alias: exit
+  Description: Exits the current Agent
   Usage: exit
   Module: Core
   Command: Exit

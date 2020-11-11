@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
+
 using Shared.Models;
-using Shared.Utilities;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using TeamServer.Hubs;
 
 namespace TeamServer.Controllers
@@ -32,26 +33,10 @@ namespace TeamServer.Controllers
 
         public void SendAgentCommand(AgentCommandRequest Request, string Nick)
         {
-            var data = Crypto.Encrypt(new C2Data
-            {
-                Module = Request.Module,
-                Command = Request.Command,
-                Data = Utilities.SerialiseData(Request.TaskData)
-            },
-            out byte[] iv);
-
-            SendAgentMessage(new AgentMessage
-            {
-                AgentID = Request.AgentID,
-                Data = data,
-                IV = iv
-            });
-
             var builder = new StringBuilder();
-            builder.Append(Request.Module.ToLower());
-            builder.Append(" " + Request.Command.ToLower());
+            builder.Append(Request.Task.Alias.ToLower());
 
-            var parameters = Request.TaskData.Parameters;
+            var parameters = Request.Task.Parameters;
 
             if (parameters != null)
             {
@@ -65,9 +50,36 @@ namespace TeamServer.Controllers
                         };
 
                         builder.Append(" " + param.Value);
+
+                        // strip paths
+                        if (param.Name.Equals("LocalPath", StringComparison.OrdinalIgnoreCase))
+                        {
+                            param.Value = null;
+                        }
                     }
                 }
             }
+
+            var task = new AgentTask
+            {
+                Module = Request.Task.Module,
+                Command = Request.Task.Command,
+                Parameters = new Dictionary<string, object>()
+            };
+
+            foreach (var param in parameters)
+            {
+                task.Parameters.Add(param.Name, param.Value);
+            }
+
+            var data = Crypto.Encrypt(task, out byte[] iv);
+
+            SendAgentMessage(new AgentMessage
+            {
+                AgentID = Request.AgentID,
+                Data = data,
+                IV = iv
+            });
 
             OnAgentEvent?.Invoke(this, new AgentEvent(Request.AgentID, AgentEvent.EventType.CommandRequest, builder.ToString(), Nick));
         }

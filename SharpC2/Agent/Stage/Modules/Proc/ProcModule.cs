@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Principal;
 
 using static Agent.PInvoke.NativeMethods;
 
@@ -48,7 +47,7 @@ namespace Agent.Modules
             };
         }
 
-        void ListProcesses(string AgentID, C2Data C2Data)
+        void ListProcesses(string AgentID, AgentTask Task)
         {
             try
             {
@@ -108,13 +107,11 @@ namespace Agent.Modules
             }
         }
 
-        void KillProcess(string AgentID, C2Data C2Data)
+        void KillProcess(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var pid = (int)parameters.FirstOrDefault(p => p.Name.Equals("PID", StringComparison.OrdinalIgnoreCase)).Value;
-
+                var pid = (int)Task.Parameters["PID"];
                 var process = Process.GetProcessById(pid);
                 process.Kill();
             }
@@ -144,8 +141,6 @@ namespace Agent.Modules
 
             return (int)pbi.InheritedFromUniqueProcessId;
         }
-
-        
 
         bool IsWow64(Process Process)
         {

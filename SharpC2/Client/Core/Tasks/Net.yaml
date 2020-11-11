@@ -1,4 +1,6 @@
 ﻿- Alias: ipconfig
+  Description: List network information
   Usage: ipconfig
+  OpSec: Inline
   Module: Net
   Command: Info

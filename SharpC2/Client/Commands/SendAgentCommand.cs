@@ -2,8 +2,6 @@
 using Client.Services;
 using Client.ViewModels;
 
-using Newtonsoft.Json;
-
 using Shared.Models;
 
 using System;
@@ -20,11 +18,11 @@ namespace Client.Commands
     {
         readonly AgentInteractViewModel AgentInteractViewModel;
         readonly Agent Agent;
-        readonly List<AgentTask> AgentTasks;
+        readonly List<TaskDefinition> AgentTasks;
 
         public event EventHandler CanExecuteChanged;
 
-        public SendAgentCommand(AgentInteractViewModel AgentInteractViewModel, Agent Agent, List<AgentTask> AgentTasks)
+        public SendAgentCommand(AgentInteractViewModel AgentInteractViewModel, Agent Agent, List<TaskDefinition> AgentTasks)
         {
             this.AgentInteractViewModel = AgentInteractViewModel;
             this.Agent = Agent;
@@ -50,7 +48,9 @@ namespace Client.Commands
                     taskOutput.Add(new AgentHelp
                     {
                         Alias = task.Alias,
-                        Usage = task.Usage
+                        Description = task.Description,
+                        Usage = task.Usage,
+                        OPSEC = task.OpSec
                     });
                 }
 
@@ -91,7 +91,7 @@ namespace Client.Commands
                     {
                         switch (task.Parameters[i].Type)
                         {
-                            case AgentTask.Parameter.ParameterType.String:
+                            case TaskDefinition.Parameter.ParameterType.String:
 
                                 if (args[i].StartsWith("\"") && args[i].EndsWith("\""))
                                 {
@@ -102,33 +102,33 @@ namespace Client.Commands
                                 task.Parameters[i].Value = args[i];
                                 break;
 
-                            case AgentTask.Parameter.ParameterType.Integer:
+                            case TaskDefinition.Parameter.ParameterType.Integer:
 
                                 task.Parameters[i].Value = Convert.ToInt32(args[i]);
                                 break;
 
-                            case AgentTask.Parameter.ParameterType.Boolean:
+                            case TaskDefinition.Parameter.ParameterType.Boolean:
 
                                 task.Parameters[i].Value = Convert.ToBoolean(args[i]);
                                 break;
 
-                            case AgentTask.Parameter.ParameterType.File:
+                            case TaskDefinition.Parameter.ParameterType.File:
 
                                 var bytes = File.ReadAllBytes(args[i]);
                                 task.Parameters[i].Value = bytes;
 
-                                task.Parameters.Insert(i + 1, new AgentTask.Parameter
+                                task.Parameters.Insert(i + 1, new TaskDefinition.Parameter
                                 {
                                     Name = "Path",
                                     Value = args[i],
-                                    Type = AgentTask.Parameter.ParameterType.String
+                                    Type = TaskDefinition.Parameter.ParameterType.String
                                 });
 
                                 args.Insert(i, string.Empty);
 
                                 break;
 
-                            case AgentTask.Parameter.ParameterType.Listener:
+                            case TaskDefinition.Parameter.ParameterType.Listener:
 
                                 var listeners = await SharpC2API.Listeners.GetAllListeners();
                                 var listener = listeners.FirstOrDefault(l => l.Name.Equals(args[i], StringComparison.OrdinalIgnoreCase));
@@ -141,24 +141,22 @@ namespace Client.Commands
                                     Type = StagerRequest.OutputType.EXE
                                 });
 
-                                task.Parameters.Insert(i + 1, new AgentTask.Parameter
+                                task.Parameters.Insert(i + 1, new TaskDefinition.Parameter
                                 {
                                     Name = "Assembly",
                                     Value = stager,
-                                    Type = AgentTask.Parameter.ParameterType.File
+                                    Type = TaskDefinition.Parameter.ParameterType.File
                                 });
 
                                 break;
 
-                            case AgentTask.Parameter.ParameterType.ShellCode:
+                            case TaskDefinition.Parameter.ParameterType.ShellCode:
                                 break;
 
                             default:
                                 break;
                         }
                     }
-
-                    var json = JsonConvert.SerializeObject(task);
 
                     SharpC2API.Agents.SubmitAgentCommand(Agent.AgentID, task.Module, task.Command, task);
                     AgentInteractViewModel.CommandHistory.Insert(0, AgentInteractViewModel.AgentCommand);

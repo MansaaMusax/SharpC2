@@ -1,5 +1,7 @@
 ﻿- Alias: link-tcp
+  Description: Link to a TCP Agent
   Usage: link-tcp [target] [port]
+  OpSec: Inline
   Module: Link
   Command: TCP
   Parameters:

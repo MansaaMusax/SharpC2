@@ -40,14 +40,12 @@ namespace Client.Commands
                 
                 task.Parameters[0].Value = module;
 
-                task.Parameters.Add(new AgentTask.Parameter
+                task.Parameters.Add(new TaskDefinition.Parameter
                 {
                     Name = "Path",
                     Value = openFile.FileName,
-                    Type = AgentTask.Parameter.ParameterType.String
+                    Type = TaskDefinition.Parameter.ParameterType.String
                 });
-
-                var json = JsonConvert.SerializeObject(task);
 
                 SharpC2API.Agents.SubmitAgentCommand(MainViewModel.SelectedAgent.AgentID, "Core", "LoadModule", task);
             }   

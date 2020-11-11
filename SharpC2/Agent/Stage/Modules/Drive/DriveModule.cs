@@ -38,7 +38,7 @@ namespace Agent.Modules
             };
         }
 
-        private void ListDrives(string AgentID, C2Data C2Data)
+        private void ListDrives(string AgentID, AgentTask Task)
         {
             try
             {

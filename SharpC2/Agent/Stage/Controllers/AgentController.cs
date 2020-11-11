@@ -26,7 +26,7 @@ namespace Agent.Controllers
 
         List<ModuleInfo> AgentModules = new List<ModuleInfo>();
 
-        public delegate void AgentCommand(string AgentID, C2Data C2Data);
+        public delegate void AgentCommand(string AgentID, AgentTask Task);
 
         public AgentController(ICommModule CommModule, CryptoController Crypto, ConfigController Config)
         {
@@ -63,23 +63,13 @@ namespace Agent.Controllers
 
         public void HandleAgentMessage(AgentMessage Message)
         {
-            C2Data c2Data = null;
-            AgentMessage message = null;
+            var task = Crypto.Decrypt<AgentTask>(Message.Data, Message.IV);
 
-            try
-            {
-                c2Data = Crypto.Decrypt<C2Data>(Message.Data, Message.IV);
-            }
-            catch
-            {
-                message = Crypto.Decrypt<AgentMessage>(Message.Data, Message.IV);
-            }
-
-            if (c2Data != null)
+            if (task != null)
             {
                 AgentCommand callback = null;
 
-                var module = AgentModules.FirstOrDefault(m => m.Name.Equals(c2Data.Module, StringComparison.OrdinalIgnoreCase));
+                var module = AgentModules.FirstOrDefault(m => m.Name.Equals(task.Module, StringComparison.OrdinalIgnoreCase));
 
                 if (module == null)
                 {
@@ -87,7 +77,7 @@ namespace Agent.Controllers
                 }
                 else
                 {
-                    var command = module.Commands.FirstOrDefault(c => c.Name.Equals(c2Data.Command, StringComparison.OrdinalIgnoreCase));
+                    var command = module.Commands.FirstOrDefault(c => c.Name.Equals(task.Command, StringComparison.OrdinalIgnoreCase));
 
                     if (command == null)
                     {
@@ -99,11 +89,7 @@ namespace Agent.Controllers
                     }
                 }
 
-                callback?.Invoke(Message.AgentID, c2Data);
-            }
-            else if(message != null)
-            {
-                SendMessage(message);
+                callback?.Invoke(Message.AgentID, task);
             }
         }
 

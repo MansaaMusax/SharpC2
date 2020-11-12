@@ -29,12 +29,6 @@
                   DisplayMemberPath="Name"
                   SelectedValuePath="Name"
                   SelectedItem="{Binding SelectedListener}"/>
-        
-        
-        <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding PayloadCustomisation}"/>
-
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="Kill Date:"/>
-        <DatePicker Grid.Row="2" Grid.Column="1" SelectedDate="{Binding KillDate}"/>
 
         <TextBlock Grid.Row="3" Grid.Column="0" Text="Format:"/>
         <ComboBox ItemsSource="{Binding PayloadFormats}" SelectedItem="{Binding SelectedPayloadFormat}" Grid.Column="1" Grid.Row="3"/>

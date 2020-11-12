@@ -32,8 +32,7 @@ namespace Client.Commands
         {
             var request = new StagerRequest
             {
-                Listener = PayloadGeneratorViewModel.SelectedListener.Name,
-                KillDate = PayloadGeneratorViewModel.KillDate,
+                Listener = PayloadGeneratorViewModel.SelectedListener.Name
             };
 
             switch (PayloadGeneratorViewModel.SelectedPayloadFormat)
@@ -50,12 +49,6 @@ namespace Client.Commands
                 default:
                     request.Type = StagerRequest.OutputType.EXE;
                     break;
-            }
-
-            if (PayloadGeneratorViewModel.SelectedListener.Type == Listener.ListenerType.HTTP)
-            {
-                request.SleepInterval = PayloadGeneratorViewModel.SleepInterval;
-                request.SleepJitter = PayloadGeneratorViewModel.SleepJitter;
             }
 
             GenerateStager(request);

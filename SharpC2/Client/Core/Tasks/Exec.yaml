@@ -8,7 +8,7 @@
   - Name: Arguments
     Type: String
 - Alias: run
-  Description: Execute a command without cmd.exe
+  Description: Execute a program without cmd.exe
   Usage: run [command] <args>
   OpSec: ForkAndRun
   Module: Exec
@@ -39,7 +39,7 @@
   - Name: Arguments
     Type: String
 - Alias: import-powershell
-  Description: Import a powershell script
+  Description: Import a powershell script, used with the powershell command
   Usage: import-powershell [path]
   OpSec: Inline
   Module: Exec
@@ -48,7 +48,7 @@
   - Name: Script
     Type: File
 - Alias: import-assembly
-  Description: Import a .NET assembly
+  Description: Import a .NET assembly, used with the execute-reflection command
   Usage: import-assembly [path]
   OpSec: Inline
   Module: Exec
@@ -57,7 +57,7 @@
   - Name: Assembly
     Type: File
 - Alias: execute-reflection
-  Description: Execute the loaded .NET assembly from memory
+  Description: Execute the loaded .NET assembly from memory, calling the specified type and method
   Usage: execute-reflection [type] [method] <args>
   OpSec: Inline
   Module: Exec

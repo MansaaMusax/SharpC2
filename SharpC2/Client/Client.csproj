@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Core\Tasks\RemoteExec.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Core\Tasks\Link.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

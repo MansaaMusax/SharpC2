@@ -1,0 +1,46 @@
+﻿- Alias: rexec-wmi
+  Description: Execute a command on a remote target via WMI
+  Usage: rexec-wmi [target] [command]
+  OpSec: Inline
+  Module: RemoteExec
+  Command: WMI
+  Parameters:
+  - Name: Target
+    Type: String
+  - Name: Command
+    Type: String
+- Alias: rexec-winrm
+  Description: Execute a command on a remote target via WinRM
+  Usage: rexec-winrm [target] [command]
+  OpSec: Inline
+  Module: RemoteExec
+  Command: WinRM
+  Parameters:
+  - Name: Target
+    Type: String
+  - Name: Command
+    Type: String
+- Alias: rexec-dcom
+  Description: Execute a command on a remote target via DCOM
+  Usage: rexec-dcom [target] [command] [args]
+  OpSec: Inline
+  Module: RemoteExec
+  Command: DCOM
+  Parameters:
+  - Name: Target
+    Type: String
+  - Name: Command
+    Type: String
+  - Name: Arguments
+    Type: String
+- Alias: rexec-scm
+  Description: Execute a command on a remote target via the Service Control Manager
+  Usage: rexec-scm [target] [command]
+  OpSec: Inline
+  Module: RemoteExec
+  Command: PsExec
+  Parameters:
+  - Name: Target
+    Type: String
+  - Name: Command
+    Type: String

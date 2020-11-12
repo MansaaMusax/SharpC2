@@ -12,14 +12,6 @@ namespace TeamServer.Controllers
         public CryptoController()
         {
             EncryptionKey = Convert.FromBase64String("wp8dXiy2AazVc3efsmK0sSF/D3VhxyUutizEpu6WdU4=");
-
-            //using (var rng = RandomNumberGenerator.Create())
-            //{
-            //    var buf = new byte[32];
-            //    rng.GetBytes(buf);
-            //    EncryptionKey = buf;
-            //    var x = Convert.ToBase64String(buf);
-            //}
         }
 
         public byte[] Encrypt<T>(T Data, out byte[] IV)

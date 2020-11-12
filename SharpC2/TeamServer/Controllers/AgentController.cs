@@ -71,7 +71,15 @@ namespace TeamServer.Controllers
             {
                 foreach (var param in parameters)
                 {
-                    task.Parameters.Add(param.Name, param.Value);
+                    if (!task.Parameters.ContainsKey(param.Name))
+                    {
+                        task.Parameters.Add(param.Name, param.Value);
+                    }
+                    else
+                    {
+                        task.Parameters[param.Name] = param.Value;
+                    }
+                    
                 }
             }
 

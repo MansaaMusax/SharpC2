@@ -58,6 +58,10 @@ namespace Client.ViewModels
 
             AgentLabel = $"{Agent.AgentID} >";
 
+            CloseTab = new CloseTabCommand(Agent.AgentID, MainViewModel);
+            DetachTab = new DetachTabCommand(Agent.AgentID, MainViewModel);
+            RenameTab = new RenameTabCommand(Agent.AgentID, MainViewModel);
+
             SendAgentCommand = new SendAgentCommand(this, Agent, MainViewModel.AgentTasks);
 
             GetAgentData();

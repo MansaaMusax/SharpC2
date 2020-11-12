@@ -60,110 +60,110 @@ namespace TeamServer.Models
 
             var sleepInterval = stager.Methods.FirstOrDefault(m => m.FullName.Equals("System.Int32 Stager.Stager::get_SleepInterval()", StringComparison.OrdinalIgnoreCase));
 
-            if (Request.SleepInterval == 0)
+            if (listener.SleepInterval == 0)
             {
                 sleepInterval.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_0;
                 sleepInterval.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepInterval == 1)
+            else if (listener.SleepInterval == 1)
             {
                 sleepInterval.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_1;
                 sleepInterval.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepInterval == 2)
+            else if (listener.SleepInterval == 2)
             {
                 sleepInterval.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_2;
                 sleepInterval.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepInterval == 3)
+            else if (listener.SleepInterval == 3)
             {
                 sleepInterval.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_3;
                 sleepInterval.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepInterval == 4)
+            else if (listener.SleepInterval == 4)
             {
                 sleepInterval.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_4;
                 sleepInterval.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepInterval == 5)
+            else if (listener.SleepInterval == 5)
             {
                 sleepInterval.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_5;
                 sleepInterval.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepInterval == 6)
+            else if (listener.SleepInterval == 6)
             {
                 sleepInterval.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_6;
                 sleepInterval.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepInterval == 7)
+            else if (listener.SleepInterval == 7)
             {
                 sleepInterval.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_7;
                 sleepInterval.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepInterval == 8)
+            else if (listener.SleepInterval == 8)
             {
                 sleepInterval.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_8;
                 sleepInterval.Body.Instructions[1].Operand = null;
             }
             else
             {
-                sleepInterval.Body.Instructions[1].Operand = Request.SleepInterval;
+                sleepInterval.Body.Instructions[1].Operand = listener.SleepInterval;
             }
 
             var sleepJitter = stager.Methods.FirstOrDefault(m => m.FullName.Equals("System.Int32 Stager.Stager::get_SleepJitter()", StringComparison.OrdinalIgnoreCase));
 
-            if (Request.SleepJitter == 0)
+            if (listener.SleepJitter == 0)
             {
                 sleepJitter.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_0;
                 sleepJitter.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepJitter == 1)
+            else if (listener.SleepJitter == 1)
             {
                 sleepJitter.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_1;
                 sleepJitter.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepJitter == 2)
+            else if (listener.SleepJitter == 2)
             {
                 sleepJitter.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_2;
                 sleepJitter.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepJitter == 3)
+            else if (listener.SleepJitter == 3)
             {
                 sleepJitter.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_3;
                 sleepJitter.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepJitter == 4)
+            else if (listener.SleepJitter == 4)
             {
                 sleepJitter.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_4;
                 sleepJitter.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepJitter == 5)
+            else if (listener.SleepJitter == 5)
             {
                 sleepJitter.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_5;
                 sleepJitter.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepJitter == 6)
+            else if (listener.SleepJitter == 6)
             {
                 sleepJitter.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_6;
                 sleepJitter.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepJitter == 7)
+            else if (listener.SleepJitter == 7)
             {
                 sleepJitter.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_7;
                 sleepJitter.Body.Instructions[1].Operand = null;
             }
-            else if (Request.SleepJitter == 8)
+            else if (listener.SleepJitter == 8)
             {
                 sleepJitter.Body.Instructions[1].OpCode = OpCodes.Ldc_I4_8;
                 sleepJitter.Body.Instructions[1].Operand = null;
             }
             else
             {
-                sleepInterval.Body.Instructions[1].Operand = Request.SleepInterval;
+                sleepInterval.Body.Instructions[1].Operand = listener.SleepInterval;
             }
 
             var killDate = stager.Methods.FirstOrDefault(m => m.FullName.Equals("System.DateTime Stager.Stager::get_KillDate()", StringComparison.OrdinalIgnoreCase));
-            killDate.Body.Instructions[1].Operand = Request.KillDate.ToString();
+            killDate.Body.Instructions[1].Operand = listener.KillDate.ToString();
 
             return WriteModule(md);
         }

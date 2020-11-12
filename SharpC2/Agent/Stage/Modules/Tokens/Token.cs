@@ -89,6 +89,7 @@ namespace Agent.Modules
         {
             var rev = Advapi.RevertToSelf();
             Kernel32.CloseHandle(hToken);
+            hToken = IntPtr.Zero;
             return rev;
         }
     }

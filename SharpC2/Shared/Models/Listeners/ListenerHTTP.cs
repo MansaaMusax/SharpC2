@@ -6,6 +6,8 @@
         public int BindPort { get; set; }
         public string ConnectAddress { get; set; }
         public int ConnectPort { get; set; }
+        public int SleepInterval { get; set; }
+        public int SleepJitter { get; set; }
 
         public ListenerHTTP()
         {

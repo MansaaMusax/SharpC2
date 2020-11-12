@@ -26,12 +26,6 @@ namespace Client.ViewModels
 
             SignalR.ServerEventReceived += SignalR_ServerEventReceived;
 
-            //SignalR.NewHttpListenerReceived += SignalR_NewListenerReceived;
-            //SignalR.NewTcpListenerReceived += SignalR_NewListenerReceived;
-            //SignalR.NewSmbListenerReceived += SignalR_NewListenerReceived;
-
-            //SignalR.RemoveListenerReceived += SignalR_RemoveListenerReceived;
-
             NewListener = new OpenWindowCommand(WindowType.NewListener);
             RemoveListener = new StopListenerCommand(this);
 

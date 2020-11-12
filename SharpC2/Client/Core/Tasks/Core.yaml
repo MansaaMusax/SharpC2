@@ -28,7 +28,7 @@
   - Name: PPID
     Type: Integer
 - Alias: blockdlls
-  Description: Enable or disable BlockDLLS for fork and run commands
+  Description: Enable or disable BlockDLLs for fork and run commands
   Usage: blockdlls [true|false]
   OpSec: NA
   Module: Core
@@ -37,7 +37,7 @@
   - Name: BlockDLLs
     Type: Boolean
 - Alias: exit
-  Description: Exits the current Agent
+  Description: Exits the Agent
   Usage: exit
   Module: Core
   Command: Exit

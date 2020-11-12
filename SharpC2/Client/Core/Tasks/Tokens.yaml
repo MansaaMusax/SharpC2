@@ -18,7 +18,7 @@
   - Name: Password
     Type: String
 - Alias: steal-token
-  Description: Impersonate the access token from the target process
+  Description: Impersonate the token of the target process
   Usage: steal-token [pid]
   OpSec: Inline
   Module: Token
@@ -33,7 +33,7 @@
   Module: Token
   Command: Revert
 - Alias: getsystem
-  Description: Attempts to impersonate a SYSTEM process
+  Description: Impersonate a SYSTEM token
   Usage: getsystem
   OpSec: Inline
   Module: Token

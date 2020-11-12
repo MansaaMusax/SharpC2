@@ -39,6 +39,8 @@ namespace Client.Commands
                     request.ConnectAddress = ViewModel.ConnectAddress;
                     request.ConnectPort = ViewModel.ConnectPort;
                     request.BindPort = ViewModel.HttpBindPort;
+                    request.SleepInterval = ViewModel.SleepInterval;
+                    request.SleepJitter = ViewModel.SleepJitter;
                     break;
                 case Listener.ListenerType.TCP:
                     request.Type = Listener.ListenerType.TCP;
@@ -53,6 +55,7 @@ namespace Client.Commands
                     break;
             }
 
+            request.KillDate = ViewModel.KillDate;
             await SharpC2API.Listeners.StartListener(request);
 
             Window.Close();

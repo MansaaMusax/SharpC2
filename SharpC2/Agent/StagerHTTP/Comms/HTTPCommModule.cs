@@ -35,7 +35,7 @@ namespace Stager.Comms
                 while (Status == ModuleStatus.Running)
                 {
                     Checkin();
-                    Thread.Sleep(500);
+                    Thread.Sleep(1000);
                 }
             });
         }

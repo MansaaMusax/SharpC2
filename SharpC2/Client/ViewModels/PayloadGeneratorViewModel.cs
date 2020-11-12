@@ -1,6 +1,5 @@
 ﻿using Client.Commands;
 using Client.Services;
-using Client.Views;
 
 using Shared.Models;
 
@@ -8,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Client.ViewModels
@@ -18,11 +16,6 @@ namespace Client.ViewModels
         public readonly Window Window;
 
         public List<Listener> Listeners { get; set; } = new List<Listener>();
-        public ContentControl PayloadCustomisation { get; set; } = new ContentControl();
-
-        public int SleepInterval { get; set; } = 60;
-        public int SleepJitter { get; set; } = 25;
-        public DateTime KillDate { get; set; } = DateTime.UtcNow.AddDays(30);
 
         public IList<PayloadFormat> PayloadFormats
         {
@@ -32,12 +25,7 @@ namespace Client.ViewModels
             }
         }
 
-        private Listener _selectedListener;
-        public Listener SelectedListener
-        {
-            get { return _selectedListener; }
-            set { _selectedListener = value; UpdateSelectedPayloadView(); }
-        }
+        public Listener SelectedListener { get; set; }
 
         public PayloadFormat SelectedPayloadFormat { get; set; }
 
@@ -60,21 +48,6 @@ namespace Client.ViewModels
             {
                 Listeners.AddRange(listeners);
             }
-        }
-
-        void UpdateSelectedPayloadView()
-        {
-            object content = null;
-
-            if (SelectedListener.Type == Listener.ListenerType.HTTP)
-            {
-                content = new HttpPayloadView
-                {
-                    DataContext = this
-                };
-            }
-
-            PayloadCustomisation.Content = content;
         }
     }
 

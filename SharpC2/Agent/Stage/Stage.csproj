@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="System.Management" />
     <Reference Include="System.Management.Automation">
       <HintPath>Resources\System.Management.Automation.dll</HintPath>
     </Reference>

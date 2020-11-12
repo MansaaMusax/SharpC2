@@ -1,5 +1,5 @@
 ﻿- Alias: ipconfig
-  Description: List network information
+  Description: List network adapter information
   Usage: ipconfig
   OpSec: Inline
   Module: Net

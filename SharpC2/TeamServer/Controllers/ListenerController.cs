@@ -93,7 +93,10 @@ namespace TeamServer.Controllers
                 Name = Request.Name,
                 BindPort = Request.BindPort,
                 ConnectAddress = Request.ConnectAddress,
-                ConnectPort = Request.ConnectPort
+                ConnectPort = Request.ConnectPort,
+                KillDate = Request.KillDate,
+                SleepInterval = Request.SleepInterval,
+                SleepJitter = Request.SleepJitter
             };
 
             var module = new HTTPCommModule(Server, listener);
@@ -112,6 +115,7 @@ namespace TeamServer.Controllers
                 Name = Request.Name,
                 BindAddress = Request.BindAddress,
                 BindPort = Request.BindPort,
+                KillDate = Request.KillDate
             };
 
             TCPListeners.Add(listener);
@@ -124,6 +128,7 @@ namespace TeamServer.Controllers
             var listener = new ListenerSMB
             {
                 Name = Request.Name,
+                KillDate = Request.KillDate,
                 PipeName = Request.PipeName
             };
 

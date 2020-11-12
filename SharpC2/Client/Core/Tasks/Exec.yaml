@@ -47,3 +47,25 @@
   Parameters:
   - Name: Script
     Type: File
+- Alias: import-assembly
+  Description: Import a .NET assembly
+  Usage: import-assembly [path]
+  OpSec: Inline
+  Module: Exec
+  Command: ImportAssembly
+  Parameters:
+  - Name: Assembly
+    Type: File
+- Alias: execute-reflection
+  Description: Execute the loaded .NET assembly from memory
+  Usage: execute-reflection [type] [method] <args>
+  OpSec: Inline
+  Module: Exec
+  Command: Reflection
+  Parameters:
+  - Name: Type
+    Type: String
+  - Name: Method
+    Type: String
+  - Name: Arguments
+    Type: String

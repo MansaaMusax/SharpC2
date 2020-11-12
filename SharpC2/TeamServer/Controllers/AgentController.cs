@@ -67,9 +67,12 @@ namespace TeamServer.Controllers
                 Parameters = new Dictionary<string, object>()
             };
 
-            foreach (var param in parameters)
+            if (parameters != null)
             {
-                task.Parameters.Add(param.Name, param.Value);
+                foreach (var param in parameters)
+                {
+                    task.Parameters.Add(param.Name, param.Value);
+                }
             }
 
             var data = Crypto.Encrypt(task, out byte[] iv);

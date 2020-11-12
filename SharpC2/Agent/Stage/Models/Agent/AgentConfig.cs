@@ -7,7 +7,6 @@
         KillDate,
         PPID,
         BlockDLLs,
-        DisableAMSI,
-        DisableETW
+        SpawnTo
     }
 }

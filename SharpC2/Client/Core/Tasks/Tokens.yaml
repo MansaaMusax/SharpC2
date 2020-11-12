@@ -1,4 +1,10 @@
-﻿- Alias: make-token
+﻿- Alias: whoami
+  Description: Returns the identity of your current token
+  Usage: whoami
+  OpSec: Inline
+  Module: Token
+  Command: Whoami
+- Alias: make-token
   Description: Create a token using plaintext credentials
   Usage: make-token [domain] [username] [password]
   OpSec: Inline
@@ -26,3 +32,9 @@
   OpSec: Inline
   Module: Token
   Command: Revert
+- Alias: getsystem
+  Description: Attempts to impersonate a SYSTEM process
+  Usage: getsystem
+  OpSec: Inline
+  Module: Token
+  Command: GetSystem

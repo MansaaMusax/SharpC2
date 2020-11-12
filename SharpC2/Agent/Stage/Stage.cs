@@ -59,10 +59,8 @@ namespace Agent
 
         static void Execute(ConfigController Config, ICommModule CommModule)
         {
-            Config.Set(AgentConfig.DisableAMSI, false);
             Config.Set(AgentConfig.PPID, System.Diagnostics.Process.GetCurrentProcess().Id);
-            Config.Set(AgentConfig.DisableAMSI, false);
-            Config.Set(AgentConfig.DisableETW, false);
+            Config.Set(AgentConfig.SpawnTo, @"C:\Windows\System32\notepad.exe");
 
             var crypto = new CryptoController(EncryptionKey);
 

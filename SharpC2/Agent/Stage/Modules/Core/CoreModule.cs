@@ -149,20 +149,20 @@ namespace Agent.Modules
 
                 if (block == null)
                 {
-                    current = Config.Get<bool>(AgentConfig.DisableAMSI);
+                    current = Config.Get<bool>(AgentConfig.BlockDLLs);
                 }
                 else
                 {
                     if ((bool)block)
                     {
-                        Config.Set(AgentConfig.DisableAMSI, true);
+                        Config.Set(AgentConfig.BlockDLLs, true);
                     }
                     else
                     {
-                        Config.Set(AgentConfig.DisableAMSI, false);
+                        Config.Set(AgentConfig.BlockDLLs, false);
                     }
 
-                    current = Config.Get<bool>(AgentConfig.DisableAMSI);
+                    current = Config.Get<bool>(AgentConfig.BlockDLLs);
                 }
 
                 if (current)

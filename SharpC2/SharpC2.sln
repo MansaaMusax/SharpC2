@@ -26,6 +26,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoModule", "AgentModules\DemoModule\DemoModule.csproj", "{8AB73DB5-CB8F-4E9A-9154-0074F825C47B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestPayloads", "TestPayloads", "{9111AEB5-0BCA-499E-B5FB-097C18B6C3A7}"
+	ProjectSection(SolutionItems) = preProject
+		Test-Function.ps1 = Test-Function.ps1
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetConsoleApp", "TestPayloads\NetConsoleApp\NetConsoleApp.csproj", "{F9B35B7E-0EFE-42BB-8275-F7908981C50B}"
 EndProject

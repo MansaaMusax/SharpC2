@@ -6,6 +6,11 @@ namespace Shared.Utilities
     {
         public static byte[] TrimBytes(this byte[] bytes)
         {
+            if (bytes.Length == 0)
+            {
+                return bytes;
+            }
+
             var index = bytes.Length - 1;
 
             while (bytes[index] == 0)

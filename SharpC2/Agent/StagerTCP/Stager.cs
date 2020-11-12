@@ -139,7 +139,8 @@ namespace Stager
                 ParentAgentID,
                 KillDate,
                 BindAddress,
-                BindPort
+                BindPort,
+                Crypto.EncryptionKey
             });
         }
 

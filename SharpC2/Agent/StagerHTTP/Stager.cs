@@ -111,7 +111,7 @@ namespace Stager
 
         static string ConnectAddress
         {
-            get { return "192.168.1.117"; }
+            get { return "192.168.1.115"; }
         }
 
         static int ConnectPort

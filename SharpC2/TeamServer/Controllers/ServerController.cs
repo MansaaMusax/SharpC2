@@ -126,6 +126,8 @@ namespace TeamServer.Controllers
                 .Delegate;
 
             callback?.Invoke(Message.AgentID, c2Data);
+
+            Agent.AgentCheckin(Message.AgentID);
         }
 
         // Server

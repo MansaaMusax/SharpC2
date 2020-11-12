@@ -56,7 +56,14 @@ namespace Agent.Controllers
             {
                 if (CommModule.RecvData(out AgentMessage Message))
                 {
-                    HandleAgentMessage(Message);
+                    if (Message.AgentID.Equals(AgentID, StringComparison.OrdinalIgnoreCase))
+                    {
+                        HandleAgentMessage(Message);
+                    }
+                    else
+                    {
+                        P2PController.ForwardMessage(Message);
+                    }
                 }
             }
         }

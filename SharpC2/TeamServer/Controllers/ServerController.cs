@@ -81,7 +81,6 @@ namespace TeamServer.Controllers
                             if (Chunk.Final)
                             {
                                 var allChunks = HTTPChunks[Chunk.AgentID].Where(c => c.ChunkID.Equals(Chunk.ChunkID, StringComparison.OrdinalIgnoreCase)).ToList();
-                                    //.Select(c => c.Data).ToList();
 
                                 var final = new StringBuilder();
 
@@ -120,17 +119,7 @@ namespace TeamServer.Controllers
                 return;
             }
 
-            C2Data c2Data;
-
-            try
-            {
-                c2Data = Crypto.Decrypt<C2Data>(Message.Data, Message.IV);
-            }
-            catch
-            {
-                var message = Crypto.Decrypt<AgentMessage>(Message.Data, Message.IV);
-                c2Data = Crypto.Decrypt<C2Data>(message.Data, Message.IV);
-            }
+            var c2Data = Crypto.Decrypt<C2Data>(Message.Data, Message.IV);
 
             var callback = ServerModules.FirstOrDefault(m => m.Name.Equals(c2Data.Module, StringComparison.OrdinalIgnoreCase)).Commands
                 .FirstOrDefault(c => c.Name.Equals(c2Data.Command, StringComparison.OrdinalIgnoreCase))

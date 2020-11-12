@@ -95,29 +95,21 @@ namespace TeamServer.Controllers
             OnAgentEvent?.Invoke(this, new AgentEvent(Request.AgentID, AgentEvent.EventType.CommandRequest, builder.ToString(), Nick));
         }
 
-        public void SendAgentMessage(AgentMessage Message)
+        public void SendAgentMessage(AgentMessage Message, string ParentAgentID = "")
         {
-            if (!AgentTasks.ContainsKey(Message.AgentID))
+            var targetAgent = string.IsNullOrEmpty(ParentAgentID) ? Message.AgentID : ParentAgentID;
+
+            if (!AgentTasks.ContainsKey(targetAgent))
             {
-                AgentTasks.Add(Message.AgentID, new Queue<AgentMessage>());
+                AgentTasks.Add(targetAgent, new Queue<AgentMessage>());
             }
 
-            AgentTasks[Message.AgentID].Enqueue(Message);
+            AgentTasks[targetAgent].Enqueue(Message);
         }
 
         public AgentMessage GetAgentTask(string AgentID)
         {
             AgentCheckin(AgentID);
-
-            //var destinationAgent = Agents.FirstOrDefault(a => a.AgentID.Equals(AgentID, StringComparison.OrdinalIgnoreCase));
-
-            //while (true)
-            //{
-            //    if (!string.IsNullOrEmpty(destinationAgent.ParentAgentID))
-            //    {
-                    
-            //    }
-            //}
 
             if (AgentTasks.ContainsKey(AgentID))
             {

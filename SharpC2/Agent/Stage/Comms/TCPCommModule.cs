@@ -25,7 +25,6 @@ namespace Agent.Comms
         readonly int Port;
 
         ConfigController Config;
-        AgentMetadata Metadata;
 
         Queue<AgentMessage> Inbound = new Queue<AgentMessage>();
         Queue<AgentMessage> Outbound = new Queue<AgentMessage>();

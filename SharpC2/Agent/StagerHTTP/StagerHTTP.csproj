@@ -52,6 +52,9 @@
     <Compile Include="..\..\Shared\Models\Modules\ModuleStatus.cs">
       <Link>Models\ModuleStatus.cs</Link>
     </Compile>
+    <Compile Include="..\..\Shared\Models\Tasks\AgentTask.cs">
+      <Link>Models\AgentTask.cs</Link>
+    </Compile>
     <Compile Include="..\..\Shared\Utilities\Utilities.cs">
       <Link>Utilities\Utilities.cs</Link>
     </Compile>

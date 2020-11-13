@@ -22,7 +22,7 @@ namespace Client.ViewModels
         public int HttpBindPort { get; set; } = 80;
         public string ConnectAddress { get; set; } = Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork).ToString();
         public int ConnectPort { get; set; } = 80;
-        public int SleepInterval { get; set; } = 5;
+        public int SleepInterval { get; set; } = 1;
         public int SleepJitter { get; set; } = 0;
         public DateTime KillDate { get; set; } = DateTime.UtcNow.AddDays(30);
 

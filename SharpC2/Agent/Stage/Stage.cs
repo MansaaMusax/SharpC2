@@ -84,7 +84,6 @@ namespace Agent
             agent.RegisterAgentModule(new ProcModule());
             agent.RegisterAgentModule(new TokenModule());
             agent.RegisterAgentModule(new RemoteExecModule());
-            agent.RegisterAgentModule(new JumpModule());
             agent.RegisterAgentModule(new LinkModule());
 
             agent.Start();

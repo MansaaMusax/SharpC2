@@ -16,6 +16,9 @@ namespace Agent.Modules
         public string Execute(string Command)
         {
             Scope = new ManagementScope($@"\\{Target}\root\cimv2");
+            Scope.Options.Impersonation = ImpersonationLevel.Impersonate;
+            Scope.Options.EnablePrivileges = true;
+
             Scope.Connect();
 
             var mgmtClass = new ManagementClass(Scope, new ManagementPath("Win32_Process"), new ObjectGetOptions());

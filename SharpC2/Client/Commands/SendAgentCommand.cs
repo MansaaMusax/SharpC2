@@ -144,8 +144,7 @@ namespace Client.Commands
                                 task.Parameters.Insert(i + 1, new TaskDefinition.Parameter
                                 {
                                     Name = "Assembly",
-                                    Value = stager,
-                                    Type = TaskDefinition.Parameter.ParameterType.File
+                                    Value = stager
                                 });
 
                                 break;

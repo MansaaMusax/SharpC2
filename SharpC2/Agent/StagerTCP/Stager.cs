@@ -71,6 +71,8 @@ namespace Stager
 
                     callback?.Invoke(task);
                 }
+
+                Thread.Sleep(1000);
             }
         }
 

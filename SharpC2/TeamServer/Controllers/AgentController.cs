@@ -44,18 +44,13 @@ namespace TeamServer.Controllers
                 {
                     if (param.Value != null)
                     {
-                        if (param.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase) || param.Name.Equals("Script", StringComparison.OrdinalIgnoreCase))
+                        if (param.Name.Equals("Assembly", StringComparison.OrdinalIgnoreCase) || param.Name.Equals("Script", StringComparison.OrdinalIgnoreCase)
+                            || param.Name.Equals("Source", StringComparison.OrdinalIgnoreCase))
                         {
                             continue;
                         };
 
                         builder.Append(" " + param.Value);
-
-                        // strip paths
-                        if (param.Name.Equals("LocalPath", StringComparison.OrdinalIgnoreCase))
-                        {
-                            param.Value = null;
-                        }
                     }
                 }
             }

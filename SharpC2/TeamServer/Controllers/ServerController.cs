@@ -213,7 +213,7 @@ namespace TeamServer.Controllers
         {
             var listener = Listeners.GetListener(Request.Listener);
             var payload = new Payload(listener);
-            var stager = payload.GenerateStager(Request);
+            var stager = payload.GenerateStager();
 
             if (stager != null)
             {

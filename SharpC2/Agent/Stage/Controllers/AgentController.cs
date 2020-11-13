@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Agent.Controllers
 {
@@ -20,9 +21,9 @@ namespace Agent.Controllers
 
         public CryptoController Crypto;
 
-        ICommModule CommModule;
-        ConfigController Config;
-        PeerToPeerController P2PController;
+        readonly ICommModule CommModule;
+        readonly ConfigController Config;
+        readonly PeerToPeerController P2PController;
 
         List<ModuleInfo> AgentModules = new List<ModuleInfo>();
 
@@ -68,6 +69,8 @@ namespace Agent.Controllers
                         }
                     }
                 }
+
+                Thread.Sleep(1000);
             }
         }
 
